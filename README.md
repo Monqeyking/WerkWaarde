@@ -107,6 +107,9 @@ for the relevant environments, enable Google's certified consent message in
 AdSense Privacy & messaging, and redeploy. The `/ads.txt` route is generated
 from the publisher ID.
 
+The public explanation page is available at `/uitleg`; `sitemap.xml` and
+`robots.txt` are generated from the configured site URL.
+
 Use build commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
 
 The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.

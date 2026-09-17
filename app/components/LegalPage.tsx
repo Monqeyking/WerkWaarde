@@ -15,6 +15,6 @@ export default function LegalPage({ eyebrow, title, intro, children }: LegalPage
       <div className="sub-hero legal-hero"><span className="section-kicker">{eyebrow}</span><h1>{title}</h1><p>{intro}</p></div>
       <article className="legal-card">{children}</article>
     </section>
-    <footer className="footer shell"><div className="brand"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></div><span>Een heldere indicatie voor jouw werk- en mobiliteitskeuze.</span><span className="footer-links"><a href="/privacy">Privacy</a><a href="/cookies">Cookies</a><a href="/contact">Contact</a></span></footer>
+    <footer className="footer shell"><div className="brand"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></div><span>Een heldere indicatie voor jouw werk- en mobiliteitskeuze.</span><span className="footer-links"><a href="/uitleg">Uitleg</a><a href="/privacy">Privacy</a><a href="/cookies">Cookies</a><a href="/contact">Contact</a></span></footer>
   </main>;
 }
