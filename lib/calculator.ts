@@ -41,6 +41,9 @@ export type ScenarioResult = {
   breakEven: { targetTotalNet: number; alternatives: Array<{ scenario: "lease" | "mobility" | "ownCar"; grossSalary: number | null; grossPackage: number | null; totalNet: number | null }> };
 };
 
+export type ScenarioKey = "lease" | "mobility" | "ownCar";
+export const ALL_SCENARIOS: ScenarioKey[] = ["lease", "mobility", "ownCar"];
+
 // The 2026 statutory maximum for an employee's own transport is €0.23/km.
 // The actual employer rate remains an input and can be lower, such as €0.22/km.
 export const TAX_FREE_KM_RATE_2026 = 0.23;
@@ -243,16 +246,17 @@ function findBreakEvenSalary(inputs: CalculatorInputs, scenario: "lease" | "mobi
   return high;
 }
 
-export function calculateScenarios(inputs: CalculatorInputs): ScenarioResult {
+export function calculateScenarios(inputs: CalculatorInputs, selectedScenarios: ScenarioKey[] = ALL_SCENARIOS): ScenarioResult {
   const lease = calculateLease(inputs);
   const mobility = calculateMobilityBudget(inputs);
   const ownCar = calculateOwnCar(inputs);
   const salary = calculateSalaryBreakdown(inputs);
-  const values = [
-    { key: "lease" as const, value: lease.netValue },
-    { key: "mobility" as const, value: mobility.netAmount },
-    { key: "ownCar" as const, value: ownCar.netResult },
-  ];
+  const selected = ALL_SCENARIOS.filter((scenario) => selectedScenarios.includes(scenario));
+  const scenarios = selected.length > 0 ? selected : ALL_SCENARIOS;
+  const values = scenarios.map((key) => ({
+    key,
+    value: key === "lease" ? lease.netValue : key === "mobility" ? mobility.netAmount : ownCar.netResult,
+  }));
   const sorted = [...values].sort((a, b) => b.value - a.value);
   const winner = sorted[0].key;
   const targetTotalNet = salary.netMonthlyAverage + sorted[0].value;

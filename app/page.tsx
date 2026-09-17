@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { calculateSalaryBreakdown, calculateScenarios, type CalculatorInputs, type ScenarioResult } from "../lib/calculator";
+import { ALL_SCENARIOS, calculateSalaryBreakdown, calculateScenarios, type CalculatorInputs, type ScenarioKey, type ScenarioResult } from "../lib/calculator";
 import { calculateWorkPattern, type WorkPatternInputs } from "../lib/work-costs";
 
 const defaults: CalculatorInputs = {
@@ -40,6 +40,12 @@ const labels = {
   mobility: { title: "Mobiliteitsbudget", eyebrow: "Uit laten betalen", accent: "blue" },
   ownCar: { title: "Eigen auto", eyebrow: "Met kilometervergoeding", accent: "orange" },
 };
+
+const scenarioOptions: Array<{ key: ScenarioKey; label: string; description: string }> = [
+  { key: "lease", label: "Leaseauto", description: "Auto van de zaak" },
+  { key: "mobility", label: "Mobiliteitsbudget", description: "Uit laten betalen" },
+  { key: "ownCar", label: "Eigen auto", description: "Kilometervergoeding" },
+];
 
 function ScenarioCard({ result, scenario, ownCarIsElectric }: { result: ScenarioResult; scenario: keyof typeof labels; ownCarIsElectric: boolean }) {
   const meta = labels[scenario];
@@ -109,12 +115,13 @@ function BreakEven({ result }: { result: ScenarioResult }) {
   </div>;
 }
 
-function Comparison({ result }: { result: ScenarioResult }) {
-  const items = [
-    { key: "lease" as const, label: "Leaseauto", value: result.lease.netValue, tone: "teal" },
-    { key: "mobility" as const, label: "Mobiliteitsbudget", value: result.mobility.netAmount, tone: "blue" },
-    { key: "ownCar" as const, label: "Eigen auto", value: result.ownCar.netResult, tone: "orange" },
-  ];
+function Comparison({ result, selectedScenarios }: { result: ScenarioResult; selectedScenarios: ScenarioKey[] }) {
+  const items = scenarioOptions.filter((option) => selectedScenarios.includes(option.key)).map((option) => ({
+    key: option.key,
+    label: option.label,
+    value: option.key === "lease" ? result.lease.netValue : option.key === "mobility" ? result.mobility.netAmount : result.ownCar.netResult,
+    tone: option.key === "lease" ? "teal" : option.key === "mobility" ? "blue" : "orange",
+  }));
   const max = Math.max(...items.map((item) => Math.abs(item.value)), 1);
   return <section className="comparison-panel">
     <div className="section-heading compact-heading"><div><span className="section-kicker">In één oogopslag</span><h2>Netto waarde per maand</h2></div><span className="year-chip">2026 indicatie</span></div>
@@ -137,6 +144,21 @@ function Navigation({ active, onNavigate }: { active: AppView; onNavigate: (view
       <button type="button" className={active === "work" ? "active" : ""} onClick={() => onNavigate("work")}>Wat kost werken?</button>
     </div>
     <div className="nav-note"><span className="status-dot"></span> Indicatie voor 2026</div></nav>;
+}
+
+function ScenarioSelector({ selectedScenarios, onChange }: { selectedScenarios: ScenarioKey[]; onChange: (scenario: ScenarioKey) => void }) {
+  return <section className="scenario-selector" aria-labelledby="scenario-selector-heading">
+    <div className="scenario-selector-heading"><div><span className="section-kicker">Jouw vergelijking</span><h3 id="scenario-selector-heading">Wat wil je vergelijken?</h3></div><span className="scenario-selector-hint">Kies minimaal twee opties</span></div>
+    <div className="scenario-options">{scenarioOptions.map((option) => {
+      const checked = selectedScenarios.includes(option.key);
+      const cannotUncheck = checked && selectedScenarios.length <= 2;
+      return <label className={`scenario-option ${checked ? "selected" : ""}`} key={option.key}>
+        <input type="checkbox" checked={checked} disabled={cannotUncheck} onChange={() => onChange(option.key)} />
+        <span className="scenario-option-box">✓</span>
+        <span><strong>{option.label}</strong><small>{option.description}</small></span>
+      </label>;
+    })}</div>
+  </section>;
 }
 
 function Landing({ onNavigate }: { onNavigate: (view: AppView) => void }) {
@@ -195,8 +217,12 @@ function WorkPatternCalculator({ onNavigate }: { onNavigate: (view: AppView) => 
 export default function Home() {
   const [activeView, setActiveView] = useState<AppView>("home");
   const [inputs, setInputs] = useState<CalculatorInputs>(defaults);
-  const result = useMemo(() => calculateScenarios(inputs), [inputs]);
+  const [selectedScenarios, setSelectedScenarios] = useState<ScenarioKey[]>(ALL_SCENARIOS);
+  const result = useMemo(() => calculateScenarios(inputs, selectedScenarios), [inputs, selectedScenarios]);
   const update = (key: keyof CalculatorInputs) => (value: number) => setInputs((current) => ({ ...current, [key]: Number.isFinite(value) ? value : 0 }));
+  const toggleScenario = (scenario: ScenarioKey) => setSelectedScenarios((current) => current.includes(scenario)
+    ? current.length > 2 ? current.filter((item) => item !== scenario) : current
+    : [...current, scenario]);
   if (activeView === "home") return <Landing onNavigate={setActiveView} />;
   if (activeView === "work") return <WorkPatternCalculator onNavigate={setActiveView} />;
   return <main>
@@ -274,8 +300,9 @@ export default function Home() {
       </aside>
       <div className="results-panel"><div className="results-heading"><div><span className="section-kicker">Jouw uitkomst</span><h2>Wat houd je netto over?</h2></div><span className="live-badge"><span></span> Live berekend</span></div>
         <SalarySummary result={result} />
-        <div className="results-grid"><ScenarioCard result={result} scenario="lease" ownCarIsElectric={inputs.ownCarIsElectric} /><ScenarioCard result={result} scenario="mobility" ownCarIsElectric={inputs.ownCarIsElectric} /><ScenarioCard result={result} scenario="ownCar" ownCarIsElectric={inputs.ownCarIsElectric} /></div>
-        <Comparison result={result} />
+        <ScenarioSelector selectedScenarios={selectedScenarios} onChange={toggleScenario} />
+        <div className={`results-grid count-${selectedScenarios.length}`}>{selectedScenarios.map((scenario) => <ScenarioCard key={scenario} result={result} scenario={scenario} ownCarIsElectric={inputs.ownCarIsElectric} />)}</div>
+        <Comparison result={result} selectedScenarios={selectedScenarios} />
         <div className="result-baseline"><span className="baseline-icon">↗</span><div><strong>Netto loon vóór mobiliteitskeuze: {money(result.salary.netMonthlyRegular)} per maand excl. vakantiegeld</strong><span>Pensioenbijdrage {money(result.salary.pensionMonthly)} per maand · gemiddeld incl. vakantiegeld {money(result.salary.netMonthlyAverage)} per maand</span></div></div><AdSlot />
       </div>
       </div>
