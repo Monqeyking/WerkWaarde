@@ -97,6 +97,16 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 - `npm test`: build and verify the rendered development-preview metadata
 - `npm run db:generate`: generate Drizzle migrations after schema changes
 
+## AdSense setup
+
+The site has three responsive ad placements. Keep the AdSense variables empty
+until Google approves the site. Then set `NEXT_PUBLIC_ADSENSE_PUBLISHER_ID`,
+`NEXT_PUBLIC_ADSENSE_SLOT_HOME`, `NEXT_PUBLIC_ADSENSE_SLOT_WORK`,
+`NEXT_PUBLIC_ADSENSE_SLOT_RESULT`, and `NEXT_PUBLIC_CONTACT_EMAIL` in Vercel
+for the relevant environments, enable Google's certified consent message in
+AdSense Privacy & messaging, and redeploy. The `/ads.txt` route is generated
+from the publisher ID.
+
 Use build commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
 
 The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
