@@ -17,6 +17,13 @@ export type CalculatorInputs = {
   businessKm: number;
   privateKm: number;
   reimbursementRate: number;
+  mobilityUsesOwnCar: boolean;
+  mobilityUsesPublicTransport: boolean;
+  publicTransportMonthly: number;
+  mobilityUsesBike: boolean;
+  bikeMonthly: number;
+  mobilityUsesSharedCar: boolean;
+  sharedCarMonthly: number;
   leaseIsElectric: boolean;
   ownCarIsElectric: boolean;
   fuelConsumption: number;
@@ -31,7 +38,7 @@ export type CalculatorInputs = {
 
 export type ScenarioResult = {
   lease: { monthlyImpact: number; taxCost: number; employeeContribution: number; netValue: number; taxableBenefit: number };
-  mobility: { grossBudget: number; taxCost: number; taxableBudget: number; taxFreeTravelReimbursement: number; netBudget: number; energyCosts: number; otherCarCosts: number; depreciationCosts: number; carCosts: number; netAmount: number };
+  mobility: { grossBudget: number; taxCost: number; taxableBudget: number; taxFreeTravelReimbursement: number; netBudget: number; energyCosts: number; otherCarCosts: number; depreciationCosts: number; carCosts: number; publicTransportCost: number; bikeCost: number; sharedCarCost: number; transportCosts: number; netAmount: number };
   ownCar: { reimbursement: number; taxFreeReimbursement: number; taxableReimbursement: number; energyCosts: number; otherCarCosts: number; depreciationCosts: number; carCosts: number; netResult: number };
   salary: { grossMonthly: number; holidayMonthly: number; grossMonthlyAverage: number; pensionMonthly: number; employerPensionMonthly: number; totalPensionMonthly: number; pensionableAnnual: number; pensionBase: number; taxableAnnual: number; taxMonthly: number; taxBenefitMonthly: number; netMonthlyRegular: number; netMonthlyAverage: number };
   baselineNet: number;
@@ -188,14 +195,23 @@ export function calculateLease(inputs: CalculatorInputs) {
 
 export function calculateMobilityBudget(inputs: CalculatorInputs) {
   const grossBudget = Math.max(0, inputs.mobilityBudget);
-  const requestedTravelReimbursement = Math.max(0, inputs.businessKm) * Math.min(Math.max(0, inputs.reimbursementRate), TAX_FREE_KM_RATE_2026) / 12;
+  const reimbursedModes = inputs.mobilityUsesOwnCar || inputs.mobilityUsesBike;
+  const requestedTravelReimbursement = reimbursedModes
+    ? Math.max(0, inputs.businessKm) * Math.min(Math.max(0, inputs.reimbursementRate), TAX_FREE_KM_RATE_2026) / 12
+    : 0;
   const taxFreeTravelReimbursement = Math.min(grossBudget, requestedTravelReimbursement);
   const taxableBudget = Math.max(0, grossBudget - taxFreeTravelReimbursement);
   const taxCost = taxDelta(inputs, taxableBudget * 12) / 12;
   // The tax-free km reimbursement is paid from the budget, not on top of it.
   const netBudget = taxableBudget - taxCost + taxFreeTravelReimbursement;
-  const vehicleCosts = calculateVehicleCosts(inputs);
-  return { grossBudget, taxCost, taxableBudget, taxFreeTravelReimbursement, netBudget, ...vehicleCosts, netAmount: netBudget - vehicleCosts.carCosts };
+  const vehicleCosts = inputs.mobilityUsesOwnCar
+    ? calculateVehicleCosts(inputs)
+    : { energyCosts: 0, otherCarCosts: 0, depreciationCosts: 0, carCosts: 0 };
+  const publicTransportCost = inputs.mobilityUsesPublicTransport ? Math.max(0, inputs.publicTransportMonthly) : 0;
+  const bikeCost = inputs.mobilityUsesBike ? Math.max(0, inputs.bikeMonthly) : 0;
+  const sharedCarCost = inputs.mobilityUsesSharedCar ? Math.max(0, inputs.sharedCarMonthly) : 0;
+  const transportCosts = vehicleCosts.carCosts + publicTransportCost + bikeCost + sharedCarCost;
+  return { grossBudget, taxCost, taxableBudget, taxFreeTravelReimbursement, netBudget, ...vehicleCosts, publicTransportCost, bikeCost, sharedCarCost, transportCosts, netAmount: netBudget - transportCosts };
 }
 
 export function calculateVehicleCosts(inputs: CalculatorInputs) {

@@ -9,7 +9,8 @@ const defaults: CalculatorInputs = {
   salary: 4500, holidayAllowance: 8, pensionInputMode: "monthly", pensionEmployeeMonthly: 0, pensionEmployerMonthly: 0,
   pensionTotalRate: 20, pensionEmployeeShare: 33.33, pensionFranchise: 19172, pensionIncludesHoliday: true, age: 35, leaseBudget: 625, mobilityBudget: 850,
   carValue: 40000, benefitRate: 22, employeeContribution: 70, businessKm: 15000,
-  privateKm: 10000, reimbursementRate: 0.23, leaseIsElectric: false, ownCarIsElectric: false, fuelConsumption: 7.5, fuelPrice: 2.00,
+  privateKm: 10000, reimbursementRate: 0.23, mobilityUsesOwnCar: true, mobilityUsesPublicTransport: false, publicTransportMonthly: 0,
+  mobilityUsesBike: false, bikeMonthly: 0, mobilityUsesSharedCar: false, sharedCarMonthly: 0, leaseIsElectric: false, ownCarIsElectric: false, fuelConsumption: 7.5, fuelPrice: 2.00,
   electricConsumption: 18, electricityPrice: 0.30, otherCarCostRate: 0.15, includeDepreciation: false, depreciationMonthly: 0, taxYear: 2026,
 };
 
@@ -71,7 +72,7 @@ function ScenarioCard({ result, scenario, ownCarIsElectric }: { result: Scenario
         <div><span>Belastbaar budget</span><strong>{money(result.mobility.taxableBudget)}</strong></div>
         <div><span>Geschatte belasting</span><strong>{money(result.mobility.taxCost)}</strong></div>
         <div><span>Netto budget</span><strong>{money(result.mobility.netBudget)}</strong></div>
-        <div><span>Autokosten bij dit gebruik</span><strong>{money(result.mobility.carCosts)}</strong></div>
+        <div><span>Vervoerskosten bij dit gebruik</span><strong>{money(result.mobility.transportCosts)}</strong></div>
         <div><span>Netto resultaat</span><strong className={result.mobility.netAmount >= 0 ? "positive" : "negative"}>{money(result.mobility.netAmount)}</strong></div>
       </>}
       {scenario === "ownCar" && <>
@@ -147,6 +148,39 @@ function Navigation({ active, onNavigate }: { active: AppView; onNavigate: (view
     <div className="nav-note"><span className="status-dot"></span> Indicatie voor 2026</div></nav>;
 }
 
+function MobilityTransportPicker({ inputs, onToggle, update }: {
+  inputs: CalculatorInputs;
+  onToggle: (key: keyof CalculatorInputs) => (checked: boolean) => void;
+  update: (key: keyof CalculatorInputs) => (value: number) => void;
+}) {
+  const selectedCount = [inputs.mobilityUsesOwnCar, inputs.mobilityUsesPublicTransport, inputs.mobilityUsesBike, inputs.mobilityUsesSharedCar].filter(Boolean).length;
+  return <div className="mobility-mode-picker">
+    <div className="mobility-mode-heading"><div><span className="section-kicker">Vervoersmix</span><strong>Wat gebruik je met je mobiliteitsbudget?</strong><small>Vink alleen aan wat je werkelijk gebruikt. De extra velden verschijnen daarna.</small></div><span className="mobility-mode-count">{selectedCount} gekozen</span></div>
+    <div className="mobility-mode-options">
+      <label className={"mobility-mode-option " + (inputs.mobilityUsesOwnCar ? "selected" : "")}>
+        <input type="checkbox" checked={inputs.mobilityUsesOwnCar} onChange={(event) => onToggle("mobilityUsesOwnCar")(event.target.checked)} />
+        <span className="checkbox-box">✓</span><span><strong>Eigen auto</strong><small>Brandstof of laden</small></span>
+      </label>
+      <label className={"mobility-mode-option " + (inputs.mobilityUsesPublicTransport ? "selected" : "")}>
+        <input type="checkbox" checked={inputs.mobilityUsesPublicTransport} onChange={(event) => onToggle("mobilityUsesPublicTransport")(event.target.checked)} />
+        <span className="checkbox-box">✓</span><span><strong>OV</strong><small>Trein, bus of tram</small></span>
+      </label>
+      <label className={"mobility-mode-option " + (inputs.mobilityUsesBike ? "selected" : "")}>
+        <input type="checkbox" checked={inputs.mobilityUsesBike} onChange={(event) => onToggle("mobilityUsesBike")(event.target.checked)} />
+        <span className="checkbox-box">✓</span><span><strong>Fiets</strong><small>Lease of onderhoud</small></span>
+      </label>
+      <label className={"mobility-mode-option " + (inputs.mobilityUsesSharedCar ? "selected" : "")}>
+        <input type="checkbox" checked={inputs.mobilityUsesSharedCar} onChange={(event) => onToggle("mobilityUsesSharedCar")(event.target.checked)} />
+        <span className="checkbox-box">✓</span><span><strong>Deelauto</strong><small>Gebruik per maand</small></span>
+      </label>
+    </div>
+    <div className="mobility-mode-details">
+      {inputs.mobilityUsesPublicTransport && <details className="mobility-mode-detail" open><summary>Openbaar vervoer <span>maandbedrag</span></summary><Field label="OV-kosten per maand" value={inputs.publicTransportMonthly} onChange={update("publicTransportMonthly")} suffix="€/mnd" hint="Je gemiddelde maandbedrag voor trein, bus, tram of metro." step={5} /></details>}
+      {inputs.mobilityUsesBike && <details className="mobility-mode-detail" open><summary>Fiets <span>maandbedrag</span></summary><Field label="Fietskosten per maand" value={inputs.bikeMonthly} onChange={update("bikeMonthly")} suffix="€/mnd" hint="Bijvoorbeeld lease, onderhoud of een reservering voor aanschaf." step={5} /></details>}
+      {inputs.mobilityUsesSharedCar && <details className="mobility-mode-detail" open><summary>Deelauto <span>maandbedrag</span></summary><Field label="Deelautokosten per maand" value={inputs.sharedCarMonthly} onChange={update("sharedCarMonthly")} suffix="€/mnd" hint="Je gemiddelde maandbedrag voor abonnement, huur en gebruik." step={5} /></details>}
+    </div>
+  </div>;
+}
 function ScenarioSelector({ selectedScenarios, onChange }: { selectedScenarios: ScenarioKey[]; onChange: (scenario: ScenarioKey) => void }) {
   return <section className="scenario-selector" aria-labelledby="scenario-selector-heading">
     <div className="scenario-selector-heading"><div><span className="section-kicker">Jouw vergelijking</span><h3 id="scenario-selector-heading">Wat wil je vergelijken?</h3></div><span className="scenario-selector-hint">Kies minimaal twee opties</span></div>
@@ -224,6 +258,8 @@ export default function Home() {
   const toggleScenario = (scenario: ScenarioKey) => setSelectedScenarios((current) => current.includes(scenario)
     ? current.length > 2 ? current.filter((item) => item !== scenario) : current
     : [...current, scenario]);
+  const toggleInput = (key: keyof CalculatorInputs) => (checked: boolean) => setInputs((current) => ({ ...current, [key]: checked }));
+  const showOwnCarInputs = inputs.mobilityUsesOwnCar || selectedScenarios.includes("ownCar");
   if (activeView === "home") return <Landing onNavigate={setActiveView} />;
   if (activeView === "work") return <WorkPatternCalculator onNavigate={setActiveView} />;
   return <main>
@@ -263,30 +299,34 @@ export default function Home() {
         <div className="input-section"><h3><span className="section-number">02</span> Werk & mobiliteit</h3>
           <Field label="Leasebudget per maand" value={inputs.leaseBudget} onChange={update("leaseBudget")} suffix="€" hint="Het maximale maandbedrag dat je werkgever voor een leaseauto beschikbaar stelt." />
           <Field label="Mobiliteitsbudget per maand" value={inputs.mobilityBudget} onChange={update("mobilityBudget")} suffix="€" hint="Het bruto bedrag dat je kunt laten uitbetalen in plaats van een leaseauto." />
-          <Field label="Zakelijke kilometers per jaar" value={inputs.businessKm} onChange={update("businessKm")} suffix="km" hint="Kilometers voor woon-werk en zakelijke ritten die je werkgever vergoedt." />
-          <Field label="Privé-kilometers per jaar" value={inputs.privateKm} onChange={update("privateKm")} suffix="km" hint="Je verwachte privégebruik van je eigen auto." />
-          <Field label="Kilometervergoeding werkgever" value={inputs.reimbursementRate} onChange={update("reimbursementRate")} suffix="€/km" hint="Je feitelijke vergoeding. In 2026 mag maximaal €0,23 per zakelijke kilometer onbelast worden vergoed." step={0.01} />
-          <label className="checkbox-row">
-            <input type="checkbox" checked={inputs.ownCarIsElectric} onChange={(event) => setInputs((current) => ({ ...current, ownCarIsElectric: event.target.checked }))} />
-            <span className="checkbox-box">✓</span>
-            <span><strong>Mijn eigen auto is elektrisch</strong><small>Gebruik laadverbruik voor eigen auto en mobiliteitsbudget</small></span>
-          </label>
-          {inputs.ownCarIsElectric ? <>
-            <Field label="Gemiddeld verbruik elektrische auto" value={inputs.electricConsumption} onChange={update("electricConsumption")} suffix="kWh/100 km" hint="Het gemiddelde stroomverbruik van je elektrische auto." step={0.1} />
-            <Field label="Gemiddelde stroomprijs" value={inputs.electricityPrice} onChange={update("electricityPrice")} suffix="€/kWh" hint="Een gewogen gemiddelde van thuisladen, publiek laden en eventueel laden op het werk." step={0.01} />
-            <div className="ev-rule-note">Bij een privé-EV rekenen we geen aparte laadvergoeding bovenop de kilometervergoeding. De laadkosten worden dus als onderdeel van je eigen autokosten meegenomen.</div>
-          </> : <>
-            <Field label="Gemiddeld verbruik eigen auto" value={inputs.fuelConsumption} onChange={update("fuelConsumption")} suffix="l/100 km" hint="Het gemiddelde brandstofverbruik van je auto." step={0.1} />
-            <Field label="Benzineprijs" value={inputs.fuelPrice} onChange={update("fuelPrice")} suffix="€/l" hint="De gemiddelde prijs die je voor een liter benzine betaalt." step={0.01} />
-          </>}
-          <Field label="Overige autokosten" value={inputs.otherCarCostRate} onChange={update("otherCarCostRate")} suffix="€/km" hint="Onderhoud, verzekering en motorrijtuigenbelasting; exclusief brandstof, laadkosten, afschrijving, parkeren en tol." step={0.01} />
-          <label className="checkbox-row compact-checkbox">
-            <input type="checkbox" checked={inputs.includeDepreciation} onChange={(event) => setInputs((current) => ({ ...current, includeDepreciation: event.target.checked }))} />
-            <span className="checkbox-box">✓</span>
-            <span><strong>Afschrijving of vervangingsreserve meenemen</strong><small>Optioneel: alleen gebruiken als je hiervoor maandelijks wilt reserveren.</small></span>
-          </label>
-          {inputs.includeDepreciation && <Field label="Afschrijving / reserve per maand" value={inputs.depreciationMonthly} onChange={update("depreciationMonthly")} suffix="€/mnd" hint="Een eigen schatting van de maandelijkse waardedaling of het bedrag dat je reserveert voor een volgende auto." step={10} />}
-          <div className="ev-rule-note">Parkeren en tol zijn niet meegenomen. Deze kosten verschillen sterk per werkgever, woonplaats en reispatroon en zouden de vergelijking anders kunnen vertekenen.</div></div>
+          <MobilityTransportPicker inputs={inputs} onToggle={toggleInput} update={update} />
+          {showOwnCarInputs && <details className="mobility-mode-detail mobility-mode-detail-car" open>
+            <summary>Eigen auto <span>kilometers en autokosten</span></summary>
+            <Field label="Zakelijke kilometers per jaar" value={inputs.businessKm} onChange={update("businessKm")} suffix="km" hint="Kilometers voor woon-werk en zakelijke ritten die je werkgever vergoedt." />
+            <Field label="Privé-kilometers per jaar" value={inputs.privateKm} onChange={update("privateKm")} suffix="km" hint="Je verwachte privégebruik van je eigen auto." />
+            <Field label="Kilometervergoeding werkgever" value={inputs.reimbursementRate} onChange={update("reimbursementRate")} suffix="€/km" hint="Je feitelijke vergoeding. In 2026 mag maximaal €0,23 per zakelijke kilometer onbelast worden vergoed." step={0.01} />
+            <label className="checkbox-row">
+              <input type="checkbox" checked={inputs.ownCarIsElectric} onChange={(event) => toggleInput("ownCarIsElectric")(event.target.checked)} />
+              <span className="checkbox-box">✓</span>
+              <span><strong>Mijn eigen auto is elektrisch</strong><small>Gebruik laadkosten voor eigen auto en mobiliteitsbudget</small></span>
+            </label>
+            {inputs.ownCarIsElectric ? <>
+              <Field label="Gemiddeld verbruik elektrische auto" value={inputs.electricConsumption} onChange={update("electricConsumption")} suffix="kWh/100 km" hint="Het gemiddelde stroomverbruik van je elektrische auto." step={0.1} />
+              <Field label="Gemiddelde stroomprijs" value={inputs.electricityPrice} onChange={update("electricityPrice")} suffix="€/kWh" hint="Een gewogen gemiddelde van thuisladen, publiek laden en eventueel laden op het werk." step={0.01} />
+            </> : <>
+              <Field label="Gemiddeld verbruik eigen auto" value={inputs.fuelConsumption} onChange={update("fuelConsumption")} suffix="l/100 km" hint="Het gemiddelde brandstofverbruik van je auto." step={0.1} />
+              <Field label="Benzineprijs" value={inputs.fuelPrice} onChange={update("fuelPrice")} suffix="€/l" hint="De gemiddelde prijs die je voor een liter benzine betaalt." step={0.01} />
+            </>}
+            <Field label="Overige autokosten" value={inputs.otherCarCostRate} onChange={update("otherCarCostRate")} suffix="€/km" hint="Onderhoud, verzekering en motorrijtuigenbelasting; exclusief brandstof, laadkosten, afschrijving, parkeren en tol." step={0.01} />
+            <label className="checkbox-row compact-checkbox">
+              <input type="checkbox" checked={inputs.includeDepreciation} onChange={(event) => toggleInput("includeDepreciation")(event.target.checked)} />
+              <span className="checkbox-box">✓</span>
+              <span><strong>Afschrijving of vervangingsreserve meenemen</strong><small>Optioneel: alleen gebruiken als je hiervoor maandelijks wilt reserveren.</small></span>
+            </label>
+            {inputs.includeDepreciation && <Field label="Afschrijving / reserve per maand" value={inputs.depreciationMonthly} onChange={update("depreciationMonthly")} suffix="€/mnd" hint="Een eigen schatting van de maandelijkse waardedaling of het bedrag dat je reserveert voor een volgende auto." step={10} />}
+            <div className="ev-rule-note">Parkeren en tol zijn niet meegenomen. Deze kosten verschillen sterk per werkgever, woonplaats en reispatroon.</div>
+          </details>}
+        </div>
         <div className="input-section last-section"><h3><span className="section-number">03</span> Leaseauto</h3>
           <label className="checkbox-row">
             <input type="checkbox" checked={inputs.leaseIsElectric} onChange={(event) => setInputs((current) => ({ ...current, leaseIsElectric: event.target.checked }))} />
@@ -297,7 +337,7 @@ export default function Home() {
           <Field label="Cataloguswaarde leaseauto" value={inputs.carValue} onChange={update("carValue")} suffix="€" hint="De fiscale catalogusprijs inclusief btw en bpm." />
           {!inputs.leaseIsElectric && <Field label="Bijtellingspercentage" value={inputs.benefitRate} onChange={update("benefitRate")} suffix="%" hint="Het percentage van de cataloguswaarde dat als belastbaar loon wordt gezien." step={0.1} />}
           <Field label="Eigen bijdrage per maand" value={inputs.employeeContribution} onChange={update("employeeContribution")} suffix="€" hint="Je eventuele maandelijkse bijdrage voor privégebruik of de leaseauto." /></div>
-        <div className="panel-footnote"><span>i</span> De leaseauto en je eigen auto hebben nu een eigen aandrijving-keuze. Zo kun je bijvoorbeeld een elektrische leaseauto vergelijken met een benzineauto privé, of andersom.</div>
+        <div className="panel-footnote"><span>i</span> Vink alleen de vervoersmiddelen aan die je gebruikt. De mobiliteitsbudget-berekening trekt daarna alleen die maandelijkse kosten af.</div>
       </aside>
       <div className="results-panel"><div className="results-heading"><div><span className="section-kicker">Jouw uitkomst</span><h2>Wat houd je netto over?</h2></div><span className="live-badge"><span></span> Live berekend</span></div>
         <SalarySummary result={result} />
