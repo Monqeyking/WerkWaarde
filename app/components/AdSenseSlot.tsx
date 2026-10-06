@@ -8,17 +8,9 @@ declare global {
   }
 }
 
-const slots = {
-  home: process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME,
-  work: process.env.NEXT_PUBLIC_ADSENSE_SLOT_WORK,
-  result: process.env.NEXT_PUBLIC_ADSENSE_SLOT_RESULT,
-} as const;
-
-type Placement = keyof typeof slots;
-
-export default function AdSenseSlot({ placement }: { placement: Placement }) {
+export default function AdSenseSlot() {
   const publisherId = process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID;
-  const slotId = slots[placement];
+  const slotId = process.env.NEXT_PUBLIC_ADSENSE_SLOT_CONTENT;
 
   useEffect(() => {
     if (!publisherId || !slotId) return;
@@ -30,9 +22,7 @@ export default function AdSenseSlot({ placement }: { placement: Placement }) {
     }
   }, [publisherId, slotId]);
 
-  if (!publisherId || !slotId) {
-    return <aside className="ad-slot" aria-label="Advertentieruimte"><span>Advertentieruimte</span><p>Relevante partners kunnen hier later zichtbaar worden.</p></aside>;
-  }
+  if (!publisherId || !slotId) return null;
 
   return <ins className="adsbygoogle ad-slot ad-slot-live"
     style={{ display: "block" }}

@@ -51,9 +51,9 @@ export type ScenarioResult = {
 export type ScenarioKey = "lease" | "mobility" | "ownCar";
 export const ALL_SCENARIOS: ScenarioKey[] = ["lease", "mobility", "ownCar"];
 
-// The 2026 statutory maximum for an employee's own transport is €0.23/km.
+// The 2026 tax-free maximum for an employee's own transport is €0.25/km.
 // The actual employer rate remains an input and can be lower, such as €0.22/km.
-export const TAX_FREE_KM_RATE_2026 = 0.23;
+export const TAX_FREE_KM_RATE_2026 = 0.25;
 const EV_BIJTELLING_RATE_2026 = 0.18;
 const EV_BIJTELLING_THRESHOLD_2026 = 30_000;
 const STANDARD_BIJTELLING_RATE_2026 = 0.22;

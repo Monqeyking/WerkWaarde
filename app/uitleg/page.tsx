@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import LegalPage from "../components/LegalPage";
+import AdSenseSlot from "../components/AdSenseSlot";
 
 export const metadata: Metadata = {
   title: "Hoe werkt WerkWaarde? | WerkWaarde",
@@ -27,12 +28,23 @@ export default function ExplanationPage() {
     <p>De werkpatroon-calculator vergelijkt de oude en nieuwe situatie per maand en per jaar. Reistijd, kilometers, brandstof of laden, parkeren, lunch, kinderopvang en overige ingevulde werkgerelateerde kosten worden afzonderlijk getoond.</p>
 
     <h2>Belangrijkste aannames</h2>
-    <p>De berekening gebruikt de tarieven en uitgangspunten die in de calculator worden vermeld. Parkeren en tol zijn niet standaard opgenomen. Bij een elektrische auto gebruiken we het ingevulde verbruik en de ingevulde energieprijs. Controleer belangrijke beslissingen altijd met je werkgever, loonstrook of belastingadviseur.</p>
+    <p>De berekening gebruikt de tarieven en uitgangspunten die in de calculator worden vermeld. Voor 2026 is de maximale gerichte vrijstelling voor een kilometervergoeding verhoogd van €0,23 naar €0,25 per kilometer, met terugwerkende kracht vanaf 1 januari. Je vult de feitelijke vergoeding zelf in; wat je werkgever betaalt kan lager zijn. Parkeren en tol zijn niet standaard opgenomen. Bij een elektrische auto gebruiken we het ingevulde verbruik en de ingevulde energieprijs. Controleer belangrijke beslissingen altijd met je werkgever, loonstrook of belastingadviseur.</p>
+
+    <h2>Voorbeeld: vergoeding en kosten van een eigen auto</h2>
+    <p>Stel dat je per jaar 15.000 zakelijke kilometers rijdt en je werkgever €0,25 per kilometer vergoedt. Dat is €3.750 per jaar, gemiddeld €312,50 per maand. Met 10.000 privé-kilometers erbij, een benzineverbruik van 7,5 liter per 100 kilometer en een benzineprijs van €2 per liter, komt brandstof in dit voorbeeld uit op €312,50 per maand. Bij €0,15 overige autokosten per kilometer komt daar nog €312,50 per maand bij. De calculator toont dan €625 aan autokosten tegenover €312,50 vergoeding: een indicatief saldo van −€312,50 per maand, vóór eventuele afschrijving, parkeren en tol.</p>
+    <p>Het voorbeeld laat zien waarom zakelijke kilometers en totale autokosten los van elkaar staan. De kilometervergoeding wordt niet automatisch gezien als volledige dekking van brandstof, onderhoud, verzekering, belasting en waardeverlies. Pas de invoer aan: vooral het privégebruik, energieverbruik en de overige kosten kunnen de vergelijking sterk veranderen.</p>
+
+    <h2>Voorbeeld: drie extra kantoordagen</h2>
+    <p>Wie van één naar vier kantoordagen per week gaat en 46 werkweken per jaar invult, krijgt 138 extra kantoordagen per jaar. Bij 25 kilometer enkele reis betekent dat 6.900 extra retourkilometers per jaar, gemiddeld 575 per maand. Een reistijd van 45 minuten enkele reis komt neer op ongeveer 17 uur extra reistijd per gemiddelde maand. De werkpatroon-calculator zet die reistijd apart van geldkosten, zodat je zelf kunt bepalen of je die tijd een waarde wilt geven.</p>
+
+    <h2>Wat de uitkomst niet meeneemt</h2>
+    <p>Een loonstrook kan afwijken door persoonlijke heffingskortingen, pensioenafspraken, cao-regels, toeslagen of andere inhoudingen. De mobiliteitsvergelijking is geen volledige begroting: bijvoorbeeld financiering, afschrijving tenzij je die aanvinkt, kosten boven je ingevoerde overige autokosten, parkeren en tol kunnen ontbreken. De werkpatroonvergelijking rekent alleen de bedragen mee die je invult en vergelijkt de twee situaties; het is geen voorspelling van je daadwerkelijke netto inkomen.</p>
 
     <h2>Veelgestelde vragen</h2>
     <div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div>
 
     <h2>Bronnen</h2>
-    <p>De calculator verwijst bij fiscale uitgangspunten naar de <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/voorlopige-aanslag/content/voorlopige-aanslag-tarieven-en-heffingskortingen" target="_blank" rel="noreferrer">Belastingdienst</a>, de informatie over <a href="https://centraalaanspreekpuntpensioenen.belastingdienst.nl/publicaties/overzicht-aow-inbouwbedragen-en-aow-franchises/" target="_blank" rel="noreferrer">AOW-franchises</a> en de regels voor <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/bijtelling-privegebruik-auto-2026" target="_blank" rel="noreferrer">bijtelling in 2026</a>.</p>
+    <p>De calculator verwijst bij fiscale uitgangspunten naar de <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/voorlopige-aanslag/content/voorlopige-aanslag-tarieven-en-heffingskortingen" target="_blank" rel="noreferrer">Belastingdienst</a>, de informatie over <a href="https://centraalaanspreekpuntpensioenen.belastingdienst.nl/publicaties/overzicht-aow-inbouwbedragen-en-aow-franchises/" target="_blank" rel="noreferrer">AOW-franchises</a>, de regels voor <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/bijtelling-privegebruik-auto-2026" target="_blank" rel="noreferrer">bijtelling in 2026</a> en de <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/berichten/nieuws/verhoging-onbelaste-kilometervergoeding-hoe-verwerkt-u-dit-in-de-loonaangifte" target="_blank" rel="noreferrer">verhoging van de kilometervergoeding in 2026</a>. Deze pagina is gecontroleerd op 6 oktober 2026.</p>
+    <AdSenseSlot />
   </LegalPage>;
 }

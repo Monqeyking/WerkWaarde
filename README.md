@@ -99,13 +99,14 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 
 ## AdSense setup
 
-The site has three responsive ad placements. Keep the AdSense variables empty
-until Google approves the site. Then set `NEXT_PUBLIC_ADSENSE_PUBLISHER_ID`,
-`NEXT_PUBLIC_ADSENSE_SLOT_HOME`, `NEXT_PUBLIC_ADSENSE_SLOT_WORK`,
-`NEXT_PUBLIC_ADSENSE_SLOT_RESULT`, and `NEXT_PUBLIC_CONTACT_EMAIL` in Vercel
-for the relevant environments, enable Google's certified consent message in
-AdSense Privacy & messaging, and redeploy. The `/ads.txt` route is generated
-from the publisher ID.
+The site has one responsive ad placement on `/uitleg`, after the calculation
+method and examples. There are no manual ad slots or empty ad placeholders on
+the home, calculator, or result screens. Before requesting a review, set
+`NEXT_PUBLIC_ADSENSE_PUBLISHER_ID` and `NEXT_PUBLIC_ADSENSE_SLOT_CONTENT` in
+Vercel, enable Google's certified consent message in AdSense Privacy &
+messaging, exclude `/`, `/mobiliteit`, and `/werkpatroon` from Auto ads, and
+redeploy. Set `NEXT_PUBLIC_CONTACT_EMAIL` there as well. The `/ads.txt` route is
+generated from the publisher ID.
 
 The public explanation page is available at `/uitleg`; `sitemap.xml` and
 `robots.txt` are generated from the configured site URL.

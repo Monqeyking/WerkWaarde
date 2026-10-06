@@ -13,6 +13,6 @@ export default function ContactPage() {
     <h2>Neem contact op</h2>
     {contactEmail
       ? <p>Mail naar <a href={`mailto:${contactEmail}`}>{contactEmail}</a>. Vermeld bij een foutmelding bij voorkeur de gebruikte calculator en de stappen waarmee je de fout zag.</p>
-      : <p>Het contactadres wordt binnenkort toegevoegd. Voor technische meldingen kun je voorlopig een issue openen in het <a href="https://github.com/Monqeyking/WerkWaarde/issues" target="_blank" rel="noreferrer">WerkWaarde GitHub-project</a>.</p>}
+      : <p>Je kunt een vraag of correctie melden via het <a href="https://github.com/Monqeyking/WerkWaarde/issues" target="_blank" rel="noreferrer">WerkWaarde-project</a>. Deel daar geen loonstrook of andere persoonlijke gegevens.</p>}
   </div></LegalPage>;
 }
