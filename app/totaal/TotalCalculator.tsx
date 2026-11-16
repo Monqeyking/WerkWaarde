@@ -17,26 +17,9 @@ import {
   type SectionKey,
 } from "../../lib/job-model";
 import { compareJobs, type JobTotal } from "../../lib/job-total";
+import { decimal, money, moneyCents, signedDecimal, signedMoney, signedMoneyCents } from "../../lib/format";
 import { applySharedStateFromLocation, shareUrl, useJobModel } from "../../lib/use-job-model";
 
-const euro = new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
-const euroCentsFormat = new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const decimalFormat = new Intl.NumberFormat("nl-NL", { maximumFractionDigits: 1 });
-
-/** "−€ 121" / "+€ 214": sign in front of the currency, with a real minus sign. */
-function formatSigned(format: Intl.NumberFormat, value: number, precision: number, alwaysSign: boolean) {
-  const rounded = Math.round(value * precision) / precision;
-  if (rounded === 0) return format.format(0);
-  const sign = rounded < 0 ? "−" : alwaysSign ? "+" : "";
-  return sign + format.format(Math.abs(rounded));
-}
-
-const money = (value: number) => formatSigned(euro, value, 1, false);
-const signedMoney = (value: number) => formatSigned(euro, value, 1, true);
-const euroCents = { format: (value: number) => formatSigned(euroCentsFormat, value, 100, false) };
-const signedEuroCents = { format: (value: number) => formatSigned(euroCentsFormat, value, 100, true) };
-const decimal = { format: (value: number) => formatSigned(decimalFormat, value, 10, false) };
-const signedDecimal = { format: (value: number) => formatSigned(decimalFormat, value, 10, true) };
 
 const jobLabels: Record<JobKey, string> = { current: "Huidige baan", next: "Nieuwe baan" };
 const sectionLabels: Record<SectionKey, string> = { salary: "Salaris", mobility: "Mobiliteit", commute: "Woon-werk", benefits: "Arbeidsvoorwaarden" };
@@ -259,10 +242,10 @@ function Results({ state, setState }: { state: NettoplaatjeState; setState: SetS
     </div>
 
     <div className="work-metrics">
-      <div><span>Netto per uur, incl. reistijd</span><strong>{euroCents.format(current.netPerHourInclTravel)} → {euroCents.format(next.netPerHourInclTravel)}</strong><small className={comparison.netPerHourDifference < 0 ? "negative" : "positive"}>{signedEuroCents.format(comparison.netPerHourDifference)} per uur</small></div>
-      <div><span>Reistijd per maand</span><strong>{decimal.format(current.commute.travelHoursPerMonth)} → {decimal.format(next.commute.travelHoursPerMonth)} uur</strong><small>{signedDecimal.format(comparison.travelHoursDifferenceMonthly)} uur</small></div>
+      <div><span>Netto per uur, incl. reistijd</span><strong>{moneyCents(current.netPerHourInclTravel)} → {moneyCents(next.netPerHourInclTravel)}</strong><small className={comparison.netPerHourDifference < 0 ? "negative" : "positive"}>{signedMoneyCents(comparison.netPerHourDifference)} per uur</small></div>
+      <div><span>Reistijd per maand</span><strong>{decimal(current.commute.travelHoursPerMonth)} → {decimal(next.commute.travelHoursPerMonth)} uur</strong><small>{signedDecimal(comparison.travelHoursDifferenceMonthly)} uur</small></div>
       <div><span>Totale beloning per jaar</span><strong>{signedMoney(comparison.totalRewardDifferenceAnnual)}</strong><small>bruto, incl. pensioen werkgever</small></div>
-      <div><span>Vakantiedagen</span><strong>{current.benefits.vacationDays} → {next.benefits.vacationDays}</strong><small>{signedDecimal.format(comparison.vacationDaysDifference)} dagen</small></div>
+      <div><span>Vakantiedagen</span><strong>{current.benefits.vacationDays} → {next.benefits.vacationDays}</strong><small>{signedDecimal(comparison.vacationDaysDifference)} dagen</small></div>
     </div>
 
     {comparison.netPerHourDifference < 0 && better && <div className="work-note warn-note"><span>!</span><p>Je houdt per maand meer over, maar per uur dat je aan je werk kwijt bent (inclusief reizen) verdien je minder.</p></div>}

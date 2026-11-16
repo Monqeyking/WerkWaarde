@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { calculateScenarios } from "../lib/calculator.ts";
 import {
+  applyCalculatorInput,
+  applyWorkPatternInput,
   commuteKmPerYear,
   copySectionToNext,
   createDefaultState,
@@ -136,5 +138,52 @@ describe("adapters to the existing calculators", () => {
     assert.equal(inputs.currentOfficeDays, 1);
     assert.equal(inputs.newOfficeDays, 4);
     assert.equal(inputs.workWeeksPerYear, 46);
+  });
+});
+
+describe("writing calculator edits back into the model", () => {
+  test("every mobility-calculator field round-trips through the model", () => {
+    const base = toCalculatorInputs(createDefaultState(), "next");
+    for (const key of Object.keys(base) as Array<keyof typeof base>) {
+      if (key === "businessKm") continue;
+      const original = base[key];
+      const changed = typeof original === "boolean" ? !original
+        : typeof original === "number" ? original + 7
+        : original === "monthly" ? "scheme" : "monthly";
+      const state = applyCalculatorInput(createDefaultState(), "next", key, changed as never);
+      assert.deepEqual(toCalculatorInputs(state, "next")[key], changed, `field ${key}`);
+      // job-specific fields must not leak into the other job
+      if (!["age", "taxYear", "privateKm", "ownCarIsElectric", "fuelConsumption", "fuelPrice", "electricConsumption", "electricityPrice", "otherCarCostRate", "includeDepreciation", "depreciationMonthly"].includes(key)) {
+        assert.deepEqual(toCalculatorInputs(state, "current")[key], toCalculatorInputs(createDefaultState(), "current")[key], `field ${key} leaked`);
+      }
+    }
+  });
+
+  test("business km are stored as extra km above commuting", () => {
+    const state = applyCalculatorInput(createDefaultState(), "current", "businessKm", 15_000);
+    assert.equal(state.jobs.current.mobility.extraBusinessKmPerYear, 15_000 - 2_300);
+    assert.equal(toCalculatorInputs(state, "current").businessKm, 15_000);
+    assert.equal(applyCalculatorInput(createDefaultState(), "current", "businessKm", 1_000).jobs.current.mobility.extraBusinessKmPerYear, 0);
+  });
+
+  test("every work-pattern field round-trips through the model", () => {
+    const base = toWorkPatternInputs(createDefaultState());
+    for (const key of Object.keys(base) as Array<keyof typeof base>) {
+      const original = base[key];
+      const changed = typeof original === "boolean" ? !original : (original as number) + 3;
+      const state = applyWorkPatternInput(createDefaultState(), key, changed as never);
+      assert.deepEqual(toWorkPatternInputs(state)[key], changed, `field ${key}`);
+    }
+  });
+
+  test("edits mark the right section as filled", () => {
+    let state = applyCalculatorInput(createDefaultState(), "next", "carValue", 50_000);
+    assert.equal(state.filled.next.mobility, true);
+    assert.equal(state.filled.next.salary, false);
+    state = applyWorkPatternInput(state, "newChildcareDays", 2);
+    assert.equal(state.filled.next.commute, true);
+    state = applyWorkPatternInput(state, "currentPensionMonthly", 150);
+    assert.equal(state.jobs.current.salary.pensionMode, "monthly");
+    assert.equal(state.filled.current.salary, true);
   });
 });

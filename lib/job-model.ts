@@ -289,6 +289,145 @@ export function commuteKmPerYear(state: NettoplaatjeState, job: JobKey) {
   return officeDaysPerWeek * state.personal.workWeeksPerYear * oneWayKm * 2;
 }
 
+/**
+ * Where each calculator field lives in the shared model. Used to write edits
+ * from the stand-alone calculators back into the model, so every page and the
+ * total stay in sync.
+ */
+type ModelPath =
+  | { scope: "job"; section: SectionKey; key: string; group?: "lease" | "mix"; extra?: Record<string, unknown> }
+  | { scope: "job-root"; key: "childcareDaysPerWeek"; marks: SectionKey }
+  | { scope: "personal"; key: string; group?: "car" | "timeValue" };
+
+const salaryPath = (key: string, extra?: Record<string, unknown>): ModelPath => ({ scope: "job", section: "salary", key, extra });
+const mobilityPath = (key: string, group?: "lease" | "mix"): ModelPath => ({ scope: "job", section: "mobility", key, group });
+const commutePath = (key: string): ModelPath => ({ scope: "job", section: "commute", key });
+const personalPath = (key: string, group?: "car" | "timeValue"): ModelPath => ({ scope: "personal", key, group });
+
+const CALCULATOR_PATHS: Record<Exclude<keyof CalculatorInputs, "businessKm">, ModelPath> = {
+  salary: salaryPath("grossMonthly"),
+  holidayAllowance: salaryPath("holidayAllowancePct"),
+  pensionInputMode: salaryPath("pensionMode"),
+  pensionEmployeeMonthly: salaryPath("pensionEmployeeMonthly"),
+  pensionEmployerMonthly: salaryPath("pensionEmployerMonthly"),
+  pensionTotalRate: salaryPath("pensionTotalRatePct"),
+  pensionEmployeeShare: salaryPath("pensionEmployeeSharePct"),
+  pensionFranchise: salaryPath("pensionFranchise"),
+  pensionIncludesHoliday: salaryPath("pensionIncludesHoliday"),
+  age: personalPath("age"),
+  taxYear: personalPath("taxYear"),
+  leaseBudget: mobilityPath("leaseBudget"),
+  mobilityBudget: mobilityPath("mobilityBudget"),
+  carValue: mobilityPath("catalogValue", "lease"),
+  benefitRate: mobilityPath("benefitRatePct", "lease"),
+  employeeContribution: mobilityPath("employeeContributionMonthly", "lease"),
+  leaseIsElectric: mobilityPath("isElectric", "lease"),
+  reimbursementRate: mobilityPath("reimbursementPerKm"),
+  mobilityUsesOwnCar: mobilityPath("ownCar", "mix"),
+  mobilityUsesPublicTransport: mobilityPath("publicTransport", "mix"),
+  mobilityUsesBike: mobilityPath("bike", "mix"),
+  mobilityUsesSharedCar: mobilityPath("sharedCar", "mix"),
+  publicTransportMonthly: mobilityPath("publicTransportMonthly"),
+  bikeMonthly: mobilityPath("bikeMonthly"),
+  sharedCarMonthly: mobilityPath("sharedCarMonthly"),
+  privateKm: personalPath("privateKmPerYear", "car"),
+  ownCarIsElectric: personalPath("isElectric", "car"),
+  fuelConsumption: personalPath("fuelConsumption", "car"),
+  fuelPrice: personalPath("fuelPrice", "car"),
+  electricConsumption: personalPath("electricConsumption", "car"),
+  electricityPrice: personalPath("electricityPrice", "car"),
+  otherCarCostRate: personalPath("otherCostPerKm", "car"),
+  includeDepreciation: personalPath("includeDepreciation", "car"),
+  depreciationMonthly: personalPath("depreciationMonthly", "car"),
+};
+
+type WorkPatternPath = { job: JobKey | null; path: ModelPath };
+const forJob = (job: JobKey, path: ModelPath): WorkPatternPath => ({ job, path });
+const shared = (path: ModelPath): WorkPatternPath => ({ job: null, path });
+
+const WORK_PATTERN_PATHS: Record<keyof WorkPatternInputs, WorkPatternPath> = {
+  currentGrossSalary: forJob("current", salaryPath("grossMonthly")),
+  newGrossSalary: forJob("next", salaryPath("grossMonthly")),
+  currentPensionMonthly: forJob("current", salaryPath("pensionEmployeeMonthly", { pensionMode: "monthly" })),
+  newPensionMonthly: forJob("next", salaryPath("pensionEmployeeMonthly", { pensionMode: "monthly" })),
+  age: shared(personalPath("age")),
+  holidayAllowance: forJob("current", salaryPath("holidayAllowancePct")),
+  currentOfficeDays: forJob("current", commutePath("officeDaysPerWeek")),
+  newOfficeDays: forJob("next", commutePath("officeDaysPerWeek")),
+  currentChildcareDays: forJob("current", { scope: "job-root", key: "childcareDaysPerWeek", marks: "commute" }),
+  newChildcareDays: forJob("next", { scope: "job-root", key: "childcareDaysPerWeek", marks: "commute" }),
+  workWeeksPerYear: shared(personalPath("workWeeksPerYear")),
+  currentOneWayKm: forJob("current", commutePath("oneWayKm")),
+  newOneWayKm: forJob("next", commutePath("oneWayKm")),
+  currentCommuteMinutesOneWay: forJob("current", commutePath("oneWayMinutes")),
+  newCommuteMinutesOneWay: forJob("next", commutePath("oneWayMinutes")),
+  currentReimbursementRate: forJob("current", mobilityPath("reimbursementPerKm")),
+  newReimbursementRate: forJob("next", mobilityPath("reimbursementPerKm")),
+  fuelConsumption: shared(personalPath("fuelConsumption", "car")),
+  fuelPrice: shared(personalPath("fuelPrice", "car")),
+  ownCarIsElectric: shared(personalPath("isElectric", "car")),
+  electricConsumption: shared(personalPath("electricConsumption", "car")),
+  electricityPrice: shared(personalPath("electricityPrice", "car")),
+  otherVariableCostRate: shared(personalPath("variableCostPerKm", "car")),
+  currentParkingPerOfficeDay: forJob("current", commutePath("parkingPerOfficeDay")),
+  newParkingPerOfficeDay: forJob("next", commutePath("parkingPerOfficeDay")),
+  currentLunchPerOfficeDay: forJob("current", commutePath("lunchPerOfficeDay")),
+  newLunchPerOfficeDay: forJob("next", commutePath("lunchPerOfficeDay")),
+  childcareCostPerDay: shared(personalPath("childcareCostPerDay")),
+  currentOtherOfficeCostPerDay: forJob("current", commutePath("otherPerOfficeDay")),
+  newOtherOfficeCostPerDay: forJob("next", commutePath("otherPerOfficeDay")),
+  includeTimeValue: shared(personalPath("include", "timeValue")),
+  timeValuePerHour: shared(personalPath("perHour", "timeValue")),
+};
+
+type Value = number | boolean | string;
+
+function applyPath(state: NettoplaatjeState, job: JobKey, path: ModelPath, value: Value): NettoplaatjeState {
+  if (path.scope === "personal") {
+    const patch = path.group
+      ? { [path.group]: { ...state.personal[path.group], [path.key]: value } }
+      : { [path.key]: value };
+    return updatePersonal(state, patch as Partial<PersonalSettings>);
+  }
+  if (path.scope === "job-root") {
+    const updated = updateJob(state, job, { [path.key]: value } as Partial<JobProfile>);
+    return { ...updated, filled: { ...updated.filled, [job]: { ...updated.filled[job], [path.marks]: true } } };
+  }
+  const section = state.jobs[job][path.section] as Record<string, unknown>;
+  const patch = path.group
+    ? { [path.group]: { ...(section[path.group] as Record<string, unknown>), [path.key]: value } }
+    : { [path.key]: value, ...path.extra };
+  return updateJobSection(state, job, path.section, patch as Partial<JobProfile[SectionKey]>);
+}
+
+/** Write one field of the mobility/salary calculator back into the model. */
+export function applyCalculatorInput<K extends keyof CalculatorInputs>(
+  state: NettoplaatjeState,
+  job: JobKey,
+  key: K,
+  value: CalculatorInputs[K],
+): NettoplaatjeState {
+  if (key === "businessKm") {
+    // Business km are derived: commuting km + extra trips. Store the part above commuting.
+    const extra = Math.max(0, (value as number) - commuteKmPerYear(state, job));
+    return updateJobSection(state, job, "mobility", { extraBusinessKmPerYear: extra });
+  }
+  return applyPath(state, job, CALCULATOR_PATHS[key as Exclude<keyof CalculatorInputs, "businessKm">], value as Value);
+}
+
+/** Write one field of the work-pattern calculator back into the model. */
+export function applyWorkPatternInput<K extends keyof WorkPatternInputs>(
+  state: NettoplaatjeState,
+  key: K,
+  value: WorkPatternInputs[K],
+): NettoplaatjeState {
+  const target = WORK_PATTERN_PATHS[key];
+  return applyPath(state, target.job ?? "current", target.path, value as Value);
+}
+
+/** Map the mobility calculator's scenario names to the model's choices. */
+export const SCENARIO_TO_CHOICE = { lease: "lease", mobility: "mobilityBudget", ownCar: "ownCar" } as const satisfies Record<string, MobilityChoice>;
+
 /** Inputs for the existing mobility/salary calculator, for one job. */
 export function toCalculatorInputs(state: NettoplaatjeState, job: JobKey): CalculatorInputs {
   const { salary, mobility } = state.jobs[job];
