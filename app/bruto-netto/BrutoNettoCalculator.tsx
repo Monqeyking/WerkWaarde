@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Field } from "../components/Field";
 import { Highlight, Metrics, SpokeCalculator, SpokeTable, ToTotal, useSpokeModel, type TableRow } from "../components/Spoke";
 import { updateJobSection, updatePersonal, type JobProfile } from "../../lib/job-model";
 import { grossToNet } from "../../lib/spokes";
+import { applyGrossPrefillFromLocation } from "../../lib/use-job-model";
 import { money, moneyCents, percent } from "../../lib/format";
 
 export default function BrutoNettoCalculator() {
@@ -12,6 +13,13 @@ export default function BrutoNettoCalculator() {
   const salary = model.jobs[job].salary;
   const result = useMemo(() => grossToNet(model, job), [model, job]);
   const set = (patch: Partial<JobProfile["salary"]>) => setModel((current) => updateJobSection(current, job, "salary", patch));
+
+  // Opened from an amount page: fill in that salary and jump to the calculator.
+  useEffect(() => {
+    if (!applyGrossPrefillFromLocation()) return;
+    setJob("current");
+    document.getElementById("calculator")?.scrollIntoView({ block: "start" });
+  }, [setJob]);
 
   const monthRows: TableRow[] = [
     { label: "Bruto salaris", value: money(result.grossMonthly) },

@@ -6,7 +6,7 @@ import { ARTICLES } from "../../lib/articles";
 import { CALCULATORS } from "../../lib/calculators";
 
 export const metadata: Metadata = {
-  title: "Vragen over salaris, leaseauto en een nieuwe baan",
+  title: "Vragen over salaris, lease en een nieuwe baan",
   description: "Heldere antwoorden over bruto en netto, bijtelling, kilometervergoeding, vakantiegeld, pensioen en het vergelijken van twee banen. Met rekenvoorbeelden.",
   alternates: { canonical: "/vragen" },
 };

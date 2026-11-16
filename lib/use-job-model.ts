@@ -4,10 +4,13 @@ import { useSyncExternalStore } from "react";
 import {
   createDefaultState,
   decodeState,
-  encodeState,
   loadState,
+  readPrefillGross,
+  readSharedParam,
   saveState,
-  SHARE_PARAM,
+  shareHash,
+  updateJobSection,
+  withoutSharedParam,
   STORAGE_KEY,
   type KeyValueStorage,
   type NettoplaatjeState,
@@ -74,9 +77,21 @@ export function useJobModel(): [NettoplaatjeState, typeof setJobModel] {
 
 /** A link that restores the current inputs on any device. */
 export function shareUrl(state: NettoplaatjeState, path = window.location.pathname) {
-  const url = new URL(path, window.location.origin);
-  url.searchParams.set(SHARE_PARAM, encodeState(state));
-  return url.toString();
+  return new URL(path + shareHash(state), window.location.origin).toString();
+}
+
+/**
+ * If the page was opened from an amount page (#bruto=3500), put that gross
+ * salary in the current job and clear the fragment. Other inputs stay as they are.
+ */
+export function applyGrossPrefillFromLocation() {
+  const url = new URL(window.location.href);
+  const gross = readPrefillGross(url);
+  if (gross === null) return false;
+  url.hash = "";
+  window.history.replaceState(window.history.state, "", url.toString());
+  setJobModel((state) => updateJobSection(state, "current", "salary", { grossMonthly: gross }));
+  return true;
 }
 
 /**
@@ -85,11 +100,10 @@ export function shareUrl(state: NettoplaatjeState, path = window.location.pathna
  */
 export function applySharedStateFromLocation() {
   const url = new URL(window.location.href);
-  const encoded = url.searchParams.get(SHARE_PARAM);
+  const encoded = readSharedParam(url);
   if (!encoded) return false;
   const shared = decodeState(encoded);
-  url.searchParams.delete(SHARE_PARAM);
-  window.history.replaceState(window.history.state, "", url.toString());
+  window.history.replaceState(window.history.state, "", withoutSharedParam(url).toString());
   if (!shared) return false;
   setJobModel(shared);
   return true;

@@ -1,29 +1,50 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import LegalPage from "../components/LegalPage";
+import { houseAdAdvertisers } from "../../lib/ads";
+import { CONTACT_EMAIL, OPERATOR, SITE_NAME } from "../../lib/site";
 
 export const metadata: Metadata = {
   title: "Privacybeleid",
-  description: "Welke gegevens Nettoplaatje verwerkt: je invoer blijft in je eigen browser en wat er gebeurt met advertenties.",
+  description: "Welke gegevens Nettoplaatje verwerkt: je invoer blijft in je eigen browser, wat de hosting logt en wat er gebeurt met advertenties.",
   alternates: { canonical: "/privacy" },
 };
 
+function Contact() {
+  return CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : <Link href="/contact">de contactpagina</Link>;
+}
+
 export default function PrivacyPage() {
-  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
-
   return <LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 16 november 2026.">
-    <h2>Wat Nettoplaatje doet</h2>
-    <p>Nettoplaatje biedt indicatieve calculators voor salaris, mobiliteit en de kosten van werken. Je kunt de calculators gebruiken zonder account.</p>
+    <h2>Wie we zijn</h2>
+    <p>{SITE_NAME} biedt gratis calculators voor salaris, mobiliteit en de kosten van werken. Je kunt ze gebruiken zonder account.{OPERATOR.name && <> {SITE_NAME} wordt beheerd door {OPERATOR.name}{OPERATOR.address && <>, {OPERATOR.address}</>}{OPERATOR.kvk && <> (KvK {OPERATOR.kvk})</>}. {OPERATOR.name} is verantwoordelijk voor de verwerking van persoonsgegevens op deze site.</>} Vragen over privacy stel je via <Contact />.</p>
 
-    <h2>Welke gegevens we verwerken</h2>
-    <p>De bedragen en keuzes die je in de calculator invult, worden in deze versie alleen in je browser gebruikt en niet door Nettoplaatje opgeslagen op een server. Je browser bewaart ze lokaal, zodat ze blijven staan als je terugkomt of naar een andere calculator gaat. Met de knop Opnieuw beginnen in het totaaloverzicht, of door je browsergegevens te wissen, verwijder je ze. Als je een vergelijking deelt, staan je ingevulde bedragen in de link zelf. Iedereen die de link krijgt, kan ze zien. De site verwerkt daarnaast de technische gegevens die nodig zijn om een webpagina veilig te leveren.</p>
+    <h2>Wat je invult, blijft bij jou</h2>
+    <p>De bedragen en keuzes die je in de calculators invult, worden alleen in je eigen browser berekend. Ze worden niet naar onze server gestuurd en wij kunnen ze niet inzien. Je browser bewaart ze lokaal, zodat ze blijven staan als je terugkomt of naar een andere calculator gaat. Met de knop Opnieuw beginnen in het totaaloverzicht, of door je browsergegevens te wissen, verwijder je ze.</p>
+    <p>Als je een vergelijking deelt, staan je ingevulde bedragen in de link zelf, in het deel na het hekje (#). Dat deel stuurt een browser niet naar een server. Iedereen die de link krijgt, kan de bedragen wel zien. Deel hem dus alleen met mensen die dat mogen.</p>
 
-    <h2>Advertenties</h2>
-    <p>Als advertenties worden ingeschakeld, kan Google AdSense cookies of vergelijkbare opslag gebruiken en gegevens verwerken om advertenties te tonen en te meten. Voor bezoekers in de Europese Economische Ruimte, het Verenigd Koninkrijk en Zwitserland wordt hiervoor de toestemmingsmelding van Google of een andere gecertificeerde CMP gebruikt.</p>
+    <h2>Bezoekgegevens en hosting</h2>
+    <p>De site draait bij Vercel Inc. Zoals elke webserver verwerkt Vercel bij elk bezoek technische gegevens: je IP-adres, de opgevraagde pagina, het type browser en het tijdstip. Dat is nodig om de site te leveren en te beveiligen, bijvoorbeeld tegen overbelasting en misbruik. De grondslag is ons gerechtvaardigd belang bij een veilige, werkende site. Vercel bewaart deze logs kort, volgens zijn eigen bewaartermijnen, en gebruikt ze niet om profielen van bezoekers te maken.</p>
+    <p>Vercel en Google zijn Amerikaanse bedrijven en kunnen gegevens buiten de Europese Unie verwerken. Dat gebeurt op basis van het EU-VS Data Privacy Framework of de standaardcontractbepalingen van de Europese Commissie.</p>
+
+    <h2>Advertenties van Google</h2>
+    <p>{SITE_NAME} is gratis dankzij advertenties. Daarvoor gebruiken we Google AdSense. Externe leveranciers, waaronder Google, gebruiken cookies om advertenties te tonen op basis van eerdere bezoeken aan deze en andere websites. Met die advertentiecookies kunnen Google en zijn partners advertenties tonen op basis van je bezoek aan deze site en andere sites op internet.</p>
+    <p>Bezoekers uit de Europese Economische Ruimte, het Verenigd Koninkrijk en Zwitserland krijgen eerst een toestemmingsmelding. Zonder toestemming krijg je alleen niet-gepersonaliseerde advertenties. Je kunt gepersonaliseerde advertenties ook uitzetten via de <a href="https://adssettings.google.com" rel="noopener" target="_blank">advertentie-instellingen van Google</a>. Lees meer over <a href="https://policies.google.com/technologies/partner-sites" rel="noopener" target="_blank">hoe Google gegevens gebruikt op sites van partners</a>. Andere advertentiepartners kun je uitzetten via <a href="https://www.youronlinechoices.eu/" rel="noopener" target="_blank">youronlinechoices.eu</a>.</p>
+    <p>Een deel van de advertenties plaatsen we zelf, voor {houseAdAdvertisers().join(" en ")}. Die gebruiken geen cookies en volgen je niet. Alleen als je erop klikt, ziet de adverteerder via de link dat je van {SITE_NAME} komt.</p>
+
+    <h2>Geen analytics, geen verkoop</h2>
+    <p>We gebruiken geen analytics- of trackingdiensten van onszelf en verkopen geen gegevens. Komt daar verandering in, dan passen we dit beleid eerst aan.</p>
+
+    <h2>Als je ons mailt</h2>
+    <p>Mail je ons, dan gebruiken we je e-mailadres en bericht alleen om je te antwoorden. We bewaren je bericht zolang dat nodig is om je vraag af te handelen en verwijderen het uiterlijk een jaar daarna.</p>
 
     <h2>Jouw rechten</h2>
-    <p>Je kunt vragen stellen over je privacy, inzage vragen of bezwaar maken tegen verwerking. Neem contact op via {contactEmail ? <a href={`mailto:${contactEmail}`}>{contactEmail}</a> : "het beheeradres dat in de Vercel-omgeving als NEXT_PUBLIC_CONTACT_EMAIL is ingesteld"}.</p>
+    <p>Je hebt het recht om je gegevens in te zien, te laten corrigeren of verwijderen, de verwerking te laten beperken, bezwaar te maken en je gegevens over te laten dragen. Stuur je verzoek via <Contact />. We reageren binnen een maand. Ben je het niet eens met hoe we met je gegevens omgaan, dan kun je een klacht indienen bij de <a href="https://autoriteitpersoonsgegevens.nl" rel="noopener" target="_blank">Autoriteit Persoonsgegevens</a>.</p>
+
+    <h2>Beveiliging</h2>
+    <p>De site werkt alleen via een versleutelde verbinding (HTTPS). Omdat we je invoer niet op een server opslaan, kan die daar ook niet uitlekken.</p>
 
     <h2>Wijzigingen</h2>
-    <p>Wanneer de werking van Nettoplaatje verandert, bijvoorbeeld door analytics, accounts of nieuwe advertentiepartners, passen we dit beleid aan.</p>
+    <p>Verandert de werking van {SITE_NAME}, bijvoorbeeld door analytics, accounts of nieuwe advertentiepartners, dan passen we dit beleid aan. Bovenaan staat de datum van de laatste wijziging.</p>
   </LegalPage>;
 }

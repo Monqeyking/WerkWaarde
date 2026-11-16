@@ -35,3 +35,10 @@ test("inline links in articles point to existing pages", () => {
     }
   }
 });
+
+test("article page titles fit in search results (60 chars with the site suffix)", () => {
+  for (const article of ARTICLES) {
+    const title = `${article.seoTitle ?? article.title} | Nettoplaatje`;
+    assert.ok(title.length <= 60, `${article.slug}: "${title}" is ${title.length} chars`);
+  }
+});

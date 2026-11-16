@@ -3,7 +3,7 @@ import SpokePage from "../components/SpokePage";
 import ArbeidsvoorwaardenCalculator from "./ArbeidsvoorwaardenCalculator";
 
 export const metadata: Metadata = {
-  title: "Arbeidsvoorwaarden berekenen: wat zijn ze waard?",
+  title: "Wat zijn je arbeidsvoorwaarden waard?",
   description: "Tel je salaris, vakantiegeld, 13e maand, bonus, werkgeverspensioen, opleidingsbudget en extra vakantiedagen op tot je totale beloning per jaar en per uur.",
   alternates: { canonical: "/arbeidsvoorwaarden" },
 };

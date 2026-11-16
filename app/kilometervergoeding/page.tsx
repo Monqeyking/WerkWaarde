@@ -3,7 +3,7 @@ import SpokePage from "../components/SpokePage";
 import KilometerCalculator from "./KilometerCalculator";
 
 export const metadata: Metadata = {
-  title: "Kilometervergoeding 2026: dekt het je autokosten?",
+  title: "Kilometervergoeding 2026: dekt het je kosten?",
   description: "Bereken wat je overhoudt aan je kilometervergoeding in 2026. Onbelast tot € 0,25 per km. Zie of de vergoeding je brandstof en autokosten dekt.",
   alternates: { canonical: "/kilometervergoeding" },
 };

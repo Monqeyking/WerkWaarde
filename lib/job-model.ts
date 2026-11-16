@@ -15,6 +15,10 @@ import type { WorkPatternInputs } from "./work-costs.ts";
 export const MODEL_VERSION = 1;
 export const STORAGE_KEY = "nettoplaatje:v1";
 export const SHARE_PARAM = "p";
+/** No calculator input is meaningful above this; caps absurd values from shared links. */
+export const MAX_INPUT = 10_000_000;
+/** Longer encodings are ignored instead of parsed. */
+const MAX_SHARE_LENGTH = 4_000;
 
 export type JobKey = "current" | "next";
 export const JOB_KEYS: JobKey[] = ["current", "next"];
@@ -166,7 +170,7 @@ function overlay<T>(template: T, input: unknown): T {
     return result as T;
   }
   if (typeof template === "number") {
-    return (typeof input === "number" && Number.isFinite(input) ? Math.max(0, input) : template) as T;
+    return (typeof input === "number" && Number.isFinite(input) ? Math.min(MAX_INPUT, Math.max(0, input)) : template) as T;
   }
   if (typeof template === "boolean" || typeof template === "string") {
     return (typeof input === typeof template ? input : template) as T;
@@ -226,11 +230,46 @@ export function encodeState(state: NettoplaatjeState): string {
 
 /** Decode a shared link. Returns null for anything that is not a valid encoding. */
 export function decodeState(encoded: string): NettoplaatjeState | null {
+  if (encoded.length > MAX_SHARE_LENGTH) return null;
   try {
     return sanitizeState(JSON.parse(fromBase64Url(encoded)));
   } catch {
     return null;
   }
+}
+
+/**
+ * Shared inputs travel in the URL fragment (#p=...). Browsers never send the
+ * fragment to a server, so amounts stay out of hosting logs and referrers.
+ * Older links used the query string (?p=...); those still work.
+ */
+export function shareHash(state: NettoplaatjeState) {
+  return `#${SHARE_PARAM}=${encodeState(state)}`;
+}
+
+/** The encoded shared state in a URL, from the fragment or (older links) the query. */
+export function readSharedParam(url: URL): string | null {
+  const fromHash = new URLSearchParams(url.hash.replace(/^#/, "")).get(SHARE_PARAM);
+  return fromHash || url.searchParams.get(SHARE_PARAM);
+}
+
+/** The same URL without any shared state, for the address bar. */
+export function withoutSharedParam(url: URL): URL {
+  const clean = new URL(url);
+  clean.searchParams.delete(SHARE_PARAM);
+  clean.hash = "";
+  return clean;
+}
+
+/** Fragment key the amount pages use to open the calculator with a gross salary (#bruto=3500). */
+export const PREFILL_GROSS_PARAM = "bruto";
+
+/** The monthly gross salary in a prefill link, or null when there is none or it is not a sensible amount. */
+export function readPrefillGross(url: URL): number | null {
+  const raw = new URLSearchParams(url.hash.replace(/^#/, "")).get(PREFILL_GROSS_PARAM);
+  if (!raw) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) && value > 0 && value <= MAX_INPUT ? Math.round(value) : null;
 }
 
 /** Minimal Storage interface so tests can pass a fake. */

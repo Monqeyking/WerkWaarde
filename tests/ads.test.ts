@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { HOUSE_ADS, adsEnabled, houseAdHref, houseAdShare, pickAd } from "../lib/ads.ts";
+import { HOUSE_ADS, adsEnabled, houseAdAdvertisers, houseAdHref, houseAdShare, pickAd } from "../lib/ads.ts";
 
 const adsense = { publisherId: "ca-pub-123", slotId: "456" };
 const sequence = (...values: number[]) => () => values.shift() ?? 0;
@@ -48,4 +48,10 @@ test("house ad links carry UTM tags for the placement", () => {
 test("house ads have unique ids and complete copy", () => {
   assert.equal(new Set(HOUSE_ADS.map((ad) => ad.id)).size, HOUSE_ADS.length);
   for (const ad of HOUSE_ADS) for (const field of [ad.title, ad.body, ad.cta, ad.advertiser]) assert.ok(field.trim().length > 0);
+});
+
+test("house ad advertisers are listed once each for the legal pages", () => {
+  const names = houseAdAdvertisers();
+  assert.deepEqual(names, [...new Set(names)]);
+  assert.ok(names.includes("Virtrust"));
 });

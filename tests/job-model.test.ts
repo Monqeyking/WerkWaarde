@@ -10,7 +10,11 @@ import {
   decodeState,
   encodeState,
   loadState,
+  MAX_INPUT,
+  readSharedParam,
   sanitizeState,
+  shareHash,
+  withoutSharedParam,
   saveState,
   STORAGE_KEY,
   toCalculatorInputs,
@@ -79,6 +83,29 @@ describe("share links", () => {
   test("invalid links return null instead of throwing", () => {
     assert.equal(decodeState("%%%not-base64"), null);
     assert.equal(decodeState("bm90IGpzb24"), null); // "not json"
+    assert.equal(decodeState("a".repeat(5_000)), null, "oversized links are ignored");
+  });
+
+  test("shared amounts travel in the fragment, never in the query", () => {
+    const state = updateJobSection(createDefaultState(), "next", "salary", { grossMonthly: 5100 });
+    const url = new URL("/totaal" + shareHash(state), "https://nettoplaatje.nl");
+    assert.equal(url.search, "");
+    assert.match(url.hash, /^#p=/);
+    assert.deepEqual(decodeState(readSharedParam(url) ?? ""), state);
+  });
+
+  test("older query links still load, and the cleaned URL drops both forms", () => {
+    const state = updateJobSection(createDefaultState(), "current", "salary", { grossMonthly: 3900 });
+    const legacy = new URL(`https://nettoplaatje.nl/totaal?p=${encodeState(state)}&utm_source=x`);
+    assert.deepEqual(decodeState(readSharedParam(legacy) ?? ""), state);
+    assert.equal(withoutSharedParam(legacy).toString(), "https://nettoplaatje.nl/totaal?utm_source=x");
+    assert.equal(withoutSharedParam(new URL("https://nettoplaatje.nl/totaal#p=abc")).toString(), "https://nettoplaatje.nl/totaal");
+    assert.equal(readSharedParam(new URL("https://nettoplaatje.nl/totaal")), null);
+  });
+
+  test("absurd shared values are capped", () => {
+    const state = sanitizeState({ jobs: { current: { salary: { grossMonthly: 1e308 } } } });
+    assert.equal(state.jobs.current.salary.grossMonthly, MAX_INPUT);
   });
 });
 

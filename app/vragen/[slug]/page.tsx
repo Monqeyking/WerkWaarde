@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticle((await params).slug);
   if (!article) return {};
   return {
-    title: article.title,
+    title: article.seoTitle ?? article.title,
     description: article.description,
     alternates: { canonical: `/vragen/${article.slug}` },
     openGraph: { type: "article", locale: "nl_NL", siteName: SITE_NAME, title: article.title, description: article.description, modifiedTime: article.updated },

@@ -311,7 +311,13 @@ function MobileResultBar({ difference }: { difference: number }) {
 export default function TotalCalculator() {
   const [state, setJobModel] = useJobModel();
   const setState: SetState = (update) => setJobModel(update);
-  useEffect(() => { applySharedStateFromLocation(); }, []);
+  useEffect(() => {
+    applySharedStateFromLocation();
+    // A shared link opened while this page is already open only changes the fragment.
+    const onHashChange = () => { applySharedStateFromLocation(); };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
   const difference = useMemo(() => compareJobs(state).netDifferenceMonthly, [state]);
 
   return <>

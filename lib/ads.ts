@@ -22,6 +22,11 @@ export type AdChoice =
 
 export const HOUSE_AD_BASE_URL = (process.env.NEXT_PUBLIC_HOUSE_AD_URL ?? "https://virtrust.nl").replace(/\/+$/, "");
 
+/** Names of the advertisers in our own house ads, for the disclaimer and privacy policy. */
+export function houseAdAdvertisers(): string[] {
+  return [...new Set(HOUSE_ADS.map((ad) => ad.advertiser))];
+}
+
 export const HOUSE_ADS: readonly HouseAd[] = [
   {
     id: "hseq-vacatures",

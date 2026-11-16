@@ -2,6 +2,7 @@ export type ArticleSection = { heading: string; paragraphs: string[] };
 export type Article = {
   slug: string; // kebab-case, Dutch, e.g. "wat-is-bijtelling"
   title: string; // the H1, a question or clear statement, ≤ 70 chars
+  seoTitle?: string; // shorter <title> when title plus " | Nettoplaatje" would exceed 60 chars
   description: string; // meta description, 120–155 chars, no quotes
   updated: string; // "2026-11-16"
   intro: string; // 2–3 sentences answering the question directly (featured-snippet style)
@@ -115,6 +116,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "minder-over-van-vakantiegeld-en-bonus",
     title: "Waarom houd je minder over van je vakantiegeld, 13e maand of bonus?",
+    seoTitle: "Vakantiegeld en bonus: waarom minder netto?",
     description:
       "Van vakantiegeld, een 13e maand of bonus blijft vaak maar de helft over. Lees hoe het bijzonder tarief en het afbouwen van heffingskortingen werken.",
     updated: "2026-11-16",
@@ -160,6 +162,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "bruto-voor-100-euro-netto-meer",
     title: "Hoeveel bruto heb je nodig voor € 100 netto meer?",
+    seoTitle: "Hoeveel bruto voor € 100 netto meer?",
     description:
       "Bij een middeninkomen heb je vaak ongeveer € 200 bruto nodig voor € 100 netto meer. Lees waarom het marginale tarief rond de 50% ligt en wat dat betekent.",
     updated: "2026-11-16",
@@ -205,6 +208,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "wat-is-bijtelling",
     title: "Wat is bijtelling en wat kost een leaseauto netto?",
+    seoTitle: "Wat is bijtelling en hoe werkt het?",
     description:
       "Bijtelling is een bedrag waarover je belasting betaalt als je een auto van de zaak privé gebruikt. Zo bereken je wat een leaseauto je netto kost in 2026.",
     updated: "2026-11-16",
@@ -250,6 +254,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "leaseauto-of-mobiliteitsbudget",
     title: "Leaseauto of mobiliteitsbudget: wat levert meer op?",
+    seoTitle: "Leaseauto of mobiliteitsbudget: wat is beter?",
     description:
       "Leaseauto, mobiliteitsbudget of je eigen auto met kilometervergoeding? Zo vergelijk je wat elke keuze je netto oplevert of kost, met rekenvoorbeelden.",
     updated: "2026-11-16",
@@ -295,6 +300,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "kilometervergoeding-onbelast",
     title: "Kilometervergoeding: hoeveel is onbelast en dekt het je autokosten?",
+    seoTitle: "Kilometervergoeding: hoeveel is onbelast?",
     description:
       "In 2026 is een kilometervergoeding onbelast tot € 0,25 per kilometer. Lees wat er gebeurt boven dat bedrag en hoe je nagaat of het je autokosten dekt.",
     updated: "2026-11-16",
@@ -340,6 +346,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "reistijd-meetellen-nieuwe-baan",
     title: "Telt reistijd mee als je een nieuwe baan kiest?",
+    seoTitle: "Telt reistijd mee bij een nieuwe baan?",
     description:
       "Reistijd kost je tijd die je meestal niet betaald krijgt. Zo bereken je je netto uurloon inclusief reistijd en vergelijk je banen op afstand eerlijk.",
     updated: "2026-11-16",
@@ -385,6 +392,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "waarde-pensioen-en-arbeidsvoorwaarden",
     title: "Wat zijn je pensioen en andere arbeidsvoorwaarden waard?",
+    seoTitle: "Wat zijn pensioen en extra's echt waard?",
     description:
       "Pensioen, vakantiedagen, 13e maand en bonus horen bij je beloning, ook als je ze niet netto terugziet. Zo bereken je wat je totale beloning echt waard is.",
     updated: "2026-11-16",

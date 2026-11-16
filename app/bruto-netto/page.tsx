@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SpokePage from "../components/SpokePage";
+import AmountLinks from "./AmountLinks";
 import BrutoNettoCalculator from "./BrutoNettoCalculator";
 
 export const metadata: Metadata = {
@@ -25,6 +26,6 @@ const faqs = [
 export default function BrutoNettoPage() {
   return <SpokePage kicker="Bruto naar netto" title="Wat houd je netto over van je salaris?"
     intro="Reken je bruto maandsalaris om naar netto, met vakantiegeld, 13e maand, bonus en pensioeninleg. Je ziet ook hoeveel bruto er nodig is voor € 100 netto meer."
-    calculator={<BrutoNettoCalculator />} how={how} faqs={faqs} adPlacement="bruto-netto"
+    calculator={<BrutoNettoCalculator />} how={how} faqs={faqs} adPlacement="bruto-netto" extra={<AmountLinks />}
     articles={["bruto-naar-netto", "minder-over-van-vakantiegeld-en-bonus", "bruto-voor-100-euro-netto-meer"]} />;
 }
