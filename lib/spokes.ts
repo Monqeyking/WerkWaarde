@@ -3,7 +3,8 @@
  * kilometervergoeding, arbeidsvoorwaarden). They all read the shared model and
  * reuse calculateJobTotal, so every page agrees with the total overview.
  */
-import { annualCarBenefit, incomeTax, TAX_FREE_KM_RATE_2026 } from "./calculator.ts";
+import { annualCarBenefit, incomeTax } from "./calculator.ts";
+import { DEFAULT_TAX_YEAR, taxYear } from "./tax-years.ts";
 import { calculateJobTotal } from "./job-total.ts";
 import { toCalculatorInputs, type JobKey, type MobilityChoice, type NettoplaatjeState } from "./job-model.ts";
 
@@ -12,9 +13,9 @@ const WEEKS_PER_YEAR = 52;
 const HOURS_PER_WORKING_DAY = 8;
 
 /** Share of an extra euro of income that goes to income tax (including the phase-out of tax credits). */
-export function marginalRate(taxableAnnual: number, age: number) {
+export function marginalRate(taxableAnnual: number, age: number, year = DEFAULT_TAX_YEAR) {
   const step = 100;
-  return (incomeTax(taxableAnnual + step, age) - incomeTax(taxableAnnual, age)) / step;
+  return (incomeTax(taxableAnnual + step, age, year) - incomeTax(taxableAnnual, age, year)) / step;
 }
 
 function withMobilityChoice(state: NettoplaatjeState, job: JobKey, choice: MobilityChoice): NettoplaatjeState {
@@ -56,10 +57,11 @@ export function grossToNet(state: NettoplaatjeState, job: JobKey): GrossToNet {
   const total = calculateJobTotal(withMobilityChoice(state, job, "none"), job);
   const { income } = total;
   const age = state.personal.age;
+  const year = state.personal.taxYear;
   const hoursPerWeek = state.jobs[job].salary.hoursPerWeek;
 
   const regularTaxableAnnual = Math.max(0, (income.grossMonthly - income.pensionEmployeeMonthly) * 12);
-  const regularTax = incomeTax(regularTaxableAnnual, age);
+  const regularTax = incomeTax(regularTaxableAnnual, age, year);
   const totalTaxable = (income.netPayMonthly + income.taxMonthly) * 12;
   const totalTax = income.taxMonthly * 12;
 
@@ -68,9 +70,9 @@ export function grossToNet(state: NettoplaatjeState, job: JobKey): GrossToNet {
   const bonusGrossAnnual = income.bonusMonthly * 12;
   const extraGross = holidayGrossAnnual + yearEndGrossAnnual + bonusGrossAnnual;
   const extraTax = Math.max(0, totalTax - regularTax);
-  const extraTaxRate = extraGross > 0 ? extraTax / extraGross : marginalRate(regularTaxableAnnual, age);
+  const extraTaxRate = extraGross > 0 ? extraTax / extraGross : marginalRate(regularTaxableAnnual, age, year);
   const grossAnnual = income.grossMonthly * 12 + extraGross;
-  const rate = marginalRate(totalTaxable, age);
+  const rate = marginalRate(totalTaxable, age, year);
   const regularNetMonthly = income.grossMonthly - income.pensionEmployeeMonthly - regularTax / 12;
 
   return {
@@ -114,7 +116,7 @@ export function leaseCost(state: NettoplaatjeState, job: JobKey): LeaseCost {
   const leaseState = withMobilityChoice(state, job, "lease");
   const { lease } = state.jobs[job].mobility;
   const total = calculateJobTotal(leaseState, job);
-  const annualBenefit = annualCarBenefit(lease.catalogValue, lease.isElectric, lease.benefitRatePct);
+  const annualBenefit = annualCarBenefit(lease.catalogValue, lease.isElectric, lease.benefitRatePct, state.personal.taxYear);
   const contributionAnnual = lease.employeeContributionMonthly * 12;
   return {
     catalogValue: lease.catalogValue,
@@ -126,7 +128,7 @@ export function leaseCost(state: NettoplaatjeState, job: JobKey): LeaseCost {
     taxMonthly: total.mobility.taxMonthly,
     netCostMonthly: -total.mobility.netMonthly,
     netCostAnnual: -total.mobility.netMonthly * 12,
-    marginalRate: marginalRate(salaryTaxableAnnual(state, job), state.personal.age),
+    marginalRate: marginalRate(salaryTaxableAnnual(state, job), state.personal.age, state.personal.taxYear),
   };
 }
 
@@ -156,25 +158,27 @@ export function kmAllowance(state: NettoplaatjeState, job: JobKey): KmAllowance 
   const kmAnnual = Math.max(0, inputs.businessKm);
   const extraKmAnnual = Math.max(0, mobility.extraBusinessKmPerYear);
   const rate = Math.max(0, mobility.reimbursementPerKm);
-  const taxableAnnual = kmAnnual * Math.max(0, rate - TAX_FREE_KM_RATE_2026);
+  const { age, taxYear: year } = state.personal;
+  const kmLimit = taxYear(year).taxFreeKmRate;
+  const taxableAnnual = kmAnnual * Math.max(0, rate - kmLimit);
   const baseTaxable = salaryTaxableAnnual(state, job);
-  const taxAnnual = Math.max(0, incomeTax(baseTaxable + taxableAnnual, state.personal.age) - incomeTax(baseTaxable, state.personal.age));
+  const taxAnnual = Math.max(0, incomeTax(baseTaxable + taxableAnnual, age, year) - incomeTax(baseTaxable, age, year));
   const energyPerKm = car.isElectric ? car.electricConsumption * car.electricityPrice / 100 : car.fuelConsumption * car.fuelPrice / 100;
   const costPerKm = energyPerKm + Math.max(0, car.otherCostPerKm);
   const reimbursementAnnual = kmAnnual * rate;
   const costAnnual = kmAnnual * costPerKm;
   const netAnnual = reimbursementAnnual - taxAnnual - costAnnual;
-  const rateAboveLimit = marginalRate(baseTaxable, state.personal.age);
-  const breakEvenRate = costPerKm <= TAX_FREE_KM_RATE_2026
+  const rateAboveLimit = marginalRate(baseTaxable, age, year);
+  const breakEvenRate = costPerKm <= kmLimit
     ? costPerKm
-    : TAX_FREE_KM_RATE_2026 + (costPerKm - TAX_FREE_KM_RATE_2026) / Math.max(0.01, 1 - rateAboveLimit);
+    : kmLimit + (costPerKm - kmLimit) / Math.max(0.01, 1 - rateAboveLimit);
   return {
     commuteKmAnnual: kmAnnual - extraKmAnnual,
     extraKmAnnual,
     kmAnnual,
     ratePerKm: rate,
     reimbursementAnnual,
-    taxFreeAnnual: kmAnnual * Math.min(rate, TAX_FREE_KM_RATE_2026),
+    taxFreeAnnual: kmAnnual * Math.min(rate, kmLimit),
     taxableAnnual,
     taxAnnual,
     costPerKm,

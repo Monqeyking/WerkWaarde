@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Field } from "../components/Field";
+import { TaxYearSelect } from "../components/TaxYearSelect";
+import { electricBijtellingText, kmLimitText } from "../../lib/tax-years";
 import {
   copySectionToNext,
   createDefaultState,
@@ -112,14 +114,14 @@ function Inputs({ state, setState }: { state: NettoplaatjeState; setState: SetSt
               className={value.choice === option.key ? "active" : ""} onClick={() => set({ choice: option.key })}>{option.label}</button>)}
           </div>
           {value.choice === "lease" && <>
-            <Checkbox checked={value.lease.isElectric} onChange={(isElectric) => set({ lease: { ...value.lease, isElectric } })} label="Volledig elektrisch" small="18% bijtelling tot €30.000" />
+            <Checkbox checked={value.lease.isElectric} onChange={(isElectric) => set({ lease: { ...value.lease, isElectric } })} label="Volledig elektrisch" small={electricBijtellingText(state.personal.taxYear)} />
             <Field label="Cataloguswaarde" value={value.lease.catalogValue} onChange={(catalogValue) => set({ lease: { ...value.lease, catalogValue } })} suffix="€" step={500} />
             {!value.lease.isElectric && <Field label="Bijtelling" value={value.lease.benefitRatePct} onChange={(benefitRatePct) => set({ lease: { ...value.lease, benefitRatePct } })} suffix="%" step={0.1} />}
             <Field label="Eigen bijdrage" value={value.lease.employeeContributionMonthly} onChange={(employeeContributionMonthly) => set({ lease: { ...value.lease, employeeContributionMonthly } })} suffix="€/mnd" />
           </>}
           {value.choice === "mobilityBudget" && <Field label="Mobiliteitsbudget" value={value.mobilityBudget} onChange={(mobilityBudget) => set({ mobilityBudget })} suffix="€/mnd" hint="Het bruto bedrag dat je laat uitbetalen. Je eigen auto-kosten worden ervan afgetrokken." step={25} />}
           {(value.choice === "ownCar" || value.choice === "mobilityBudget") && <>
-            <Field label="Km-vergoeding" value={value.reimbursementPerKm} onChange={(reimbursementPerKm) => set({ reimbursementPerKm })} suffix="€/km" hint="In 2026 is maximaal €0,25 per km onbelast. Vul 0 in als je geen vergoeding krijgt." step={0.01} />
+            <Field label="Km-vergoeding" value={value.reimbursementPerKm} onChange={(reimbursementPerKm) => set({ reimbursementPerKm })} suffix="€/km" hint={`In ${state.personal.taxYear} is maximaal ${kmLimitText(state.personal.taxYear)} per km onbelast. Vul 0 in als je geen vergoeding krijgt.`} step={0.01} />
             <Field label="Extra zakelijke km" value={value.extraBusinessKmPerYear} onChange={(extraBusinessKmPerYear) => set({ extraBusinessKmPerYear })} suffix="km/jaar" hint="Zakelijke ritten bovenop woon-werk. Woon-werk km rekenen we uit je kantoordagen." step={500} />
           </>}
           {value.choice === "none" && <p className="choice-note">Je reist met fiets, OV of lopend. Eventuele kosten vul je in bij woon-werk.</p>}
@@ -317,6 +319,7 @@ export default function TotalCalculator() {
       <aside className="work-inputs">
         <div className="panel-heading"><div><span className="section-kicker">Jouw gegevens</span><h2>Huidige en nieuwe baan</h2></div></div>
         <p className="panel-intro">Vul per onderdeel beide banen in. Alles wordt alleen op dit apparaat bewaard, ook als je de pagina later opnieuw opent.</p>
+        <TaxYearSelect />
         <Inputs state={state} setState={setState} />
       </aside>
       <Results state={state} setState={setState} />

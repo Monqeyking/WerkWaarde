@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "nettoplaatje-dev-preview-years",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "set NEXT_PUBLIC_PREVIEW_TAX_YEARS=1&& npm run dev"],
+      "port": 3000
     }
   ]
 }

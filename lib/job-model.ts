@@ -9,6 +9,7 @@
  * This module is framework-free so it can be unit tested with `node --test`.
  */
 import type { CalculatorInputs } from "./calculator.ts";
+import { DEFAULT_TAX_YEAR, selectableTaxYears } from "./tax-years.ts";
 import type { WorkPatternInputs } from "./work-costs.ts";
 
 export const MODEL_VERSION = 1;
@@ -135,7 +136,7 @@ export function createDefaultState(): NettoplaatjeState {
   return {
     version: MODEL_VERSION,
     personal: {
-      age: 35, taxYear: 2026, workWeeksPerYear: 46,
+      age: 35, taxYear: DEFAULT_TAX_YEAR, workWeeksPerYear: 46,
       car: {
         isElectric: false, fuelConsumption: 7.5, fuelPrice: 2, electricConsumption: 18, electricityPrice: 0.3,
         otherCostPerKm: 0.15, variableCostPerKm: 0.08, includeDepreciation: false, depreciationMonthly: 0, privateKmPerYear: 10000,
@@ -186,6 +187,8 @@ export function sanitizeState(input: unknown): NettoplaatjeState {
     job.salary.pensionEmployeeSharePct = Math.min(100, job.salary.pensionEmployeeSharePct);
   }
   state.personal.workWeeksPerYear = Math.min(52, state.personal.workWeeksPerYear);
+  // Only years the interface offers; an unpublished or unknown year falls back to the default.
+  if (!selectableTaxYears().includes(state.personal.taxYear)) state.personal.taxYear = DEFAULT_TAX_YEAR;
   return state;
 }
 

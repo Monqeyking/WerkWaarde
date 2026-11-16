@@ -5,6 +5,7 @@ import { Field } from "../components/Field";
 import { Checkbox, Highlight, Metrics, SpokeCalculator, SpokeTable, ToTotal, useSpokeModel } from "../components/Spoke";
 import { updateJobSection, updatePersonal, type JobProfile, type PersonalSettings } from "../../lib/job-model";
 import { kmAllowance } from "../../lib/spokes";
+import { kmLimitText } from "../../lib/tax-years";
 import { money, moneyCents, signedMoney } from "../../lib/format";
 
 const km = (value: number) => `${Math.round(value).toLocaleString("nl-NL")} km`;
@@ -18,6 +19,7 @@ export default function KilometerCalculator() {
   const setMobility = (patch: Partial<JobProfile["mobility"]>) => setModel((current) => updateJobSection(current, job, "mobility", patch));
   const setCar = (patch: Partial<PersonalSettings["car"]>) => setModel((current) => updatePersonal(current, { car: { ...current.personal.car, ...patch } }));
   const covers = result.netAnnual >= 0;
+  const limit = kmLimitText(model.personal.taxYear);
 
   return <SpokeCalculator job={job} onJobChange={setJob} inputsTitle="Je ritten en auto"
     results={<>
@@ -28,12 +30,12 @@ export default function KilometerCalculator() {
         { label: "Zakelijke km per jaar", value: km(result.kmAnnual), note: `${km(result.commuteKmAnnual)} woon-werk` },
         { label: "Je auto kost per km", value: moneyCents(result.costPerKm), note: "brandstof of laden plus overige kosten" },
         { label: "Kostendekkende vergoeding", value: `${moneyCents(result.breakEvenRate)} per km`, note: "hierbij speel je precies quitte" },
-        { label: "Belast deel", value: result.taxableAnnual > 0 ? money(result.taxableAnnual) : "€ 0", note: "boven € 0,25 per km" },
+        { label: "Belast deel", value: result.taxableAnnual > 0 ? money(result.taxableAnnual) : "€ 0", note: `boven ${limit} per km` },
       ]} />
       <SpokeTable head={["Per jaar", "Bedrag"]} rows={[
         { label: `Vergoeding (${km(result.kmAnnual)} × ${moneyCents(result.ratePerKm)})`, value: money(result.reimbursementAnnual) },
         { label: "Waarvan onbelast", value: money(result.taxFreeAnnual), muted: true },
-        ...(result.taxAnnual > 0 ? [{ label: "Belasting over het deel boven € 0,25", value: money(-result.taxAnnual) }] : []),
+        ...(result.taxAnnual > 0 ? [{ label: `Belasting over het deel boven ${limit}`, value: money(-result.taxAnnual) }] : []),
         { label: "Kosten van deze kilometers", value: money(-result.costAnnual) },
         { label: "Saldo", value: signedMoney(result.netAnnual), total: true },
       ]} />
@@ -46,7 +48,7 @@ export default function KilometerCalculator() {
       <Field label="Woon-werk enkele reis" value={commute.oneWayKm} onChange={(oneWayKm) => setCommute({ oneWayKm })} suffix="km" />
     </div>
     <Field label="Overige zakelijke km per jaar" value={mobility.extraBusinessKmPerYear} onChange={(extraBusinessKmPerYear) => setMobility({ extraBusinessKmPerYear })} suffix="km" hint="Ritten naar klanten of andere vestigingen, bovenop woon-werk." step={500} />
-    <Field label="Kilometervergoeding" value={mobility.reimbursementPerKm} onChange={(reimbursementPerKm) => setMobility({ reimbursementPerKm })} suffix="€/km" hint="Wat je werkgever per km betaalt. In 2026 is maximaal € 0,25 per km onbelast." step={0.01} />
+    <Field label="Kilometervergoeding" value={mobility.reimbursementPerKm} onChange={(reimbursementPerKm) => setMobility({ reimbursementPerKm })} suffix="€/km" hint={`Wat je werkgever per km betaalt. In ${model.personal.taxYear} is maximaal ${limit} per km onbelast.`} step={0.01} />
     <Checkbox checked={car.isElectric} onChange={(isElectric) => setCar({ isElectric })} label="Mijn auto is elektrisch" />
     {car.isElectric ? <div className="two-fields">
       <Field label="Verbruik" value={car.electricConsumption} onChange={(electricConsumption) => setCar({ electricConsumption })} suffix="kWh/100" step={0.5} />

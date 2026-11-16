@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CALCULATORS } from "../../lib/calculators";
+import { selectableTaxYears } from "../../lib/tax-years";
 
 export type NavKey = "home" | "total" | "mobility" | "work" | "questions";
 
@@ -26,7 +27,7 @@ export function SiteNav({ active }: { active?: NavKey }) {
     <div className="site-nav" role="navigation" aria-label="Hoofdnavigatie">
       {navItems.map((item) => <Link key={item.key} href={item.href} className={active === item.key ? "active" : ""} aria-current={active === item.key ? "page" : undefined}>{item.label}</Link>)}
     </div>
-    <div className="nav-note"><span className="status-dot"></span> Indicatie voor 2026</div>
+    <div className="nav-note"><span className="status-dot"></span> Indicatie voor {selectableTaxYears().join(" en ")}</div>
   </nav>;
 }
 

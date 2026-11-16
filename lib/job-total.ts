@@ -13,8 +13,8 @@ import {
   calculatePensionBreakdown,
   calculateVehicleCosts,
   incomeTax,
-  TAX_FREE_KM_RATE_2026,
 } from "./calculator.ts";
+import { taxYear } from "./tax-years.ts";
 import {
   JOB_KEYS,
   SECTION_KEYS,
@@ -97,7 +97,7 @@ function mobilityPart(state: NettoplaatjeState, job: JobKey) {
       const businessKm = Math.max(0, inputs.businessKm);
       const reimbursement = businessKm * rate / 12;
       const costs = calculateVehicleCosts(inputs).carCosts;
-      return { cashMonthly: reimbursement - costs, taxableAnnual: businessKm * Math.max(0, rate - TAX_FREE_KM_RATE_2026) };
+      return { cashMonthly: reimbursement - costs, taxableAnnual: businessKm * Math.max(0, rate - taxYear(state.personal.taxYear).taxFreeKmRate) };
     }
     case "none":
       return { cashMonthly: 0, taxableAnnual: 0 };
@@ -117,10 +117,10 @@ export function calculateJobTotal(state: NettoplaatjeState, job: JobKey): JobTot
   const yearEndAnnual = grossAnnual * salary.yearEndBonusPct / 100;
   const bonusAnnual = salary.annualBonus;
   const salaryTaxable = Math.max(0, grossAnnual + holidayAnnual + yearEndAnnual + bonusAnnual - pension.employeeAnnual);
-  const salaryTax = incomeTax(salaryTaxable, personal.age);
+  const salaryTax = incomeTax(salaryTaxable, personal.age, personal.taxYear);
 
   const mobility = mobilityPart(state, job);
-  const totalTax = incomeTax(salaryTaxable + mobility.taxableAnnual, personal.age);
+  const totalTax = incomeTax(salaryTaxable + mobility.taxableAnnual, personal.age, personal.taxYear);
   const mobilityTaxMonthly = Math.max(0, totalTax - salaryTax) / 12;
 
   const netPayMonthly = (salaryTaxable - salaryTax) / 12;

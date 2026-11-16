@@ -8,6 +8,8 @@ import { SiteFooter, SiteNav } from "./components/SiteChrome";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { JobToggle } from "./components/JobToggle";
+import { TaxYearSelect } from "./components/TaxYearSelect";
+import { electricBijtellingText, kmLimitText } from "../lib/tax-years";
 import { ALL_SCENARIOS, calculateSalaryBreakdown, calculateScenarios, type CalculatorInputs, type ScenarioKey, type ScenarioResult } from "../lib/calculator";
 import { money } from "../lib/format";
 import { applyCalculatorInput, applyWorkPatternInput, commuteKmPerYear, SCENARIO_TO_CHOICE, toCalculatorInputs, toWorkPatternInputs, updateJobSection, type JobKey, type JobProfile } from "../lib/job-model";
@@ -65,13 +67,13 @@ function ScenarioCard({ result, scenario, ownCarIsElectric }: { result: Scenario
   </article>;
 }
 
-function SalarySummary({ result }: { result: ScenarioResult }) {
+function SalarySummary({ result, year }: { result: ScenarioResult; year: number }) {
   return <section className="salary-summary">
     <div className="salary-summary-heading"><div><span className="section-kicker">Bruto → netto</span><h3>Je loon vóór mobiliteitskeuze</h3></div><span className="salary-period">gemiddeld per maand</span></div>
     <div className="salary-metrics">
       <div><span>Bruto maandsalaris</span><strong>{money(result.salary.grossMonthly)}</strong><small>+ {money(result.salary.holidayMonthly)} vakantiegeld apart</small></div>
       <div><span>Pensioenbijdrage</span><strong className="negative">− {money(result.salary.pensionMonthly)}</strong><small>eigen inleg</small></div>
-      <div><span>Loonheffing</span><strong className="negative">− {money(result.salary.taxMonthly)}</strong><small>indicatie 2026</small></div>
+      <div><span>Loonheffing</span><strong className="negative">− {money(result.salary.taxMonthly)}</strong><small>indicatie {year}</small></div>
       <div className="salary-net"><span>Geschat netto loon</span><strong>{money(result.salary.netMonthlyRegular)}</strong><small>excl. vakantiegeld</small></div>
     </div>
     <div className="salary-note"><span>i</span> De pensioenbijdrage verlaagt in deze indicatie het belastbare loon. Daardoor is het geschatte belastingvoordeel {money(result.salary.taxBenefitMonthly)} per maand; de pensioeninleg zelf blijft wel een inhouding. Gemiddeld inclusief vakantiegeld komt het netto loon uit op {money(result.salary.netMonthlyAverage)} per maand.</div>
@@ -94,7 +96,7 @@ function BreakEven({ result }: { result: ScenarioResult }) {
   </div>;
 }
 
-function Comparison({ result, selectedScenarios }: { result: ScenarioResult; selectedScenarios: ScenarioKey[] }) {
+function Comparison({ result, selectedScenarios, year }: { result: ScenarioResult; selectedScenarios: ScenarioKey[]; year: number }) {
   const items = scenarioOptions.filter((option) => selectedScenarios.includes(option.key)).map((option) => ({
     key: option.key,
     label: option.label,
@@ -103,7 +105,7 @@ function Comparison({ result, selectedScenarios }: { result: ScenarioResult; sel
   }));
   const max = Math.max(...items.map((item) => Math.abs(item.value)), 1);
   return <section className="comparison-panel">
-    <div className="section-heading compact-heading"><div><span className="section-kicker">In één oogopslag</span><h2>Netto waarde per maand</h2></div><span className="year-chip">2026 indicatie</span></div>
+    <div className="section-heading compact-heading"><div><span className="section-kicker">In één oogopslag</span><h2>Netto waarde per maand</h2></div><span className="year-chip">{year} indicatie</span></div>
     <div className="bars" aria-label="Vergelijking van netto waarde per maand">{items.map((item) => <div className="bar-row" key={item.key}>
       <div className="bar-label"><span><span className={`bar-icon ${item.tone}`}></span>{item.label}</span><strong>{money(item.value)}</strong></div>
       <div className="bar-track"><div className={`bar-fill ${item.tone}`} style={{ width: `${Math.max(8, Math.abs(item.value) / max * 100)}%` }} /></div>
@@ -246,6 +248,7 @@ export default function CalculatorApp({ initialView }: { initialView: AppView })
       <aside className="inputs-panel"><div className="panel-heading"><div><span className="section-kicker">Jouw situatie</span><h2>Vul je gegevens in</h2></div><span className="lock-icon">⌁</span></div>
         <p className="panel-intro">De voorbeeldwaarden zijn ingevuld. Pas ze aan voor een persoonlijke indicatie.</p>
         <JobToggle job={job} onChange={setJob} />
+        <TaxYearSelect />
         <div className="input-section"><h3><span className="section-number">01</span> Inkomen</h3>
           <Field label="Bruto maandsalaris" value={inputs.salary} onChange={update("salary")} suffix="€" hint="Je bruto loon vóór loonheffing en pensioenpremie." />
           <Field label="Vakantiegeldpercentage" value={inputs.holidayAllowance} onChange={update("holidayAllowance")} suffix="%" hint="Het gebruikelijke vakantiegeld is 8% van het bruto jaarsalaris." step={0.1} max={20} />
@@ -280,7 +283,7 @@ export default function CalculatorApp({ initialView }: { initialView: AppView })
             <Field label="Overige zakelijke km per jaar" value={model.jobs[job].mobility.extraBusinessKmPerYear} onChange={(value) => setModel((current) => updateJobSection(current, job, "mobility", { extraBusinessKmPerYear: Number.isFinite(value) ? value : 0 }))} suffix="km" hint="Zakelijke ritten bovenop woon-werk, bijvoorbeeld naar klanten of andere vestigingen." step={500} />
             <small className="km-total">= {Math.round(inputs.businessKm).toLocaleString("nl-NL")} zakelijke km per jaar, waarvan {Math.round(commuteKmPerYear(model, job)).toLocaleString("nl-NL")} woon-werk ({model.personal.workWeeksPerYear} werkweken)</small>
           </div>
-          {showReimbursementInputs && <Field label="Kilometervergoeding werkgever" value={inputs.reimbursementRate} onChange={update("reimbursementRate")} suffix="€/km" hint="Je feitelijke vergoeding. In 2026 mag maximaal €0,25 per zakelijke kilometer onbelast worden vergoed." step={0.01} />}
+          {showReimbursementInputs && <Field label="Kilometervergoeding werkgever" value={inputs.reimbursementRate} onChange={update("reimbursementRate")} suffix="€/km" hint={`Je feitelijke vergoeding. In ${inputs.taxYear} mag maximaal ${kmLimitText(inputs.taxYear)} per zakelijke kilometer onbelast worden vergoed.`} step={0.01} />}
           {showOwnCarInputs && <>
           <Field label="Privé-kilometers per jaar" value={inputs.privateKm} onChange={update("privateKm")} suffix="km" hint="Je verwachte privégebruik van je eigen auto." />
           <label className="checkbox-row">
@@ -310,19 +313,19 @@ export default function CalculatorApp({ initialView }: { initialView: AppView })
           <label className="checkbox-row">
             <input type="checkbox" checked={inputs.leaseIsElectric} onChange={(event) => setInput("leaseIsElectric", event.target.checked)} />
             <span className="checkbox-box">✓</span>
-            <span><strong>De leaseauto is volledig elektrisch</strong><small>Pas de indicatieve 2026-bijtelling toe op de leaseauto</small></span>
+            <span><strong>De leaseauto is volledig elektrisch</strong><small>Pas de indicatieve {inputs.taxYear}-bijtelling toe op de leaseauto</small></span>
           </label>
-          {inputs.leaseIsElectric && <div className="ev-rule-note">2026: 18% bijtelling tot €30.000 cataloguswaarde, 22% over het meerdere. Het verlaagde tarief geldt onder voorwaarden 60 maanden. Laadkosten van een auto van de zaak worden hier verondersteld door de werkgever vergoed en tellen niet als extra loon.</div>}
+          {inputs.leaseIsElectric && <div className="ev-rule-note">{inputs.taxYear}: {electricBijtellingText(inputs.taxYear)} van de cataloguswaarde. Het verlaagde tarief geldt onder voorwaarden 60 maanden. Laadkosten van een auto van de zaak worden hier verondersteld door de werkgever vergoed en tellen niet als extra loon.</div>}
           <Field label="Cataloguswaarde leaseauto" value={inputs.carValue} onChange={update("carValue")} suffix="€" hint="De fiscale catalogusprijs inclusief btw en bpm." />
           {!inputs.leaseIsElectric && <Field label="Bijtellingspercentage" value={inputs.benefitRate} onChange={update("benefitRate")} suffix="%" hint="Het percentage van de cataloguswaarde dat als belastbaar loon wordt gezien." step={0.1} />}
           <Field label="Eigen bijdrage per maand" value={inputs.employeeContribution} onChange={update("employeeContribution")} suffix="€" hint="Je eventuele maandelijkse bijdrage voor privégebruik of de leaseauto." /></div>
         <div className="panel-footnote"><span>i</span> Vink alleen de vervoersmiddelen aan die je gebruikt. De mobiliteitsbudget-berekening trekt daarna alleen die maandelijkse kosten af.</div>
       </aside>
       <div className="results-panel"><div className="results-heading"><div><span className="section-kicker">Jouw uitkomst</span><h2>Wat houd je netto over?</h2></div><span className="live-badge"><span></span> Live berekend</span></div>
-        <SalarySummary result={result} />
+        <SalarySummary result={result} year={inputs.taxYear} />
         <ScenarioSelector selectedScenarios={selectedScenarios} onChange={toggleScenario} />
         <div className={`results-grid count-${selectedScenarios.length}`}>{selectedScenarios.map((scenario) => <ScenarioCard key={scenario} result={result} scenario={scenario} ownCarIsElectric={inputs.ownCarIsElectric} />)}</div>
-        <Comparison result={result} selectedScenarios={selectedScenarios} />
+        <Comparison result={result} selectedScenarios={selectedScenarios} year={inputs.taxYear} />
         <div className="to-total"><div><span className="section-kicker">Naar je totaaloverzicht</span><strong>Welke keuze neem je mee voor je {job === "current" ? "huidige" : "nieuwe"} baan?</strong><small>Je salaris, pensioen en kilometers gaan automatisch mee.</small></div>
           <div className="to-total-buttons">{selectedScenarios.map((scenario) => <button key={scenario} type="button" className={scenario === result.winner ? "primary-button" : "ghost-button"} onClick={() => chooseForTotal(scenario)}>{labels[scenario].title} →</button>)}</div></div>
         <div className="result-baseline"><span className="baseline-icon">↗</span><div><strong>Netto loon vóór mobiliteitskeuze: {money(result.salary.netMonthlyRegular)} per maand excl. vakantiegeld</strong><span>Pensioenbijdrage {money(result.salary.pensionMonthly)} per maand · gemiddeld incl. vakantiegeld {money(result.salary.netMonthlyAverage)} per maand</span></div></div>

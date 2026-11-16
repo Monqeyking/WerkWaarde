@@ -1,3 +1,5 @@
+import { creditAt, DEFAULT_TAX_YEAR, taxYear, type TaxYearParams } from "./tax-years.ts";
+
 export type CalculatorInputs = {
   salary: number;
   holidayAllowance: number;
@@ -51,25 +53,17 @@ export type ScenarioResult = {
 export type ScenarioKey = "lease" | "mobility" | "ownCar";
 export const ALL_SCENARIOS: ScenarioKey[] = ["lease", "mobility", "ownCar"];
 
-// The 2026 tax-free maximum for an employee's own transport is €0.25/km.
-// The actual employer rate remains an input and can be lower, such as €0.22/km.
-export const TAX_FREE_KM_RATE_2026 = 0.25;
-const EV_BIJTELLING_RATE_2026 = 0.18;
-const EV_BIJTELLING_THRESHOLD_2026 = 30_000;
-const STANDARD_BIJTELLING_RATE_2026 = 0.22;
-const MAX_PENSIONABLE_SALARY_2026 = 137_800;
+// Year-specific figures (tax brackets, credits, bijtelling, km limit) live in tax-years.ts.
+// The actual employer km rate remains an input and can be lower, such as €0.22/km.
 
-type Bracket = { limit: number; rate: number };
-const BOX_1_BRACKETS_2026: Bracket[] = [
-  { limit: 38_883, rate: 0.3575 },
-  { limit: 78_426, rate: 0.3756 },
-  { limit: Number.POSITIVE_INFINITY, rate: 0.495 },
-];
+/** The 2026 tax-free km maximum. Prefer taxYear(year).taxFreeKmRate. */
+export const TAX_FREE_KM_RATE_2026 = taxYear(2026).taxFreeKmRate;
 
-function taxBeforeCredits(income: number, age: number) {
-  const brackets = age >= 67
-    ? [{ limit: 38_883, rate: 0.1785 }, { limit: 78_426, rate: 0.3756 }, { limit: Number.POSITIVE_INFINITY, rate: 0.495 }]
-    : BOX_1_BRACKETS_2026;
+/** From this age the lower AOW rates and credits apply (indicative). */
+const AOW_AGE = 67;
+
+function taxBeforeCredits(income: number, age: number, params: TaxYearParams) {
+  const brackets = age >= AOW_AGE ? params.bracketsAow : params.brackets;
   let previousLimit = 0;
   let total = 0;
   for (const bracket of brackets) {
@@ -81,37 +75,22 @@ function taxBeforeCredits(income: number, age: number) {
   return total;
 }
 
-function generalTaxCredit(income: number, age: number) {
-  if (age >= 67) {
-    if (income <= 29_736) return 1_556;
-    if (income <= 78_426) return Math.max(0, 1_556 - 0.03195 * (income - 29_736));
-    return 0;
-  }
-  if (income <= 29_736) return 3_115;
-  if (income <= 78_426) return Math.max(0, 3_115 - 0.06398 * (income - 29_736));
-  return 0;
+function generalTaxCredit(income: number, age: number, params: TaxYearParams) {
+  const { max, maxAow, phaseOutFrom, phaseOutRate, phaseOutRateAow } = params.generalCredit;
+  const aow = age >= AOW_AGE;
+  return Math.max(0, (aow ? maxAow : max) - Math.max(0, income - phaseOutFrom) * (aow ? phaseOutRateAow : phaseOutRate));
 }
 
-function employmentTaxCredit(income: number, age: number) {
-  if (age >= 67) {
-    if (income <= 11_965) return income * 0.04156;
-    if (income <= 25_845) return 498 + (income - 11_965) * 0.15483;
-    if (income <= 45_592) return 2_647 + (income - 25_845) * 0.00974;
-    if (income <= 132_920) return Math.max(0, 2_840 - (income - 45_592) * 0.0325);
-    return 0;
-  }
-  if (income <= 11_965) return income * 0.08324;
-  if (income <= 25_845) return 996 + (income - 11_965) * 0.31009;
-  if (income <= 45_592) return 5_300 + (income - 25_845) * 0.0195;
-  if (income <= 132_920) return Math.max(0, 5_685 - (income - 45_592) * 0.0651);
-  return 0;
+function employmentTaxCredit(income: number, age: number, params: TaxYearParams) {
+  return creditAt(age >= AOW_AGE ? params.employmentCreditAow : params.employmentCredit, income);
 }
 
-/** Indicative annual income tax for a Dutch employee, based on 2026 rates. */
-export function incomeTax(annualIncome: number, age = 35) {
+/** Indicative annual income tax for a Dutch employee for a tax year (default 2026). */
+export function incomeTax(annualIncome: number, age = 35, year = DEFAULT_TAX_YEAR) {
+  const params = taxYear(year);
   const income = Math.max(0, annualIncome);
-  const credits = generalTaxCredit(income, age) + employmentTaxCredit(income, age);
-  return Math.max(0, taxBeforeCredits(income, age) - credits);
+  const credits = generalTaxCredit(income, age, params) + employmentTaxCredit(income, age, params);
+  return Math.max(0, taxBeforeCredits(income, age, params) - credits);
 }
 
 function annualGrossSalary(inputs: CalculatorInputs) {
@@ -121,7 +100,7 @@ function annualGrossSalary(inputs: CalculatorInputs) {
 export function calculatePensionBreakdown(inputs: CalculatorInputs) {
   const grossAnnual = Math.max(0, inputs.salary) * 12;
   const pensionableAnnual = Math.min(
-    MAX_PENSIONABLE_SALARY_2026,
+    taxYear(inputs.taxYear).maxPensionableSalary,
     grossAnnual * (inputs.pensionIncludesHoliday ? 1 + Math.max(0, inputs.holidayAllowance) / 100 : 1),
   );
 
@@ -161,7 +140,7 @@ function annualTaxableSalary(inputs: CalculatorInputs) {
 }
 
 function taxDelta(inputs: CalculatorInputs, additionalAnnualIncome: number) {
-  return Math.max(0, incomeTax(annualTaxableSalary(inputs) + additionalAnnualIncome, inputs.age) - incomeTax(annualTaxableSalary(inputs), inputs.age));
+  return Math.max(0, incomeTax(annualTaxableSalary(inputs) + additionalAnnualIncome, inputs.age, inputs.taxYear) - incomeTax(annualTaxableSalary(inputs), inputs.age, inputs.taxYear));
 }
 
 export function calculateSalaryBreakdown(inputs: CalculatorInputs) {
@@ -171,8 +150,8 @@ export function calculateSalaryBreakdown(inputs: CalculatorInputs) {
   const pension = calculatePensionBreakdown(inputs);
   const pensionMonthly = pension.employeeMonthly;
   const taxableAnnual = annualTaxableSalary(inputs);
-  const taxMonthly = incomeTax(taxableAnnual, inputs.age) / 12;
-  const taxWithoutPension = incomeTax(annualGrossSalary(inputs), inputs.age) / 12;
+  const taxMonthly = incomeTax(taxableAnnual, inputs.age, inputs.taxYear) / 12;
+  const taxWithoutPension = incomeTax(annualGrossSalary(inputs), inputs.age, inputs.taxYear) / 12;
   const taxBenefitMonthly = Math.max(0, taxWithoutPension - taxMonthly);
   const netMonthlyRegular = grossMonthly - pensionMonthly - taxMonthly;
   const netMonthlyAverage = grossMonthlyAverage - pensionMonthly - taxMonthly;
@@ -180,16 +159,17 @@ export function calculateSalaryBreakdown(inputs: CalculatorInputs) {
 }
 
 /** Annual bijtelling (taxable benefit of a company car) before any own contribution. */
-export function annualCarBenefit(catalogValue: number, isElectric: boolean, benefitRatePct: number) {
+export function annualCarBenefit(catalogValue: number, isElectric: boolean, benefitRatePct: number, year = DEFAULT_TAX_YEAR) {
   const carValue = Math.max(0, catalogValue);
+  const { electricCap, electricRate, standardRate } = taxYear(year).bijtelling;
   return isElectric
-    ? Math.min(carValue, EV_BIJTELLING_THRESHOLD_2026) * EV_BIJTELLING_RATE_2026
-      + Math.max(0, carValue - EV_BIJTELLING_THRESHOLD_2026) * STANDARD_BIJTELLING_RATE_2026
+    ? Math.min(carValue, electricCap) * electricRate
+      + Math.max(0, carValue - electricCap) * standardRate
     : carValue * Math.max(0, benefitRatePct) / 100;
 }
 
 export function calculateLease(inputs: CalculatorInputs) {
-  const annualBenefit = annualCarBenefit(inputs.carValue, inputs.leaseIsElectric, inputs.benefitRate);
+  const annualBenefit = annualCarBenefit(inputs.carValue, inputs.leaseIsElectric, inputs.benefitRate, inputs.taxYear);
   const annualContribution = Math.max(0, inputs.employeeContribution) * 12;
   const taxableBenefit = Math.max(0, annualBenefit - annualContribution);
   const taxCost = taxDelta(inputs, taxableBenefit) / 12;
@@ -202,7 +182,7 @@ export function calculateMobilityBudget(inputs: CalculatorInputs) {
   const grossBudget = Math.max(0, inputs.mobilityBudget);
   const reimbursedModes = inputs.mobilityUsesOwnCar || inputs.mobilityUsesBike;
   const requestedTravelReimbursement = reimbursedModes
-    ? Math.max(0, inputs.businessKm) * Math.min(Math.max(0, inputs.reimbursementRate), TAX_FREE_KM_RATE_2026) / 12
+    ? Math.max(0, inputs.businessKm) * Math.min(Math.max(0, inputs.reimbursementRate), taxYear(inputs.taxYear).taxFreeKmRate) / 12
     : 0;
   const taxFreeTravelReimbursement = Math.min(grossBudget, requestedTravelReimbursement);
   const taxableBudget = Math.max(0, grossBudget - taxFreeTravelReimbursement);
@@ -233,8 +213,9 @@ export function calculateOwnCar(inputs: CalculatorInputs) {
   const businessKm = Math.max(0, inputs.businessKm);
   const rate = Math.max(0, inputs.reimbursementRate);
   const reimbursement = businessKm * rate / 12;
-  const taxFreeReimbursement = businessKm * Math.min(rate, TAX_FREE_KM_RATE_2026) / 12;
-  const taxablePart = businessKm * Math.max(0, rate - TAX_FREE_KM_RATE_2026) / 12;
+  const kmLimit = taxYear(inputs.taxYear).taxFreeKmRate;
+  const taxFreeReimbursement = businessKm * Math.min(rate, kmLimit) / 12;
+  const taxablePart = businessKm * Math.max(0, rate - kmLimit) / 12;
   const taxCost = taxDelta(inputs, taxablePart * 12) / 12;
   const vehicleCosts = calculateVehicleCosts(inputs);
   return { reimbursement, taxFreeReimbursement, taxableReimbursement: taxCost, ...vehicleCosts, netResult: reimbursement - taxCost - vehicleCosts.carCosts };

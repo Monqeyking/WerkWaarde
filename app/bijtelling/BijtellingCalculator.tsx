@@ -5,6 +5,7 @@ import { Field } from "../components/Field";
 import { Checkbox, Highlight, Metrics, SpokeCalculator, SpokeTable, ToTotal, useSpokeModel } from "../components/Spoke";
 import { updateJobSection, type JobProfile } from "../../lib/job-model";
 import { leaseCost } from "../../lib/spokes";
+import { electricBijtellingText, standardBijtellingText } from "../../lib/tax-years";
 import { money, percent } from "../../lib/format";
 
 export default function BijtellingCalculator() {
@@ -37,8 +38,8 @@ export default function BijtellingCalculator() {
         apply={(current) => updateJobSection(current, job, "mobility", { choice: "lease" })} />
     </>}>
     <Field label="Cataloguswaarde" value={lease.catalogValue} onChange={(catalogValue) => setLease({ catalogValue })} suffix="€" hint="De fiscale catalogusprijs inclusief btw en bpm. Die staat in de leaseofferte of op de site van de RDW." step={500} />
-    <Checkbox checked={lease.isElectric} onChange={(isElectric) => setLease({ isElectric })} label="Volledig elektrisch" small="2026: 18% tot € 30.000, 22% over de rest" />
-    {!lease.isElectric && <Field label="Bijtelling" value={lease.benefitRatePct} onChange={(benefitRatePct) => setLease({ benefitRatePct })} suffix="%" hint="Standaard 22% in 2026. Voor oudere auto's kan een ander percentage gelden; dat staat op je loonstrook of in de offerte." step={0.1} max={35} />}
+    <Checkbox checked={lease.isElectric} onChange={(isElectric) => setLease({ isElectric })} label="Volledig elektrisch" small={`${model.personal.taxYear}: ${electricBijtellingText(model.personal.taxYear)}`} />
+    {!lease.isElectric && <Field label="Bijtelling" value={lease.benefitRatePct} onChange={(benefitRatePct) => setLease({ benefitRatePct })} suffix="%" hint={`Standaard ${standardBijtellingText(model.personal.taxYear)} in ${model.personal.taxYear}. Voor oudere auto's kan een ander percentage gelden; dat staat op je loonstrook of in de offerte.`} step={0.1} max={35} />}
     <Field label="Eigen bijdrage" value={lease.employeeContributionMonthly} onChange={(employeeContributionMonthly) => setLease({ employeeContributionMonthly })} suffix="€/mnd" hint="Wat je zelf per maand betaalt voor privégebruik. Dit gaat van de bijtelling af." />
     <Field label="Bruto salaris per maand" value={salary.grossMonthly} onChange={setSalary} suffix="€" hint="Nodig om je belastingtarief te bepalen. Vakantiegeld en bonus uit je profiel tellen ook mee." step={50} />
   </SpokeCalculator>;

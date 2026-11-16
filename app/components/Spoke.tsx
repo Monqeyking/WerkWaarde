@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import type { JobKey, NettoplaatjeState } from "../../lib/job-model";
 import { useJobModel } from "../../lib/use-job-model";
 import { JobToggle } from "./JobToggle";
+import { TaxYearSelect } from "./TaxYearSelect";
 
 /** Shared model plus which job this calculator page is filling in. */
 export function useSpokeModel() {
@@ -23,6 +24,7 @@ export function SpokeCalculator({ job, onJobChange, inputsTitle, children, resul
         <div className="panel-heading"><div><span className="section-kicker">Jouw situatie</span><h2>{inputsTitle}</h2></div><span className="lock-icon">⌁</span></div>
         <p className="panel-intro">De voorbeeldwaarden zijn ingevuld. Pas ze aan voor een persoonlijke indicatie.</p>
         <JobToggle job={job} onChange={onJobChange} />
+        <TaxYearSelect />
         <div className="input-section last-section">{children}</div>
       </aside>
       <div className="results-panel">
