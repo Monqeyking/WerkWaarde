@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://werk-waarde-khaki.vercel.app"),
   title: "WerkWaarde | Wat houd je écht over van je werk?",
   description: "Vergelijk salaris, pensioen, mobiliteit, reistijd en de totale waarde van een baan.",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
