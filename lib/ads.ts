@@ -1,13 +1,10 @@
 /**
- * Advertising config: every page shows one labelled ad box, filled either by
- * Google AdSense or by a house ad. House ads need no cookies or consent.
+ * Advertising config: each ad box is filled either by Google AdSense or by a
+ * house ad. House ads promote Virtrust's services and need no cookies or consent.
  */
-
-export type AdAudience = "candidate" | "employer";
 
 export type HouseAd = {
   id: string;
-  audience: AdAudience;
   advertiser: string;
   /** Small advertiser logo under public/, shown left in the ad. Text fallback without it. */
   logo?: string;
@@ -31,18 +28,7 @@ export function houseAdAdvertisers(): string[] {
 
 export const HOUSE_ADS: readonly HouseAd[] = [
   {
-    id: "hseq-vacatures",
-    audience: "candidate",
-    advertiser: "Virtrust",
-    logo: "/ads/virtrust.svg",
-    title: "Werk je in veiligheid, gezondheid of milieu?",
-    body: "Bekijk vacatures en opdrachten voor HSEQ-professionals.",
-    cta: "Bekijk vacatures",
-    path: "/",
-  },
-  {
     id: "hseq-volgende-stap",
-    audience: "candidate",
     advertiser: "Virtrust",
     logo: "/ads/virtrust.svg",
     title: "Toe aan een volgende stap in veiligheid?",
@@ -51,14 +37,58 @@ export const HOUSE_ADS: readonly HouseAd[] = [
     path: "/",
   },
   {
-    id: "hseq-specialist-nodig",
-    audience: "employer",
+    id: "veiligheidskunde",
     advertiser: "Virtrust",
     logo: "/ads/virtrust.svg",
-    title: "Tijdelijk een HSEQ-specialist nodig?",
-    body: "Virtrust levert adviseurs voor veiligheid, gezondheid, kwaliteit en milieu.",
-    cta: "Neem contact op",
-    path: "/",
+    title: "Een veiligheidskundige nodig?",
+    body: "MVK- en HVK-veiligheidskundigen die veiligheid concreet en meetbaar maken, van werkvloer tot directie.",
+    cta: "Bekijk veiligheidskunde",
+    path: "/dienstverlening/veiligheidskunde",
+  },
+  {
+    id: "procesveiligheid",
+    advertiser: "Virtrust",
+    logo: "/ads/virtrust.svg",
+    title: "Grip op risicovolle processen?",
+    body: "HAZOP-, LOPA- en QRA-studies en audits die verder gaan dan vinkjes zetten.",
+    cta: "Meer over procesveiligheid",
+    path: "/dienstverlening/procesveiligheid",
+  },
+  {
+    id: "adr-pgs",
+    advertiser: "Virtrust",
+    logo: "/ads/virtrust.svg",
+    title: "Gevaarlijke stoffen goed geregeld?",
+    body: "Advies over opslag, transport en beheer van gevaarlijke stoffen volgens ADR en PGS.",
+    cta: "Bekijk ADR & PGS",
+    path: "/dienstverlening/adr-pgs-solutions",
+  },
+  {
+    id: "interim-projectinzet",
+    advertiser: "Virtrust",
+    logo: "/ads/virtrust.svg",
+    title: "Tijdelijk extra HSEQ-capaciteit nodig?",
+    body: "Direct inzetbare professionals die met ervaring en daadkracht een project versterken.",
+    cta: "Bekijk interim-inzet",
+    path: "/dienstverlening/interim-en-projectinzet",
+  },
+  {
+    id: "projectmanagement",
+    advertiser: "Virtrust",
+    logo: "/ads/virtrust.svg",
+    title: "Een project met veiligheidsrisico's?",
+    body: "Projectmanagers die van vergunning tot oplevering grip houden op planning en veiligheid.",
+    cta: "Meer over projectmanagement",
+    path: "/dienstverlening/projectmanagement",
+  },
+  {
+    id: "quickscan",
+    advertiser: "Virtrust",
+    logo: "/ads/virtrust.svg",
+    title: "Voldoet de organisatie aan de regels?",
+    body: "De Virtrust Quickscan geeft snel inzicht in compliance en werkgeversverantwoordelijkheid.",
+    cta: "Meer over de Quickscan",
+    path: "/dienstverlening/virtrust-quickscan",
   },
 ];
 
@@ -105,16 +135,15 @@ export function houseAdHref(ad: HouseAd, placement: string): string {
  * Pick what one ad box shows. `random` returns a number in [0, 1) and is
  * called at most twice: once for house-vs-AdSense, once for which house ad.
  */
-export function pickAd(config: AdConfig, options: { placement: string; audience?: AdAudience; exclude?: readonly string[]; random?: () => number }): AdChoice | null {
+export function pickAd(config: AdConfig, options: { placement: string; exclude?: readonly string[]; random?: () => number }): AdChoice | null {
   const random = options.random ?? Math.random;
   const share = houseAdShare(config);
   const adsense = config.publisherId && config.slotId ? { kind: "adsense" as const, publisherId: config.publisherId, slotId: config.slotId } : null;
 
   if (share > 0 && (!adsense || random() * 100 < share)) {
-    const matching = HOUSE_ADS.filter((ad) => !options.audience || ad.audience === options.audience);
     // Prefer ads not yet on the page, so two boxes don't repeat the same ad.
-    const fresh = matching.filter((ad) => !options.exclude?.includes(ad.id));
-    const pool = fresh.length > 0 ? fresh : matching.length > 0 ? matching : HOUSE_ADS;
+    const fresh = HOUSE_ADS.filter((ad) => !options.exclude?.includes(ad.id));
+    const pool = fresh.length > 0 ? fresh : HOUSE_ADS;
     const ad = pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))];
     return { kind: "house", ad, href: houseAdHref(ad, options.placement) };
   }

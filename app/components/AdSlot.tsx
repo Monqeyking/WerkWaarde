@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { adsEnabled, pickAd, readAdConfig, type AdAudience, type AdChoice } from "../../lib/ads.ts";
+import { adsEnabled, pickAd, readAdConfig, type AdChoice } from "../../lib/ads.ts";
 
 declare global {
   interface Window {
@@ -35,18 +35,18 @@ function AdSenseUnit({ publisherId, slotId }: { publisherId: string; slotId: str
  * inputs, buttons or results. The choice is made after mount so server and
  * client render the same empty box first; the box reserves its height.
  */
-export default function AdSlot({ placement, audience }: { placement: string; audience?: AdAudience }) {
+export default function AdSlot({ placement }: { placement: string }) {
   const [choice, setChoice] = useState<AdChoice | null>(null);
 
   useEffect(() => {
     // Picking is random, so it must run on the client only (no hydration mismatch).
     const path = window.location.pathname;
     if (shownOnPage.path !== path) shownOnPage = { path, ids: [] };
-    const next = pickAd(config, { placement, audience, exclude: shownOnPage.ids });
+    const next = pickAd(config, { placement, exclude: shownOnPage.ids });
     if (next?.kind === "house") shownOnPage.ids.push(next.ad.id);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setChoice(next);
-  }, [placement, audience]);
+  }, [placement]);
 
   if (!adsEnabled(config)) return null;
 

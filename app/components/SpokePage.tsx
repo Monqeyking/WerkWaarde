@@ -59,7 +59,7 @@ export default function SpokePage({ active, kicker, title, intro, calculator, ho
         <Link className="related-all" href="/vragen">Alle vragen en antwoorden →</Link>
       </div>}
     </section>
-    <AdSlot placement={adPlacement} audience="candidate" />
+    <AdSlot placement={adPlacement} />
     <SiteFooter />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
   </main>;

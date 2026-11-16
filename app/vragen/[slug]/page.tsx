@@ -78,7 +78,7 @@ export default async function ArticlePage({ params }: Props) {
         <div className="related-list">{related.map((item) => <Link key={item.slug} href={`/vragen/${item.slug}`} className="related-card"><strong>{item.title}</strong><span>{stripLinks(item.description)}</span></Link>)}</div>
       </div>}
     </section>
-    <AdSlot placement={`vragen-${article.slug}`} audience="candidate" />
+    <AdSlot placement={`vragen-${article.slug}`} />
     <SiteFooter />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
   </main>;

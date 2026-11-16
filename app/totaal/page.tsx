@@ -59,7 +59,7 @@ export default function TotalPage() {
         <div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div>
       </div>
     </section>
-    <AdSlot placement="totaal" audience="candidate" />
+    <AdSlot placement="totaal" />
     <SiteFooter />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
   </main>;

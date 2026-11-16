@@ -135,7 +135,7 @@ export default async function AmountPage({ params }: Props) {
 
       <AmountLinks current={page.slug} heading="Andere bedragen" />
     </section>
-    <AdSlot placement="bruto-netto-bedrag" audience="candidate" />
+    <AdSlot placement="bruto-netto-bedrag" />
     <SiteFooter />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
   </main>;
