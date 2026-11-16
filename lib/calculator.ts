@@ -276,7 +276,8 @@ export function calculateScenarios(inputs: CalculatorInputs, selectedScenarios: 
   const sorted = [...values].sort((a, b) => b.value - a.value);
   const winner = sorted[0].key;
   const targetTotalNet = salary.netMonthlyAverage + sorted[0].value;
-  const alternatives = (Object.keys(labelsForBreakEven) as Array<"lease" | "mobility" | "ownCar">)
+  // Only offer break-even salaries for the options the user is actually comparing.
+  const alternatives = scenarios
     .filter((scenario) => scenario !== winner)
     .map((scenario) => {
       const grossSalary = findBreakEvenSalary(inputs, scenario, targetTotalNet);
@@ -299,5 +300,3 @@ export function calculateScenarios(inputs: CalculatorInputs, selectedScenarios: 
     breakEven: { targetTotalNet, alternatives },
   };
 }
-
-const labelsForBreakEven = { lease: true, mobility: true, ownCar: true };

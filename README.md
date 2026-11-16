@@ -1,121 +1,47 @@
-# vinext-starter
+# Nettoplaatje (voorheen WerkWaarde)
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+Gratis, onafhankelijke rekentool die laat zien wat een baan je netto écht oplevert:
+salaris, pensioen, mobiliteit (leaseauto, mobiliteitsbudget, eigen auto), reiskosten,
+reistijd en werkgerelateerde kosten.
 
-## Prerequisites
+Gebouwd met Next.js (App Router) en gehost op Vercel. Alle berekeningen draaien in de
+browser; er wordt niets op een server opgeslagen.
 
-- Node.js `>=22.13.0`
-- Linux with `flock`, `curl`, and GNU `timeout`
+## Ontwikkelen
 
-## Sites Lifecycle
+Vereist Node.js 22.18 of nieuwer (voor het direct draaien van TypeScript-tests).
 
-The Sites lifecycle CLI runs the locked dependency install before returning this checkout. Edit the source under `app/`, then checkpoint when a coherent milestone is ready to inspect or share. The remote Sites builder runs `npm run build` against the pushed commit. Do not repeat install or build as a normal pre-checkpoint step.
-
-This starter does not use `wrangler.jsonc`.
-
-`install:ci` is intentionally a single, non-retrying `npm ci`. It refuses a concurrent install for the same project, consumes a matching image-seeded npm cache with `--prefer-offline` while retaining registry fallback for a missing cache object, otherwise downloads and verifies the complete vinext tarball recorded in `package-lock.json`, limits npm to one socket, and terminates a stalled install. `build` applies a short timeout. These helpers target Linux and use GNU `timeout`; they are not native macOS scripts.
-
-Scripts that need writable project-scoped home, npm, XDG, and temporary paths use `scripts/sites-env.sh`. The `dev` and `start` scripts honor the caller's runtime environment and keep Wrangler logs inside the checkout. The generated `.sites-runtime/` directory is disposable and ignored by Git.
-
-## Included Shape
-
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+npm install
+npm run dev        # lokale ontwikkelserver op http://localhost:3000
+npm test           # unit tests van de rekenlogica (node:test)
+npm run lint
+npm run typecheck
+npm run build      # productie-build, zoals Vercel die draait
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+## Structuur
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+- `app/` — pagina's en componenten
+- `lib/calculator.ts` — bruto-netto, pensioen, leaseauto, mobiliteitsbudget, eigen auto
+- `lib/work-costs.ts` — kosten van een werkpatroon (kantoordagen, reizen, opvang)
+- `lib/job-model.ts` — gedeeld datamodel `{ huidige baan, nieuwe baan }` dat alle
+  calculators en het totaaloverzicht vullen, met opslag in de browser
+- `tests/` — unit tests; voeg bij elke wijziging in de rekenlogica een test toe
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+Imports binnen `lib/` gebruiken de `.ts`-extensie, zodat Node de tests zonder bundler
+kan draaien.
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+## Fiscale tarieven bijwerken
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+De tarieven staan in `lib/calculator.ts`. Controleer ze elk jaar rond Prinsjesdag en
+1 januari tegen de bronnen van de Belastingdienst, en werk de tests bij.
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+## Omgevingsvariabelen
 
-## Diagnostic Commands
+Zie `.env.example`. Stel ze in Vercel in:
 
-- `npm run install:ci`: perform the one bounded lockfile install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build the deployable Sites artifact
-- `npm run start`: start the built Vinext application
-- `npm test`: build and verify the rendered development-preview metadata
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## AdSense setup
-
-The site has one responsive ad placement on `/uitleg`, after the calculation
-method and examples. There are no manual ad slots or empty ad placeholders on
-the home, calculator, or result screens. Before requesting a review, set
-`NEXT_PUBLIC_ADSENSE_PUBLISHER_ID` and `NEXT_PUBLIC_ADSENSE_SLOT_CONTENT` in
-Vercel, enable Google's certified consent message in AdSense Privacy &
-messaging, exclude `/`, `/mobiliteit`, and `/werkpatroon` from Auto ads, and
-redeploy. Set `NEXT_PUBLIC_CONTACT_EMAIL` there as well. The `/ads.txt` route is
-generated from the publisher ID.
-
-The public explanation page is available at `/uitleg`; `sitemap.xml` and
-`robots.txt` are generated from the configured site URL.
-
-Use build commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
-
-The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- `NEXT_PUBLIC_SITE_URL` — publieke URL, gebruikt voor sitemap en robots
+- `NEXT_PUBLIC_CONTACT_EMAIL` — contactadres op privacy- en contactpagina
+- `NEXT_PUBLIC_ADSENSE_PUBLISHER_ID` — `ca-pub-…`; genereert ook `/ads.txt`
+- `NEXT_PUBLIC_ADSENSE_SLOT_CONTENT` — advertentie-unit

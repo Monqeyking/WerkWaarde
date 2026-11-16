@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ALL_SCENARIOS, calculateSalaryBreakdown, calculateScenarios, TAX_FREE_KM_RATE_2026, type CalculatorInputs, type ScenarioKey, type ScenarioResult } from "../lib/calculator";
 import { calculateWorkPattern, type WorkPatternInputs } from "../lib/work-costs";
@@ -134,11 +135,11 @@ function Comparison({ result, selectedScenarios }: { result: ScenarioResult; sel
 type AppView = "home" | "mobility" | "work";
 
 function Navigation({ active }: { active: AppView }) {
-  return <nav className="topbar shell"><a className="brand" href="/"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></a>
+  return <nav className="topbar shell"><Link className="brand" href="/"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></Link>
     <div className="site-nav" role="navigation" aria-label="Hoofdnavigatie">
-      <a href="/" className={active === "home" ? "active" : ""}>Start</a>
-      <a href="/mobiliteit" className={active === "mobility" ? "active" : ""}>Lease & mobiliteit</a>
-      <a href="/werkpatroon" className={active === "work" ? "active" : ""}>Wat kost werken?</a>
+      <Link href="/" className={active === "home" ? "active" : ""}>Start</Link>
+      <Link href="/mobiliteit" className={active === "mobility" ? "active" : ""}>Lease & mobiliteit</Link>
+      <Link href="/werkpatroon" className={active === "work" ? "active" : ""}>Wat kost werken?</Link>
     </div>
     <div className="nav-note"><span className="status-dot"></span> Indicatie voor 2026</div></nav>;
 }
@@ -190,8 +191,8 @@ function Landing() {
       <h1>Wat houd je écht over van je werk?</h1><p>Vergelijk je mobiliteitskeuze én ontdek wat vaker naar kantoor gaan je werkelijk kost.</p>
       <div className="hero-trust"><span className="trust-check">✓</span> Direct resultaat <span className="trust-divider"></span> Geen account nodig <span className="trust-divider"></span> Indicatief</div>
     </div></section>
-    <section className="tool-grid shell"><a className="tool-card teal" href="/mobiliteit"><span className="tool-number">01</span><span className="section-kicker">Leaseauto, budget of eigen auto</span><h2>Vergelijk je mobiliteitskeuze</h2><p>Zie wat je netto overhoudt met een leaseauto, mobiliteitsbudget of eigen auto met kilometervergoeding.</p><span className="tool-link">Naar mobiliteitsvergelijking →</span></a>
-      <a className="tool-card blue" href="/werkpatroon"><span className="tool-number">02</span><span className="section-kicker">Thuiswerken versus kantoor</span><h2>Wat kost vaker naar kantoor?</h2><p>Bereken extra reistijd, autokosten, parkeren, kinderopvang en andere kosten van een gewijzigd werkpatroon.</p><span className="tool-link">Naar werkpatroon-calculator →</span></a></section>
+    <section className="tool-grid shell"><Link className="tool-card teal" href="/mobiliteit"><span className="tool-number">01</span><span className="section-kicker">Leaseauto, budget of eigen auto</span><h2>Vergelijk je mobiliteitskeuze</h2><p>Zie wat je netto overhoudt met een leaseauto, mobiliteitsbudget of eigen auto met kilometervergoeding.</p><span className="tool-link">Naar mobiliteitsvergelijking →</span></Link>
+      <Link className="tool-card blue" href="/werkpatroon"><span className="tool-number">02</span><span className="section-kicker">Thuiswerken versus kantoor</span><h2>Wat kost vaker naar kantoor?</h2><p>Bereken extra reistijd, autokosten, parkeren, kinderopvang en andere kosten van een gewijzigd werkpatroon.</p><span className="tool-link">Naar werkpatroon-calculator →</span></Link></section>
     <section className="landing-note shell"><span className="formula-mark">∑</span><div><strong>Van bruto loon naar werkelijke waarde</strong><p>De twee calculators gebruiken dezelfde heldere uitgangspunten, maar beantwoorden elk één concrete vraag. Zo blijft de invoer overzichtelijk en voorkom je dat kosten dubbel worden meegerekend.</p></div></section>
     <section className="landing-content shell" aria-label="Hoe WerkWaarde werk en mobiliteit vergelijkt">
       <span className="section-kicker">Wat je vergelijkt</span><h2>Een baan beoordelen op meer dan het brutoloon</h2>
@@ -199,9 +200,9 @@ function Landing() {
       <div><h3>De ritten achter de autokosten</h3><p>Bij een eigen auto rekenen we de vergoeding over zakelijke kilometers. Brandstof of laden en overige variabele autokosten tellen mee over het aantal zakelijke én privé-kilometers dat je invult. Zo zie je waarom een vergoeding per zakelijke kilometer niet hetzelfde is als de volledige kostprijs van de auto.</p></div>
       <div><h3>Vaker naar kantoor</h3><p>De tweede vergelijking zet twee werkpatronen naast elkaar. Reistijd, retourafstand, reiskostenvergoeding, parkeren, lunch en kinderopvang worden apart getoond. Reistijd blijft eerst een tijdsverschil; alleen als je dat zelf kiest, krijgt die tijd ook een geldwaarde.</p></div>
       <div><h3>Fiscale bedragen controleren</h3><p>Voor 2026 is de maximale gerichte vrijstelling voor een kilometervergoeding verhoogd naar €0,25 per kilometer, met terugwerkende kracht vanaf 1 januari. De werkgever bepaalt de werkelijke vergoeding; daarom kun je die zelf invullen. <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/berichten/nieuws/verhoging-onbelaste-kilometervergoeding-hoe-verwerkt-u-dit-in-de-loonaangifte" target="_blank" rel="noreferrer">Bron: Belastingdienst</a></p></div>
-      <p>Lees de <a href="/uitleg">rekenmethode, voorbeelden en beperkingen</a>, of open direct de <a href="/mobiliteit">mobiliteitsvergelijking</a> of de calculator voor je <a href="/werkpatroon">werkpatroon</a>.</p>
+      <p>Lees de <Link href="/uitleg">rekenmethode, voorbeelden en beperkingen</Link>, of open direct de <Link href="/mobiliteit">mobiliteitsvergelijking</Link> of de calculator voor je <Link href="/werkpatroon">werkpatroon</Link>.</p>
     </section>
-    <footer className="footer shell"><div className="brand"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></div><span>Een heldere indicatie voor jouw werk- en mobiliteitskeuze.</span><span className="footer-links"><a href="/uitleg">Uitleg</a><a href="/privacy">Privacy</a><a href="/cookies">Cookies</a><a href="/contact">Contact</a></span></footer>
+    <footer className="footer shell"><div className="brand"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></div><span>Een heldere indicatie voor jouw werk- en mobiliteitskeuze.</span><span className="footer-links"><Link href="/uitleg">Uitleg</Link><Link href="/privacy">Privacy</Link><Link href="/cookies">Cookies</Link><Link href="/contact">Contact</Link></span></footer>
   </main>;
 }
 
@@ -240,7 +241,7 @@ function WorkPatternCalculator() {
       <div className="work-note"><span>i</span><p>De vergelijking rekent beide banen volledig door. Je ziet nu bruto brandstof-/laadkosten, variabele autokosten, kilometervergoeding en netto autokosten apart. Afschrijving, algemene verzekering en tol zijn niet als extra werk-kosten opgenomen.</p></div>
     </div></section>
     <section className="how-section shell"><div className="section-heading"><div><span className="section-kicker">Transparant rekenen</span><h2>Zo werkt deze vergelijking</h2></div><span className="formula-mark">∑</span></div><div className="how-grid"><div className="how-card"><span className="how-icon blue">01</span><h3>Per baan apart</h3><p>We rekenen salaris, kantoordagen, afstand en reistijd voor de oude en nieuwe baan afzonderlijk uit.</p></div><div className="how-card"><span className="how-icon blue">02</span><h3>Ingevoerde kosten</h3><p>Brandstof of laden, kilometervergoeding, parkeren, lunch en kinderopvang worden per baan meegenomen.</p></div><div className="how-card"><span className="how-icon orange">03</span><h3>Indicatief eindbeeld</h3><p>Je ziet het geschatte bedrag na de ingevoerde werkgerelateerde kosten en het verschil per maand en jaar.</p></div></div><div className="method-copy"><p>Het aantal maandelijkse kantoordagen is je kantoordagen per week × je werkweken per jaar ÷ 12. Retourkilometers volgen uit de dagen maal de enkele reisafstand maal twee. Reistijd wordt apart berekend uit de reistijd per enkele reis. Dit maakt het effect van extra kantoorbezoek inzichtelijk zonder tijd automatisch als loon te tellen.</p><p>De kilometervergoeding wordt hier als ingevuld bedrag meegerekend; deze vergelijking berekent geen loonheffing over een eventueel deel boven de 2026-vrijstelling van €0,25/km. Voor de fiscale behandeling van jouw vergoeding controleer je de afspraken met je werkgever. Brandstof- of laadkosten gebruiken jouw verbruik en energieprijs; vaste kosten zoals afschrijving worden niet automatisch aan extra kantoordagen toegerekend.</p></div></section>
-    <footer className="footer shell"><div className="brand"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></div><span>Een heldere indicatie voor jouw werk- en mobiliteitskeuze.</span><span className="footer-links"><a href="/uitleg">Uitleg</a><a href="/privacy">Privacy</a><a href="/cookies">Cookies</a><a href="/contact">Contact</a></span></footer>
+    <footer className="footer shell"><div className="brand"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></div><span>Een heldere indicatie voor jouw werk- en mobiliteitskeuze.</span><span className="footer-links"><Link href="/uitleg">Uitleg</Link><Link href="/privacy">Privacy</Link><Link href="/cookies">Cookies</Link><Link href="/contact">Contact</Link></span></footer>
   </main>;
 }
 
@@ -296,7 +297,7 @@ export default function CalculatorApp({ initialView }: { initialView: AppView })
           <Field label="Mobiliteitsbudget per maand" value={inputs.mobilityBudget} onChange={update("mobilityBudget")} suffix="€" hint="Het bruto bedrag dat je kunt laten uitbetalen in plaats van een leaseauto." />
           <MobilityTransportPicker inputs={inputs} onToggle={toggleInput} update={update} />
           <Field label="Zakelijke kilometers per jaar" value={inputs.businessKm} onChange={update("businessKm")} suffix="km" hint="Kilometers voor woon-werk en zakelijke ritten die je werkgever vergoedt." />
-          {(showOwnCarInputs || inputs.mobilityUsesBike) && <Field label="Kilometervergoeding werkgever" value={inputs.reimbursementRate} onChange={update("reimbursementRate")} suffix="€/km" hint="Je feitelijke vergoeding. In 2026 mag maximaal €0,25 per zakelijke kilometer onbelast worden vergoed." step={0.01} />}
+          {showReimbursementInputs && <Field label="Kilometervergoeding werkgever" value={inputs.reimbursementRate} onChange={update("reimbursementRate")} suffix="€/km" hint="Je feitelijke vergoeding. In 2026 mag maximaal €0,25 per zakelijke kilometer onbelast worden vergoed." step={0.01} />}
           {showOwnCarInputs && <>
           <Field label="Privé-kilometers per jaar" value={inputs.privateKm} onChange={update("privateKm")} suffix="km" hint="Je verwachte privégebruik van je eigen auto." />
           <label className="checkbox-row">
@@ -351,6 +352,6 @@ export default function CalculatorApp({ initialView }: { initialView: AppView })
         <div className="how-card"><span className="how-icon orange">04</span><h3>Eigen auto</h3><p>De kilometervergoeding wordt berekend over zakelijke kilometers. In 2026 is maximaal €0,25 per kilometer onbelast; die vergoeding is bedoeld als forfait voor het gebruik van je eigen vervoermiddel. Daarna trekken we brandstof- of laadkosten en overige autokosten af. Afschrijving of een vervangingsreserve is optioneel; parkeren en tol zijn niet meegenomen.</p></div></div>
       <div className="disclaimer"><span className="disclaimer-icon">!</span><div><strong>Let op: dit is een indicatie, geen financieel of fiscaal advies.</strong><p>Werkelijke bedragen kunnen afwijken door persoonlijke omstandigheden, pensioenregelingen, cao-afspraken, de precieze loonheffing en fiscale uitzonderingen. De berekening houdt geen rekening met toeslagen, eigenwoningbezit, lijfrenteaftrek of andere persoonlijke aftrekposten. Bij een privé-EV is geen aparte belastingvrije laadvergoeding bovenop de kilometervergoeding verondersteld. Bij een lease-EV veronderstellen we dat werkelijke laadkosten door de werkgever worden vergoed; de fiscale behandeling hangt af van de afspraken en de werkelijke kostprijs.</p><div className="sources">Gebaseerd op de 2026-tarieven van de <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/voorlopige-aanslag/content/voorlopige-aanslag-tarieven-en-heffingskortingen" target="_blank" rel="noreferrer">Belastingdienst</a> · <a href="https://centraalaanspreekpuntpensioenen.belastingdienst.nl/publicaties/overzicht-aow-inbouwbedragen-en-aow-franchises/" target="_blank" rel="noreferrer">AOW-franchise 2026</a> · <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/bijtelling-privegebruik-auto-2026" target="_blank" rel="noreferrer">EV-bijtelling 2026</a> · <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/berichten/nieuws/verhoging-onbelaste-kilometervergoeding-hoe-verwerkt-u-dit-in-de-loonaangifte" target="_blank" rel="noreferrer">onbelaste kilometervergoeding 2026: €0,25</a> · standaard bijtelling: 22%</div></div></div>
     </section>
-    <footer className="footer shell"><div className="brand"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></div><span>Een heldere indicatie voor jouw mobiliteitskeuze.</span><span className="footer-links"><a href="/uitleg">Uitleg</a><a href="/privacy">Privacy</a><a href="/cookies">Cookies</a><a href="/contact">Contact</a></span></footer>
+    <footer className="footer shell"><div className="brand"><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></div><span>Een heldere indicatie voor jouw mobiliteitskeuze.</span><span className="footer-links"><Link href="/uitleg">Uitleg</Link><Link href="/privacy">Privacy</Link><Link href="/cookies">Cookies</Link><Link href="/contact">Contact</Link></span></footer>
   </main>;
 }
