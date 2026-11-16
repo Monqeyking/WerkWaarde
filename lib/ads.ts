@@ -46,7 +46,7 @@ export const HOUSE_ADS: readonly HouseAd[] = [
     advertiser: "Virtrust",
     logo: "/ads/virtrust.svg",
     title: "Toe aan een volgende stap in veiligheid?",
-    body: "Virtrust bemiddelt en detacheert specialisten in veiligheid, kwaliteit en milieu.",
+    body: "Virtrust geeft advies, bemiddelt en detacheert specialisten in veiligheid, kwaliteit en milieu.",
     cta: "Meer informatie",
     path: "/",
   },
