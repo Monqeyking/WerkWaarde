@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { CaoSelect } from "../components/CaoSelect";
 import { Field } from "../components/Field";
 import { Highlight, Metrics, SpokeCalculator, SpokeTable, ToTotal, useSpokeModel } from "../components/Spoke";
 import { updateJobSection, type JobProfile } from "../../lib/job-model";
@@ -34,6 +35,7 @@ export default function ArbeidsvoorwaardenCalculator() {
       <Field label="Bruto per maand" value={salary.grossMonthly} onChange={(grossMonthly) => setSalary({ grossMonthly })} suffix="€" step={50} />
       <Field label="Uren per week" value={salary.hoursPerWeek} onChange={(hoursPerWeek) => setSalary({ hoursPerWeek })} suffix="uur" max={60} />
     </div>
+    <CaoSelect salary={salary} onChange={setSalary} />
     <div className="two-fields">
       <Field label="Vakantiegeld" value={salary.holidayAllowancePct} onChange={(holidayAllowancePct) => setSalary({ holidayAllowancePct })} suffix="%" step={0.1} max={20} />
       <Field label="13e maand" value={salary.yearEndBonusPct} onChange={(yearEndBonusPct) => setSalary({ yearEndBonusPct })} suffix="%" hint="Een volledige 13e maand is 8,33%." step={0.01} max={50} />
@@ -41,7 +43,7 @@ export default function ArbeidsvoorwaardenCalculator() {
     <Field label="Bonus per jaar" value={salary.annualBonus} onChange={(annualBonus) => setSalary({ annualBonus })} suffix="€" step={100} />
     {salary.pensionMode === "monthly"
       ? <Field label="Pensioenbijdrage werkgever" value={salary.pensionEmployerMonthly} onChange={(pensionEmployerMonthly) => setSalary({ pensionEmployerMonthly })} suffix="€/mnd" hint="Wat je werkgever per maand aan je pensioen betaalt. Vraag ernaar of kijk in je pensioenoverzicht." />
-      : <p className="choice-note">De werkgeversbijdrage wordt berekend uit je pensioenregeling. Dit pas je aan bij lease en mobiliteit.</p>}
+      : <p className="choice-note">De werkgeversbijdrage volgt uit de pensioenregeling. <button type="button" className="link-button" onClick={() => setSalary({ pensionMode: "monthly" })}>Zelf invullen</button></p>}
     <Field label="Vakantiedagen per jaar" value={benefits.vacationDays} onChange={(vacationDays) => setBenefits({ vacationDays })} suffix="dagen" hint="Bovenwettelijke dagen tellen mee als beloning. Wettelijk krijg je vier keer het aantal werkdagen per week." max={60} />
     <Field label="Opleidingsbudget per jaar" value={benefits.trainingBudgetAnnual} onChange={(trainingBudgetAnnual) => setBenefits({ trainingBudgetAnnual })} suffix="€" step={100} />
     <Field label="Overige vergoedingen per jaar" value={benefits.otherAnnual} onChange={(otherAnnual) => setBenefits({ otherAnnual })} suffix="€" hint="Bijvoorbeeld een vitaliteitsbudget, telefoon of andere vaste vergoedingen." step={100} />

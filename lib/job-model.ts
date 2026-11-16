@@ -9,6 +9,7 @@
  * This module is framework-free so it can be unit tested with `node --test`.
  */
 import type { CalculatorInputs } from "./calculator.ts";
+import { findCao } from "./caos.ts";
 import { DEFAULT_TAX_YEAR, selectableTaxYears } from "./tax-years.ts";
 import type { WorkPatternInputs } from "./work-costs.ts";
 
@@ -69,6 +70,8 @@ export type JobProfile = {
     pensionEmployeeSharePct: number;
     pensionFranchise: number;
     pensionIncludesHoliday: boolean;
+    /** Cao the conditions were prefilled from; empty when filled in by hand. */
+    caoId: string;
   };
   mobility: {
     choice: MobilityChoice;
@@ -117,7 +120,7 @@ const defaultJob = (officeDaysPerWeek: number): JobProfile => ({
   salary: {
     grossMonthly: 4500, hoursPerWeek: 40, holidayAllowancePct: 8, yearEndBonusPct: 0, annualBonus: 0,
     pensionMode: "monthly", pensionEmployeeMonthly: 0, pensionEmployerMonthly: 0,
-    pensionTotalRatePct: 20, pensionEmployeeSharePct: 33.33, pensionFranchise: 19172, pensionIncludesHoliday: true,
+    pensionTotalRatePct: 20, pensionEmployeeSharePct: 33.33, pensionFranchise: 19172, pensionIncludesHoliday: true, caoId: "",
   },
   mobility: {
     choice: "ownCar", leaseBudget: 625, mobilityBudget: 850,
@@ -189,6 +192,7 @@ export function sanitizeState(input: unknown): NettoplaatjeState {
     job.commute.officeDaysPerWeek = Math.min(7, job.commute.officeDaysPerWeek);
     job.childcareDaysPerWeek = Math.min(7, job.childcareDaysPerWeek);
     job.salary.pensionEmployeeSharePct = Math.min(100, job.salary.pensionEmployeeSharePct);
+    if (!findCao(job.salary.caoId)) job.salary.caoId = "";
   }
   state.personal.workWeeksPerYear = Math.min(52, state.personal.workWeeksPerYear);
   // Only years the interface offers; an unpublished or unknown year falls back to the default.

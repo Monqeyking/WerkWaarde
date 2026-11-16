@@ -328,3 +328,11 @@ button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; ba
 .landing-why>p { grid-column:1/-1; }
 @media (max-width:900px) { .landing-hero { grid-template-columns:1fr; gap:28px; } }
 @media (max-width:760px) { .landing-why { grid-template-columns:1fr; }.landing-why>p { grid-column:auto; } }
+/* Cao picker */
+.input-wrap select { width:100%; height:37px; padding:0 12px; border:1px solid #dce5e9; border-radius:8px; outline:none; color:var(--ink); background:#fbfcfd; font:inherit; font-size:13px; font-weight:700; }
+.input-wrap select:focus { border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-soft); }
+.cao-note { display:block; margin-top:7px; color:var(--muted); font-size:10px; line-height:1.55; }
+.cao-note summary { cursor:pointer; }
+.cao-note p { margin-top:5px; }
+.cao-note a { color:var(--teal); font-weight:700; }
+.link-button { padding:0; border:0; color:var(--teal); background:none; font:inherit; font-weight:700; text-decoration:underline; cursor:pointer; }

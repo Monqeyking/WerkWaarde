@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { CaoSelect } from "../components/CaoSelect";
 import { Field } from "../components/Field";
+import { calculatePensionBreakdown } from "../../lib/calculator";
 import { TaxYearSelect } from "../components/TaxYearSelect";
 import { electricBijtellingText, kmLimitText } from "../../lib/tax-years";
 import {
   copySectionToNext,
+  toCalculatorInputs,
   createDefaultState,
   updateJob,
   updateJobSection,
@@ -75,6 +78,13 @@ function Checkbox({ checked, onChange, label, small }: { checked: boolean; onCha
   </label>;
 }
 
+/** Pension worked out from a scheme (e.g. a cao's): show the amounts, with a way back to typing them in. */
+function SchemePension({ state, job, onManual }: { state: NettoplaatjeState; job: JobKey; onManual: (amounts: { pensionEmployeeMonthly: number; pensionEmployerMonthly: number }) => void }) {
+  const pension = calculatePensionBreakdown(toCalculatorInputs(state, job));
+  return <p className="choice-note">Pensioen volgens de regeling: {money(pension.employeeMonthly)} eigen inleg en {money(pension.employerMonthly)} van je werkgever per maand.{" "}
+    <button type="button" className="link-button" onClick={() => onManual({ pensionEmployeeMonthly: Math.round(pension.employeeMonthly), pensionEmployerMonthly: Math.round(pension.employerMonthly) })}>Zelf invullen</button></p>;
+}
+
 function Inputs({ state, setState }: { state: NettoplaatjeState; setState: SetState }) {
   const section = <S extends SectionKey>(job: JobKey, name: S) =>
     (patch: Partial<JobProfile[S]>) => setState((current) => updateJobSection(current, job, name, patch));
@@ -95,11 +105,14 @@ function Inputs({ state, setState }: { state: NettoplaatjeState; setState: SetSt
         return <>
           <Field label="Bruto per maand" value={value.grossMonthly} onChange={(grossMonthly) => set({ grossMonthly })} suffix="€" hint="Je vaste bruto maandsalaris, zonder vakantiegeld." step={50} />
           <Field label="Uren per week" value={value.hoursPerWeek} onChange={(hoursPerWeek) => set({ hoursPerWeek })} suffix="uur" max={60} />
+          <CaoSelect salary={value} onChange={set} />
           <Field label="Vakantiegeld" value={value.holidayAllowancePct} onChange={(holidayAllowancePct) => set({ holidayAllowancePct })} suffix="%" step={0.1} max={20} />
           <Field label="13e maand / eindejaars" value={value.yearEndBonusPct} onChange={(yearEndBonusPct) => set({ yearEndBonusPct })} suffix="%" hint="Een 13e maand is 8,33% van het jaarsalaris. Vul 0 in als je die niet krijgt." step={0.01} max={50} />
           <Field label="Bonus per jaar" value={value.annualBonus} onChange={(annualBonus) => set({ annualBonus })} suffix="€" hint="Verwachte bruto bonus of winstdeling per jaar." step={100} />
-          <Field label="Eigen pensioeninleg" value={value.pensionEmployeeMonthly} onChange={(pensionEmployeeMonthly) => set({ pensionEmployeeMonthly, pensionMode: "monthly" })} suffix="€/mnd" hint="De werknemersbijdrage pensioen op je loonstrook." />
-          <Field label="Pensioen werkgever" value={value.pensionEmployerMonthly} onChange={(pensionEmployerMonthly) => set({ pensionEmployerMonthly, pensionMode: "monthly" })} suffix="€/mnd" hint="Wat je werkgever per maand aan je pensioen bijdraagt. Telt niet als netto, wel als totale beloning." />
+          {value.pensionMode === "scheme" ? <SchemePension state={state} job={job} onManual={(amounts) => set({ ...amounts, pensionMode: "monthly" })} /> : <>
+            <Field label="Eigen pensioeninleg" value={value.pensionEmployeeMonthly} onChange={(pensionEmployeeMonthly) => set({ pensionEmployeeMonthly, pensionMode: "monthly" })} suffix="€/mnd" hint="De werknemersbijdrage pensioen op je loonstrook." />
+            <Field label="Pensioen werkgever" value={value.pensionEmployerMonthly} onChange={(pensionEmployerMonthly) => set({ pensionEmployerMonthly, pensionMode: "monthly" })} suffix="€/mnd" hint="Wat je werkgever per maand aan je pensioen bijdraagt. Telt niet als netto, wel als totale beloning." />
+          </>}
         </>;
       }} />
     </InputSection>

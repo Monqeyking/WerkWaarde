@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import { CaoSelect } from "../components/CaoSelect";
 import { Field } from "../components/Field";
 import { Highlight, Metrics, SpokeCalculator, SpokeTable, ToTotal, useSpokeModel, type TableRow } from "../components/Spoke";
 import { updateJobSection, updatePersonal, type JobProfile } from "../../lib/job-model";
@@ -53,12 +54,13 @@ export default function BrutoNettoCalculator() {
     </>}>
     <Field label="Bruto per maand" value={salary.grossMonthly} onChange={(grossMonthly) => set({ grossMonthly })} suffix="€" hint="Je vaste bruto maandsalaris, zonder vakantiegeld." step={50} />
     <Field label="Uren per week" value={salary.hoursPerWeek} onChange={(hoursPerWeek) => set({ hoursPerWeek })} suffix="uur" max={60} />
+    <CaoSelect salary={salary} onChange={set} />
     <Field label="Vakantiegeld" value={salary.holidayAllowancePct} onChange={(holidayAllowancePct) => set({ holidayAllowancePct })} suffix="%" hint="Wettelijk minimaal 8% van je bruto salaris." step={0.1} max={20} />
     <Field label="13e maand / eindejaarsuitkering" value={salary.yearEndBonusPct} onChange={(yearEndBonusPct) => set({ yearEndBonusPct })} suffix="%" hint="Een volledige 13e maand is 8,33% van het jaarsalaris. Vul 0 in als je die niet krijgt." step={0.01} max={50} />
     <Field label="Bonus per jaar" value={salary.annualBonus} onChange={(annualBonus) => set({ annualBonus })} suffix="€" hint="Verwachte bruto bonus of winstdeling per jaar." step={100} />
     {salary.pensionMode === "monthly"
       ? <Field label="Eigen pensioeninleg" value={salary.pensionEmployeeMonthly} onChange={(pensionEmployeeMonthly) => set({ pensionEmployeeMonthly })} suffix="€/mnd" hint="De werknemersbijdrage pensioen op je loonstrook. Die gaat van je bruto af vóór de belasting." />
-      : <p className="choice-note">Je pensioeninleg wordt berekend uit je pensioenregeling: {money(result.pensionMonthly)} per maand. Dit pas je aan bij lease en mobiliteit.</p>}
+      : <p className="choice-note">Je eigen pensioeninleg volgt uit de pensioenregeling: {money(result.pensionMonthly)} per maand. <button type="button" className="link-button" onClick={() => set({ pensionMode: "monthly", pensionEmployeeMonthly: Math.round(result.pensionMonthly) })}>Zelf invullen</button></p>}
     <Field label="Leeftijd" value={model.personal.age} onChange={(age) => setModel((current) => updatePersonal(current, { age }))} suffix="jaar" hint="Vanaf de AOW-leeftijd gelden lagere tarieven." min={16} max={100} />
   </SpokeCalculator>;
 }
