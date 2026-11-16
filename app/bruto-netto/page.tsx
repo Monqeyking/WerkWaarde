@@ -3,7 +3,7 @@ import SpokePage from "../components/SpokePage";
 import BrutoNettoCalculator from "./BrutoNettoCalculator";
 
 export const metadata: Metadata = {
-  title: "Bruto netto berekenen 2026: wat houd je over van je salaris?",
+  title: "Bruto netto berekenen 2026: wat houd je over?",
   description: "Reken je bruto salaris om naar netto per maand en per jaar, inclusief vakantiegeld, 13e maand, bonus en pensioeninleg. Met de tarieven van 2026.",
   alternates: { canonical: "/bruto-netto" },
 };

@@ -14,11 +14,13 @@ export function Field({ label, value, onChange, suffix, hint, step = 1, min = 0,
 }) {
   const [showHint, setShowHint] = useState(false);
   const hintId = useId();
-  return <label className="field">
-    <span className="field-label">{label} {hint && <InfoToggle hint={hint} open={showHint} onToggle={() => setShowHint((open) => !open)} controls={hintId} />}</span>
+  const inputId = useId();
+  // A div, not a wrapping <label>: the info button inside would otherwise become the label's control instead of the input.
+  return <div className="field">
+    <span className="field-label"><label htmlFor={inputId}>{label}</label> {hint && <InfoToggle hint={hint} open={showHint} onToggle={() => setShowHint((open) => !open)} controls={hintId} />}</span>
     {hint && showHint && <span className="field-hint" id={hintId}>{hint}</span>}
-    <span className="input-wrap"><input type="number" value={Number.isFinite(value) ? value : 0}
+    <span className="input-wrap"><input id={inputId} aria-describedby={hint && showHint ? hintId : undefined} type="number" value={Number.isFinite(value) ? value : 0}
       onChange={(event) => onChange(Number(event.target.value))} min={min} max={max} step={step}
       inputMode={step < 1 ? "decimal" : "numeric"} />{suffix && <span className="input-suffix">{suffix}</span>}</span>
-  </label>;
+  </div>;
 }

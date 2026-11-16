@@ -3,7 +3,8 @@ import LegalPage from "../components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Contact opnemen met Nettoplaatje.",
+  description: "Vraag, fout in een berekening of suggestie voor Nettoplaatje? Zo neem je contact met ons op.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

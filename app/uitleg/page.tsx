@@ -4,6 +4,7 @@ import LegalPage from "../components/LegalPage";
 export const metadata: Metadata = {
   title: "Hoe werkt Nettoplaatje?",
   description: "Lees hoe Nettoplaatje salaris, mobiliteit, reistijd en werkgerelateerde kosten vergelijkt.",
+  alternates: { canonical: "/uitleg" },
 };
 
 const faqs = [

@@ -115,6 +115,8 @@ button,input { font:inherit; } a { color:inherit; }
 .pattern-card { padding:12px 10px 4px; border:1px solid #e0e9ec; border-radius:10px; }
 .pattern-card.current { background:#f8fbfb; }
 .pattern-card.new { background:#f7f9ff; border-color:#dce4f6; }
+.pattern-grid > * { min-width:0; }
+.pattern-card .choice-group { grid-template-columns:1fr; }
 .pattern-label { display:block; margin-bottom:3px; color:var(--ink); font-size:10px; font-weight:800; }
 .work-highlight { margin-top:20px; padding:21px; border-radius:13px; background:linear-gradient(135deg,#eef6f6,#f4f7ff); }
 .work-highlight strong { display:block; margin-top:4px; color:var(--blue); font-size:38px; letter-spacing:-.06em; }
@@ -165,7 +167,10 @@ button,input { font:inherit; } a { color:inherit; }
 @media (max-width:420px) { .mobility-mode-options { grid-template-columns:1fr; } }
 
 /* Info button + hint (works on touch screens) */
-button.info-dot { padding:0; background:#fff; font:inherit; font-size:9px; line-height:1; cursor:pointer; }
+button.info-dot { position:relative; padding:0; background:#fff; font:inherit; font-size:9px; line-height:1; cursor:pointer; }
+/* Larger invisible tap area (about 26px) around the small dot. */
+button.info-dot::after { content:""; position:absolute; inset:-6px; }
+.field-label label { cursor:pointer; }
 button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; background:var(--teal); }
 .field-hint { display:block; margin:-2px 0 7px; padding:7px 9px; border-radius:7px; background:var(--teal-soft); color:#4d7d77; font-size:10px; font-weight:400; line-height:1.45; }
 

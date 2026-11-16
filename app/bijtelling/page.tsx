@@ -3,7 +3,7 @@ import SpokePage from "../components/SpokePage";
 import BijtellingCalculator from "./BijtellingCalculator";
 
 export const metadata: Metadata = {
-  title: "Bijtelling berekenen 2026: wat kost een leaseauto netto?",
+  title: "Bijtelling 2026: wat kost een leaseauto netto?",
   description: "Bereken de bijtelling van je leaseauto in 2026 en wat die je netto per maand kost. Voor elektrische en brandstofauto's, met eigen bijdrage.",
   alternates: { canonical: "/bijtelling" },
 };

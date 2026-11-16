@@ -3,13 +3,15 @@ import LegalPage from "../components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Cookiebeleid",
-  description: "Het cookiebeleid van Nettoplaatje.",
+  description: "Welke cookies en lokale opslag Nettoplaatje gebruikt, waarvoor, en hoe je je toestemming voor advertentiecookies beheert.",
+  alternates: { canonical: "/cookies" },
 };
 
 export default function CookiesPage() {
-  return <LegalPage adPlacement="cookies" eyebrow="Nettoplaatje" title="Cookiebeleid" intro="Laatst bijgewerkt: 17 september 2026.">
+  return <LegalPage adPlacement="cookies" eyebrow="Nettoplaatje" title="Cookiebeleid" intro="Laatst bijgewerkt: 16 november 2026.">
     <h2>Functionele werking</h2>
-    <p>De calculators werken zonder account. Nettoplaatje gebruikt in deze versie geen eigen trackingcookies om je invoer op te slaan.</p>
+    <p>De calculators werken zonder account. Nettoplaatje gebruikt geen eigen trackingcookies.</p>
+    <p>Wat je invult, bewaart je browser in de lokale opslag (localStorage) van dit apparaat. Zo blijven je gegevens staan als je terugkomt of naar een andere calculator gaat. Dit is nodig voor de werking van de site. De gegevens gaan niet naar onze server en worden niet gebruikt om je te volgen. Je verwijdert ze met de knop Opnieuw beginnen in het totaaloverzicht of door je browsergegevens te wissen.</p>
 
     <h2>AdSense en toestemmingen</h2>
     <p>Wanneer Google AdSense actief is, kunnen Google en advertentiepartners cookies of vergelijkbare opslag gebruiken. Bezoekers uit de Europese Economische Ruimte, het Verenigd Koninkrijk en Zwitserland krijgen via de ingestelde gecertificeerde toestemmingspartner informatie over deze verwerking en kunnen hun keuze beheren.</p>
