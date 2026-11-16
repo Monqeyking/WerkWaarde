@@ -14,7 +14,7 @@ export default function CookiesPage() {
     <p>Wat je invult, bewaart je browser in de lokale opslag (localStorage) van dit apparaat. Zo blijven je gegevens staan als je terugkomt of naar een andere calculator gaat. Dit is nodig voor de werking van de site. De gegevens gaan niet naar onze server en worden niet gebruikt om je te volgen. Je verwijdert ze met de knop Opnieuw beginnen in het totaaloverzicht of door je browsergegevens te wissen.</p>
 
     <h2>AdSense en toestemmingen</h2>
-    <p>Wanneer Google AdSense actief is, kunnen Google en advertentiepartners cookies of vergelijkbare opslag gebruiken. Bezoekers uit de Europese Economische Ruimte, het Verenigd Koninkrijk en Zwitserland krijgen via de ingestelde gecertificeerde toestemmingspartner informatie over deze verwerking en kunnen hun keuze beheren.</p>
+    <p>Voor advertenties gebruiken we Google AdSense. Google en zijn partners kunnen daarvoor cookies of vergelijkbare opslag gebruiken. Bezoekers uit de Europese Economische Ruimte, het Verenigd Koninkrijk en Zwitserland krijgen eerst een toestemmingsmelding van Google en kiezen daar zelf.</p>
     <p>Een deel van de advertenties zijn advertenties die we zelf plaatsen. Die gebruiken geen cookies en volgen je niet; alleen als je erop klikt, ziet de adverteerder via de link dat je van Nettoplaatje komt.</p>
 
     <h2>Keuze aanpassen</h2>

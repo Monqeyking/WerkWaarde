@@ -11,6 +11,9 @@ declare global {
 
 const config = readAdConfig();
 
+/** House ads already shown on the current page, so a second box picks another one. */
+let shownOnPage: { path: string; ids: string[] } = { path: "", ids: [] };
+
 function AdSenseUnit({ publisherId, slotId }: { publisherId: string; slotId: string }) {
   useEffect(() => {
     try {
@@ -37,8 +40,12 @@ export default function AdSlot({ placement, audience }: { placement: string; aud
 
   useEffect(() => {
     // Picking is random, so it must run on the client only (no hydration mismatch).
+    const path = window.location.pathname;
+    if (shownOnPage.path !== path) shownOnPage = { path, ids: [] };
+    const next = pickAd(config, { placement, audience, exclude: shownOnPage.ids });
+    if (next?.kind === "house") shownOnPage.ids.push(next.ad.id);
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setChoice(pickAd(config, { placement, audience }));
+    setChoice(next);
   }, [placement, audience]);
 
   if (!adsEnabled(config)) return null;

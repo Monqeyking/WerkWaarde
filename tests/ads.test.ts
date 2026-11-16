@@ -30,6 +30,16 @@ test("pickAd splits between house ads and AdSense by share", () => {
   assert.equal(pickAd({ ...adsense, houseShare: "0" }, { placement: "home", random: sequence(0) })?.kind, "adsense");
 });
 
+test("pickAd skips house ads already on the page while others are left", () => {
+  const candidates = HOUSE_ADS.filter((ad) => ad.audience === "candidate").map((ad) => ad.id);
+  for (const draw of [0, 0.5, 0.999999]) {
+    const choice = pickAd({}, { placement: "totaal", audience: "candidate", exclude: [candidates[0]], random: sequence(draw) });
+    assert.ok(choice?.kind === "house" && choice.ad.id !== candidates[0]);
+  }
+  const all = pickAd({}, { placement: "totaal", audience: "candidate", exclude: candidates, random: sequence(0) });
+  assert.equal(all?.kind, "house");
+});
+
 test("pickAd respects the audience and never indexes past the pool", () => {
   for (const audience of ["candidate", "employer"] as const) {
     const choice = pickAd({}, { placement: "totaal", audience, random: sequence(0.999999) });

@@ -105,14 +105,16 @@ export function houseAdHref(ad: HouseAd, placement: string): string {
  * Pick what one ad box shows. `random` returns a number in [0, 1) and is
  * called at most twice: once for house-vs-AdSense, once for which house ad.
  */
-export function pickAd(config: AdConfig, options: { placement: string; audience?: AdAudience; random?: () => number }): AdChoice | null {
+export function pickAd(config: AdConfig, options: { placement: string; audience?: AdAudience; exclude?: readonly string[]; random?: () => number }): AdChoice | null {
   const random = options.random ?? Math.random;
   const share = houseAdShare(config);
   const adsense = config.publisherId && config.slotId ? { kind: "adsense" as const, publisherId: config.publisherId, slotId: config.slotId } : null;
 
   if (share > 0 && (!adsense || random() * 100 < share)) {
     const matching = HOUSE_ADS.filter((ad) => !options.audience || ad.audience === options.audience);
-    const pool = matching.length > 0 ? matching : HOUSE_ADS;
+    // Prefer ads not yet on the page, so two boxes don't repeat the same ad.
+    const fresh = matching.filter((ad) => !options.exclude?.includes(ad.id));
+    const pool = fresh.length > 0 ? fresh : matching.length > 0 ? matching : HOUSE_ADS;
     const ad = pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))];
     return { kind: "house", ad, href: houseAdHref(ad, options.placement) };
   }
