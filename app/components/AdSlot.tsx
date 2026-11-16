@@ -47,10 +47,13 @@ export default function AdSlot({ placement, audience }: { placement: string; aud
     <span className="ad-label">Advertentie</span>
     {choice?.kind === "adsense" && <AdSenseUnit publisherId={choice.publisherId} slotId={choice.slotId} />}
     {choice?.kind === "house" && <a className="house-ad" href={choice.href} target="_blank" rel="sponsored noopener">
+      {/* Plain img: the site is a static export without the image optimizer. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {choice.ad.logo && <img className="house-ad-logo" src={choice.ad.logo} alt={choice.ad.advertiser} width={82} height={28} />}
       <span className="house-ad-text">
         <strong>{choice.ad.title}</strong>
         <span>{choice.ad.body}</span>
-        <span className="house-ad-advertiser">{choice.ad.advertiser}</span>
+        {!choice.ad.logo && <span className="house-ad-advertiser">{choice.ad.advertiser}</span>}
       </span>
       <span className="house-ad-cta">{choice.ad.cta} →</span>
     </a>}

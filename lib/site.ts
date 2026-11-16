@@ -5,9 +5,9 @@ export const SITE_DESCRIPTION = "Gratis en zonder account: vergelijk je huidige 
 
 /**
  * Public URL, used for canonical links, sitemap and robots.txt.
- * Set NEXT_PUBLIC_SITE_URL in Vercel once the nettoplaatje.nl domain is live.
+ * Override with NEXT_PUBLIC_SITE_URL, e.g. for a preview build.
  */
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://werk-waarde-khaki.vercel.app").replace(/\/+$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://nettoplaatje.nl").replace(/\/+$/, "");
 
 /**
  * The company behind Nettoplaatje, shown in the footer, on the contact page and

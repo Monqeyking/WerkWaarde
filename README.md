@@ -4,8 +4,9 @@ Gratis, onafhankelijke rekentool die laat zien wat een baan je netto écht oplev
 salaris, pensioen, mobiliteit (leaseauto, mobiliteitsbudget, eigen auto), reiskosten,
 reistijd en werkgerelateerde kosten.
 
-Gebouwd met Next.js (App Router) en gehost op Vercel. Alle berekeningen draaien in de
-browser; er wordt niets op een server opgeslagen.
+Gebouwd met Next.js (App Router) als statische export en gehost op Cloudflare (Workers
+static assets, gratis plan). Alle berekeningen draaien in de browser; er wordt niets op
+een server opgeslagen.
 
 ## Ontwikkelen
 
@@ -17,8 +18,14 @@ npm run dev        # lokale ontwikkelserver op http://localhost:3000
 npm test           # unit tests van de rekenlogica (node:test)
 npm run lint
 npm run typecheck
-npm run build      # productie-build, zoals Vercel die draait
+npm run build      # statische export naar out/
+npm start          # serveert out/ lokaal met wrangler
+npm run deploy     # build + upload naar Cloudflare (wrangler login nodig)
 ```
+
+Na de build kopieert `scripts/flatten-segments.mjs` de prefetch-bestanden van Next naar
+de platte namen die de client opvraagt. Configuratie staat in `wrangler.jsonc`,
+beveiligingsheaders in `public/_headers`.
 
 ## Structuur
 
@@ -39,7 +46,8 @@ De tarieven staan in `lib/calculator.ts`. Controleer ze elk jaar rond Prinsjesda
 
 ## Omgevingsvariabelen
 
-Zie `.env.example`. Stel ze in Vercel in:
+Zie `.env.example`. Ze worden tijdens de build ingebakken, dus zet ze in `.env.local`
+op de machine die `npm run deploy` draait:
 
 - `NEXT_PUBLIC_SITE_URL` — publieke URL, gebruikt voor sitemap en robots
 - `NEXT_PUBLIC_CONTACT_EMAIL` — contactadres op privacy- en contactpagina

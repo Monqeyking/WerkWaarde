@@ -1,3 +1,6 @@
+// Built once at build time; the static export writes it to out/ads.txt.
+export const dynamic = "force-static";
+
 export function GET() {
   const publisherId = process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID?.match(/^ca-pub-(\d+)$/)?.[1];
 

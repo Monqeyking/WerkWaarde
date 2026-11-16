@@ -1,0 +1,15 @@
+# Security headers for Cloudflare Pages (all pages).
+# A full script CSP is left out on purpose: AdSense loads code from many
+# changing Google domains. frame-ancestors only stops other sites from framing
+# Nettoplaatje (clickjacking, fake ad views).
+/*
+  Content-Security-Policy: frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
+
+# The OG image is exported without an extension; tell browsers and crawlers it is a PNG.
+/opengraph-image
+  Content-Type: image/png

@@ -4,6 +4,8 @@ import { AMOUNT_PAGES, amountPath } from "../lib/amounts";
 import { ARTICLES } from "../lib/articles";
 import { CALCULATORS } from "../lib/calculators";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = SITE_URL;
   const paths = [

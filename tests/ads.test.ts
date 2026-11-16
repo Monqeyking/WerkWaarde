@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { HOUSE_ADS, adsEnabled, houseAdAdvertisers, houseAdHref, houseAdShare, pickAd } from "../lib/ads.ts";
@@ -54,4 +55,10 @@ test("house ad advertisers are listed once each for the legal pages", () => {
   const names = houseAdAdvertisers();
   assert.deepEqual(names, [...new Set(names)]);
   assert.ok(names.includes("Virtrust"));
+});
+
+test("house ad logos exist under public/", () => {
+  for (const ad of HOUSE_ADS) {
+    if (ad.logo) assert.ok(existsSync(new URL(`../public${ad.logo}`, import.meta.url)), `${ad.id}: ${ad.logo} missing`);
+  }
 });

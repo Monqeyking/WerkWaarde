@@ -1,0 +1,20 @@
+// Cloudflare Workers static assets: serves the static export in out/.
+// No Worker script, so requests are free and unlimited on the free plan.
+// Deploy with `npm run deploy` (builds first).
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "nettoplaatje",
+  "compatibility_date": "2026-11-13",
+  // Cloudflare creates the DNS records and certificates for these itself.
+  "routes": [
+    { "pattern": "nettoplaatje.nl", "custom_domain": true },
+    { "pattern": "www.nettoplaatje.nl", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "./out",
+    // /bruto-netto serves bruto-netto.html; /bruto-netto/ redirects to it.
+    "html_handling": "auto-trailing-slash",
+    // Unknown paths get out/404.html with status 404.
+    "not_found_handling": "404-page"
+  }
+}

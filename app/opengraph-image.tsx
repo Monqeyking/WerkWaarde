@@ -6,6 +6,8 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 /** Preview image shown when a link is shared (WhatsApp, LinkedIn, Slack, …). */
+export const dynamic = "force-static";
+
 export default function OpenGraphImage() {
   const bars = [
     { label: "Netto loon", value: "+€ 374", color: "#129783", width: 520 },

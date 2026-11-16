@@ -9,6 +9,8 @@ export type HouseAd = {
   id: string;
   audience: AdAudience;
   advertiser: string;
+  /** Small advertiser logo under public/, shown left in the ad. Text fallback without it. */
+  logo?: string;
   title: string;
   body: string;
   cta: string;
@@ -32,6 +34,7 @@ export const HOUSE_ADS: readonly HouseAd[] = [
     id: "hseq-vacatures",
     audience: "candidate",
     advertiser: "Virtrust",
+    logo: "/ads/virtrust.svg",
     title: "Werk je in veiligheid, gezondheid of milieu?",
     body: "Bekijk vacatures en opdrachten voor HSEQ-professionals.",
     cta: "Bekijk vacatures",
@@ -41,6 +44,7 @@ export const HOUSE_ADS: readonly HouseAd[] = [
     id: "hseq-volgende-stap",
     audience: "candidate",
     advertiser: "Virtrust",
+    logo: "/ads/virtrust.svg",
     title: "Toe aan een volgende stap in HSEQ?",
     body: "Virtrust bemiddelt en detacheert specialisten in veiligheid, kwaliteit en milieu.",
     cta: "Meer informatie",
@@ -50,6 +54,7 @@ export const HOUSE_ADS: readonly HouseAd[] = [
     id: "hseq-specialist-nodig",
     audience: "employer",
     advertiser: "Virtrust",
+    logo: "/ads/virtrust.svg",
     title: "Tijdelijk een HSEQ-specialist nodig?",
     body: "Virtrust levert adviseurs voor veiligheid, gezondheid, kwaliteit en milieu.",
     cta: "Neem contact op",
