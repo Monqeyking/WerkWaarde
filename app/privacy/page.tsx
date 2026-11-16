@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
 
-  return <LegalPage eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 17 september 2026.">
+  return <LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 17 september 2026.">
     <h2>Wat Nettoplaatje doet</h2>
     <p>Nettoplaatje biedt indicatieve calculators voor salaris, mobiliteit en de kosten van werken. Je kunt de calculators gebruiken zonder account.</p>
 

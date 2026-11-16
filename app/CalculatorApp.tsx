@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Field } from "./components/Field";
+import AdSlot from "./components/AdSlot";
 import { SiteFooter, SiteNav } from "./components/SiteChrome";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -172,6 +173,7 @@ function Landing() {
       <div><h3>Fiscale bedragen controleren</h3><p>Voor 2026 is de maximale gerichte vrijstelling voor een kilometervergoeding verhoogd naar €0,25 per kilometer, met terugwerkende kracht vanaf 1 januari. De werkgever bepaalt de werkelijke vergoeding; daarom kun je die zelf invullen. <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/berichten/nieuws/verhoging-onbelaste-kilometervergoeding-hoe-verwerkt-u-dit-in-de-loonaangifte" target="_blank" rel="noreferrer">Bron: Belastingdienst</a></p></div>
       <p>Lees de <Link href="/uitleg">rekenmethode, voorbeelden en beperkingen</Link>, of open direct de <Link href="/mobiliteit">mobiliteitsvergelijking</Link> of de calculator voor je <Link href="/werkpatroon">werkpatroon</Link>.</p>
     </section>
+    <AdSlot placement="home" />
     <SiteFooter />
   </main>;
 }
@@ -203,6 +205,7 @@ function WorkPatternCalculator() {
       <div className="work-note"><span>i</span><p>De vergelijking rekent beide banen volledig door. Je ziet nu bruto brandstof-/laadkosten, variabele autokosten, kilometervergoeding en netto autokosten apart. Afschrijving, algemene verzekering en tol zijn niet als extra werk-kosten opgenomen.</p></div>
     </div></section>
     <section className="how-section shell"><div className="section-heading"><div><span className="section-kicker">Transparant rekenen</span><h2>Zo werkt deze vergelijking</h2></div><span className="formula-mark">∑</span></div><div className="how-grid"><div className="how-card"><span className="how-icon blue">01</span><h3>Per baan apart</h3><p>We rekenen salaris, kantoordagen, afstand en reistijd voor de oude en nieuwe baan afzonderlijk uit.</p></div><div className="how-card"><span className="how-icon blue">02</span><h3>Ingevoerde kosten</h3><p>Brandstof of laden, kilometervergoeding, parkeren, lunch en kinderopvang worden per baan meegenomen.</p></div><div className="how-card"><span className="how-icon orange">03</span><h3>Indicatief eindbeeld</h3><p>Je ziet het geschatte bedrag na de ingevoerde werkgerelateerde kosten en het verschil per maand en jaar.</p></div></div><div className="method-copy"><p>Het aantal maandelijkse kantoordagen is je kantoordagen per week × je werkweken per jaar ÷ 12. Retourkilometers volgen uit de dagen maal de enkele reisafstand maal twee. Reistijd wordt apart berekend uit de reistijd per enkele reis. Dit maakt het effect van extra kantoorbezoek inzichtelijk zonder tijd automatisch als loon te tellen.</p><p>De kilometervergoeding wordt hier als ingevuld bedrag meegerekend; deze vergelijking berekent geen loonheffing over een eventueel deel boven de 2026-vrijstelling van €0,25/km. Voor de fiscale behandeling van jouw vergoeding controleer je de afspraken met je werkgever. Brandstof- of laadkosten gebruiken jouw verbruik en energieprijs; vaste kosten zoals afschrijving worden niet automatisch aan extra kantoordagen toegerekend.</p></div></section>
+    <AdSlot placement="werkpatroon" audience="candidate" />
     <SiteFooter />
   </main>;
 }
@@ -334,6 +337,7 @@ export default function CalculatorApp({ initialView }: { initialView: AppView })
         <div className="how-card"><span className="how-icon orange">04</span><h3>Eigen auto</h3><p>De kilometervergoeding wordt berekend over zakelijke kilometers. In 2026 is maximaal €0,25 per kilometer onbelast; die vergoeding is bedoeld als forfait voor het gebruik van je eigen vervoermiddel. Daarna trekken we brandstof- of laadkosten en overige autokosten af. Afschrijving of een vervangingsreserve is optioneel; parkeren en tol zijn niet meegenomen.</p></div></div>
       <div className="disclaimer"><span className="disclaimer-icon">!</span><div><strong>Let op: dit is een indicatie, geen financieel of fiscaal advies.</strong><p>Werkelijke bedragen kunnen afwijken door persoonlijke omstandigheden, pensioenregelingen, cao-afspraken, de precieze loonheffing en fiscale uitzonderingen. De berekening houdt geen rekening met toeslagen, eigenwoningbezit, lijfrenteaftrek of andere persoonlijke aftrekposten. Bij een privé-EV is geen aparte belastingvrije laadvergoeding bovenop de kilometervergoeding verondersteld. Bij een lease-EV veronderstellen we dat werkelijke laadkosten door de werkgever worden vergoed; de fiscale behandeling hangt af van de afspraken en de werkelijke kostprijs.</p><div className="sources">Gebaseerd op de 2026-tarieven van de <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/voorlopige-aanslag/content/voorlopige-aanslag-tarieven-en-heffingskortingen" target="_blank" rel="noreferrer">Belastingdienst</a> · <a href="https://centraalaanspreekpuntpensioenen.belastingdienst.nl/publicaties/overzicht-aow-inbouwbedragen-en-aow-franchises/" target="_blank" rel="noreferrer">AOW-franchise 2026</a> · <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/bijtelling-privegebruik-auto-2026" target="_blank" rel="noreferrer">EV-bijtelling 2026</a> · <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/berichten/nieuws/verhoging-onbelaste-kilometervergoeding-hoe-verwerkt-u-dit-in-de-loonaangifte" target="_blank" rel="noreferrer">onbelaste kilometervergoeding 2026: €0,25</a> · standaard bijtelling: 22%</div></div></div>
     </section>
+    <AdSlot placement="mobiliteit" audience="candidate" />
     <SiteFooter />
   </main>;
 }

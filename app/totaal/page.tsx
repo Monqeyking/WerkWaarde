@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import AdSenseSlot from "../components/AdSenseSlot";
+import AdSlot from "../components/AdSlot";
 import { SiteFooter, SiteNav } from "../components/SiteChrome";
 import { SITE_NAME } from "../../lib/site";
 import TotalCalculator from "./TotalCalculator";
@@ -58,8 +58,8 @@ export default function TotalPage() {
         <h2>Veelgestelde vragen</h2>
         <div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div>
       </div>
-      <AdSenseSlot />
     </section>
+    <AdSlot placement="totaal" audience="candidate" />
     <SiteFooter />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
   </main>;

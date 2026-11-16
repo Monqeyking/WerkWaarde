@@ -87,7 +87,20 @@ button,input { font:inherit; } a { color:inherit; }
 .landing-content .section-kicker { grid-column:1/-1; }
 .method-copy { display:grid; gap:12px; max-width:900px; margin-top:22px; color:var(--muted); font-size:12px; line-height:1.7; }
 @media (max-width:760px) { .landing-content { grid-template-columns:1fr; padding:20px; }.landing-content h2,.landing-content .section-kicker { grid-column:auto; } }
-.ad-slot-live { display:block; min-height:90px; margin-top:16px; }
+/* Ads: one labelled box per page, between content and footer. Height is reserved to avoid layout shift. */
+.ad-box { display:block; min-height:118px; margin-top:28px; margin-bottom:8px; padding:10px 14px 14px; border:1px solid var(--line); border-radius:14px; background:#fbfcfc; }
+.ad-label { display:block; margin-bottom:8px; color:#8a99a6; font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.ad-unit { min-height:90px; }
+.ad-box:has(ins[data-ad-status="unfilled"]) { display:none; }
+.house-ad { display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:72px; padding:4px 2px; color:var(--ink); text-decoration:none; }
+.house-ad-text { display:grid; gap:3px; }
+.house-ad-text strong { font-size:15px; }
+.house-ad-text span { color:var(--muted); font-size:12px; line-height:1.5; }
+.house-ad-text .house-ad-advertiser { color:#8a99a6; font-size:10px; font-weight:700; }
+.house-ad-cta { flex:0 0 auto; padding:9px 14px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--teal); font-size:12px; font-weight:800; white-space:nowrap; }
+.house-ad:hover .house-ad-cta { border-color:var(--teal); }
+.house-ad:focus-visible { outline:2px solid var(--teal); outline-offset:4px; border-radius:8px; }
+@media (max-width:760px) { .ad-box { min-height:150px; }.house-ad { flex-direction:column; align-items:flex-start; gap:12px; } }
 .faq-list { margin-top:12px; }.faq-item { padding:12px 0; border-top:1px solid var(--line); }.faq-item:last-child { border-bottom:1px solid var(--line); }.faq-item summary { color:var(--ink); cursor:pointer; font-size:12px; font-weight:700; }.faq-item p { margin-top:8px; }
 .legal-wrap { padding-bottom:64px; }.legal-hero { padding-bottom:25px; }.legal-card { max-width:800px; padding:30px 32px; border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:0 8px 25px rgba(23,45,66,.04); }.legal-card h2 { margin:25px 0 9px; font-size:17px; }.legal-card h2:first-child { margin-top:0; }.legal-card p { color:var(--muted); font-size:12px; line-height:1.7; }.legal-card a { color:var(--teal); font-weight:700; }.legal-back { color:var(--muted); font-size:11px; font-weight:700; }.footer-links { display:flex; gap:12px; }.footer-links a { color:var(--muted); font-weight:700; text-decoration:none; }.footer-links a:hover { color:var(--teal); }.contact-card { padding:18px; border-radius:12px; background:#f8fbfb; }
 @media (max-width:760px) { .legal-card { padding:23px 19px; }.legal-back { font-size:10px; }.footer-links { width:100%; } }
