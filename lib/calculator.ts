@@ -153,7 +153,10 @@ export function calculateSalaryBreakdown(inputs: CalculatorInputs) {
   const taxMonthly = incomeTax(taxableAnnual, inputs.age, inputs.taxYear) / 12;
   const taxWithoutPension = incomeTax(annualGrossSalary(inputs), inputs.age, inputs.taxYear) / 12;
   const taxBenefitMonthly = Math.max(0, taxWithoutPension - taxMonthly);
-  const netMonthlyRegular = grossMonthly - pensionMonthly - taxMonthly;
+  // A regular month is taxed as if the salary were the whole income; holiday
+  // allowance is taxed separately when it is paid. Same method as grossToNet.
+  const regularTaxMonthly = incomeTax(Math.max(0, (grossMonthly - pensionMonthly) * 12), inputs.age, inputs.taxYear) / 12;
+  const netMonthlyRegular = grossMonthly - pensionMonthly - regularTaxMonthly;
   const netMonthlyAverage = grossMonthlyAverage - pensionMonthly - taxMonthly;
   return { grossMonthly, holidayMonthly, grossMonthlyAverage, pensionMonthly, employerPensionMonthly: pension.employerMonthly, totalPensionMonthly: pension.totalMonthly, pensionableAnnual: pension.pensionableAnnual, pensionBase: pension.pensionBase, taxableAnnual, taxMonthly, taxBenefitMonthly, netMonthlyRegular, netMonthlyAverage };
 }

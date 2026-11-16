@@ -74,6 +74,14 @@ describe("pension", () => {
     assert.ok(withPension.taxBenefitMonthly > 0);
     near(without.netMonthlyRegular - withPension.netMonthlyRegular, 200 - withPension.taxBenefitMonthly);
   });
+
+  test("a regular month is taxed without the holiday allowance (€ 3.500 → about € 2.906)", () => {
+    const salary = calculateSalaryBreakdown({ ...base, salary: 3500 });
+    near(salary.netMonthlyRegular, 3500 - incomeTax(42_000) / 12);
+    near(salary.netMonthlyRegular, 2906, 1);
+    // The yearly average still spreads the tax on the holiday allowance.
+    near(salary.netMonthlyAverage, 3500 * 1.08 - incomeTax(45_360) / 12);
+  });
 });
 
 describe("lease car", () => {
