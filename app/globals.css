@@ -76,9 +76,6 @@ button,input { font:inherit; } a { color:inherit; }
 .tool-card p { max-width:410px; margin-top:10px; color:var(--muted); font-size:12px; line-height:1.55; }
 .tool-link { display:block; margin-top:25px; color:var(--teal); font-size:10px; font-weight:800; }
 .tool-card.blue .tool-link { color:var(--blue); }
-.landing-note { display:flex; align-items:flex-start; gap:15px; margin-top:16px; padding:18px 20px; border:1px solid #dce7ed; border-radius:13px; background:#fbfcfe; }
-.landing-note p { margin-top:4px; color:var(--muted); font-size:10px; line-height:1.5; }
-.landing-note .formula-mark { flex:0 0 auto; }
 .landing-content { display:grid; grid-template-columns:1fr 1fr; gap:18px 28px; margin-top:34px; padding:26px 28px; border:1px solid var(--line); border-radius:16px; background:#fff; }
 .landing-content h2 { grid-column:1/-1; margin:0; }
 .landing-content h3 { margin:0 0 5px; font-size:15px; }
@@ -319,3 +316,15 @@ button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; ba
 .amount-link.current { border-color:var(--teal); color:var(--teal); background:var(--teal-soft); }
 @media (max-width:980px) { .amount-shell { grid-template-columns:1fr 320px; } }
 @media (max-width:760px) { .amount-shell .amount-main,.amount-shell .amount-side { border-left:1px solid var(--line); border-radius:16px; }.amount-shell .amount-main { margin-top:0; }.amount-shell .amount-side { margin-top:12px; }.amount-links-grid { grid-template-columns:1fr 1fr; } }
+/* Homepage: quick gross-to-net next to the hero copy. */
+.landing-hero { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:40px; align-items:center; }
+.quick-net { display:grid; gap:14px; padding:22px; border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:0 10px 25px rgba(23,45,66,.06); }
+.quick-net-result { display:grid; gap:2px; padding:14px 16px; border-radius:12px; background:var(--teal-soft); }
+.quick-net-result span { color:var(--muted); font-size:11px; font-weight:700; }
+.quick-net-result strong { color:var(--ink); font-size:32px; letter-spacing:-.04em; }
+.quick-net-result small { color:var(--muted); font-size:11px; line-height:1.5; }
+.quick-net-link { color:var(--teal); font-size:11px; font-weight:800; text-decoration:none; }
+.landing-why { grid-template-columns:repeat(3,1fr); margin-bottom:40px; }
+.landing-why>p { grid-column:1/-1; }
+@media (max-width:900px) { .landing-hero { grid-template-columns:1fr; gap:28px; } }
+@media (max-width:760px) { .landing-why { grid-template-columns:1fr; }.landing-why>p { grid-column:auto; } }

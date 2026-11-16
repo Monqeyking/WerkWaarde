@@ -12,6 +12,7 @@ import { TaxYearSelect } from "./components/TaxYearSelect";
 import { electricBijtellingText, kmLimitText } from "../lib/tax-years";
 import { ALL_SCENARIOS, calculateSalaryBreakdown, calculateScenarios, type CalculatorInputs, type ScenarioKey, type ScenarioResult } from "../lib/calculator";
 import { money } from "../lib/format";
+import { grossToNet } from "../lib/spokes";
 import { applyCalculatorInput, applyWorkPatternInput, commuteKmPerYear, SCENARIO_TO_CHOICE, toCalculatorInputs, toWorkPatternInputs, updateJobSection, type JobKey, type JobProfile } from "../lib/job-model";
 import { useJobModel } from "../lib/use-job-model";
 import { calculateWorkPattern, type WorkPatternInputs } from "../lib/work-costs";
@@ -159,24 +160,38 @@ function ScenarioSelector({ selectedScenarios, onChange }: { selectedScenarios: 
   </section>;
 }
 
+/** Answers the most common question right away: what is my net monthly pay? */
+function QuickNet() {
+  const [model, setModel] = useJobModel();
+  const result = useMemo(() => grossToNet(model, "current"), [model]);
+  const gross = model.jobs.current.salary.grossMonthly;
+  return <div className="quick-net" aria-label="Snel bruto naar netto">
+    <span className="section-kicker">Snel uitrekenen</span>
+    <Field label="Je bruto maandsalaris" value={gross} onChange={(grossMonthly) => setModel((current) => updateJobSection(current, "current", "salary", { grossMonthly }))} suffix="€" step={50} />
+    <div className="quick-net-result" aria-live="polite">
+      <span>Netto per maand</span>
+      <strong>{money(result.regularNetMonthly)}</strong>
+      <small>In een gewone maand, 2026. Met vakantiegeld gemiddeld {money(result.netMonthlyAverage)} per maand.</small>
+    </div>
+    <Link className="quick-net-link" href="/bruto-netto">Met 13e maand, bonus of pensioen →</Link>
+  </div>;
+}
+
 function Landing() {
   return <main><SiteNav active="home" />
     <section className="landing-hero shell"><div className="hero-copy"><div className="hero-kicker"><span className="kicker-line"></span> Slim kiezen begint met vergelijken</div>
-      <h1>Wat houd je écht over van je werk?</h1><p>Vergelijk je huidige en nieuwe baan in één overzicht: salaris, pensioen, auto, reiskosten en reistijd. Of bekijk één onderdeel in detail.</p><div className="hero-actions"><Link className="primary-button" href="/totaal">Vergelijk twee banen →</Link></div>
+      <h1>Wat houd je écht over van je werk?</h1><p>Vul je brutoloon in en zie direct je netto salaris. Of vergelijk twee banen, inclusief auto, reiskosten en reistijd.</p><div className="hero-actions"><Link className="primary-button" href="/totaal">Vergelijk twee banen →</Link></div>
       <div className="hero-trust"><span className="trust-check">✓</span> Direct resultaat <span className="trust-divider"></span> Geen account nodig <span className="trust-divider"></span> Indicatief</div>
-    </div></section>
+    </div><QuickNet /></section>
     <section className="tool-grid tool-grid-all shell" aria-label="Alle calculators">{CALCULATORS.filter((tool) => tool.href !== "/totaal").map((tool, index) => <Link key={tool.href} className={`tool-card ${index % 2 === 0 ? "teal" : "blue"}`} href={tool.href}><span className="tool-number">{String(index + 1).padStart(2, "0")}</span><span className="section-kicker">{tool.kicker}</span><h2>{tool.title}</h2><p>{tool.text}</p><span className="tool-link">Bereken →</span></Link>)}</section>
-    <section className="landing-note shell"><span className="formula-mark">∑</span><div><strong>Van bruto loon naar werkelijke waarde</strong><p>Elke calculator beantwoordt één concrete vraag en gebruikt dezelfde gegevens. Wat je ergens invult, staat ook klaar in het <Link href="/totaal">totaaloverzicht</Link>. Meer uitleg vind je bij de <Link href="/vragen">vragen en antwoorden</Link>.</p></div></section>
-    <AdSlot placement="home-midden" />
-    <section className="landing-content shell" aria-label="Hoe Nettoplaatje werk en mobiliteit vergelijkt">
-      <span className="section-kicker">Wat je vergelijkt</span><h2>Een baan beoordelen op meer dan het brutoloon</h2>
-      <div><h3>Salaris en mobiliteit samen bekijken</h3><p>Een leaseauto, een uitbetaald mobiliteitsbudget en een eigen auto hebben verschillende gevolgen voor je nettoloon en je maandelijkse kosten. Nettoplaatje zet die onderdelen naast elkaar en laat zien welke invoer de uitkomst bepaalt. Pas de bedragen aan je aanbod, loonstrook en verwachte gebruik aan.</p></div>
-      <div><h3>De ritten achter de autokosten</h3><p>Bij een eigen auto rekenen we de vergoeding over zakelijke kilometers. Brandstof of laden en overige variabele autokosten tellen mee over het aantal zakelijke én privé-kilometers dat je invult. Zo zie je waarom een vergoeding per zakelijke kilometer niet hetzelfde is als de volledige kostprijs van de auto.</p></div>
-      <div><h3>Vaker naar kantoor</h3><p>De tweede vergelijking zet twee werkpatronen naast elkaar. Reistijd, retourafstand, reiskostenvergoeding, parkeren, lunch en kinderopvang worden apart getoond. Reistijd blijft eerst een tijdsverschil; alleen als je dat zelf kiest, krijgt die tijd ook een geldwaarde.</p></div>
-      <div><h3>Fiscale bedragen controleren</h3><p>Voor 2026 is de maximale gerichte vrijstelling voor een kilometervergoeding verhoogd naar €0,25 per kilometer, met terugwerkende kracht vanaf 1 januari. De werkgever bepaalt de werkelijke vergoeding; daarom kun je die zelf invullen. <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/berichten/nieuws/verhoging-onbelaste-kilometervergoeding-hoe-verwerkt-u-dit-in-de-loonaangifte" target="_blank" rel="noreferrer">Bron: Belastingdienst</a></p></div>
-      <p>Lees de <Link href="/uitleg">rekenmethode, voorbeelden en beperkingen</Link>, of open direct de <Link href="/mobiliteit">mobiliteitsvergelijking</Link> of de calculator voor je <Link href="/werkpatroon">werkpatroon</Link>.</p>
-    </section>
     <AdSlot placement="home" />
+    <section className="landing-content landing-why shell" aria-label="Waarom Nettoplaatje">
+      <span className="section-kicker">Waarom Nettoplaatje</span><h2>Meer dan alleen je brutoloon</h2>
+      <div><h3>Alles in één plaatje</h3><p>Salaris, auto, reiskosten en reistijd naast elkaar, zodat je twee banen eerlijk vergelijkt.</p></div>
+      <div><h3>Tarieven van 2026</h3><p>Gerekend met de actuele belastingschijven en heffingskortingen van de Belastingdienst.</p></div>
+      <div><h3>Je gegevens blijven bij jou</h3><p>Geen account nodig. Wat je invult, blijft in je eigen browser.</p></div>
+      <p>Benieuwd hoe we rekenen? Lees de <Link href="/uitleg">uitleg</Link> of de <Link href="/vragen">vragen en antwoorden</Link>.</p>
+    </section>
     <SiteFooter />
   </main>;
 }
