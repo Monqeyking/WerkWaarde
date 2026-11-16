@@ -10,6 +10,8 @@ export type CalculatorInputs = {
   pensionEmployeeShare: number;
   pensionFranchise: number;
   pensionIncludesHoliday: boolean;
+  /** The pension fund's own cap on pensionable salary per year; 0 or absent means only the fiscal maximum applies. */
+  pensionMaxSalary?: number;
   age: number;
   leaseBudget: number;
   mobilityBudget: number;
@@ -99,8 +101,10 @@ function annualGrossSalary(inputs: CalculatorInputs) {
 
 export function calculatePensionBreakdown(inputs: CalculatorInputs) {
   const grossAnnual = Math.max(0, inputs.salary) * 12;
+  const fundCap = inputs.pensionMaxSalary && inputs.pensionMaxSalary > 0 ? inputs.pensionMaxSalary : Infinity;
   const pensionableAnnual = Math.min(
     taxYear(inputs.taxYear).maxPensionableSalary,
+    fundCap,
     grossAnnual * (inputs.pensionIncludesHoliday ? 1 + Math.max(0, inputs.holidayAllowance) / 100 : 1),
   );
 

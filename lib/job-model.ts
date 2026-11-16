@@ -70,6 +70,8 @@ export type JobProfile = {
     pensionEmployeeSharePct: number;
     pensionFranchise: number;
     pensionIncludesHoliday: boolean;
+    /** Pension fund's cap on pensionable salary per year; 0 = only the fiscal maximum. */
+    pensionMaxSalary: number;
     /** Cao the conditions were prefilled from; empty when filled in by hand. */
     caoId: string;
   };
@@ -120,7 +122,7 @@ const defaultJob = (officeDaysPerWeek: number): JobProfile => ({
   salary: {
     grossMonthly: 4500, hoursPerWeek: 40, holidayAllowancePct: 8, yearEndBonusPct: 0, annualBonus: 0,
     pensionMode: "monthly", pensionEmployeeMonthly: 0, pensionEmployerMonthly: 0,
-    pensionTotalRatePct: 20, pensionEmployeeSharePct: 33.33, pensionFranchise: 19172, pensionIncludesHoliday: true, caoId: "",
+    pensionTotalRatePct: 20, pensionEmployeeSharePct: 33.33, pensionFranchise: 19172, pensionIncludesHoliday: true, pensionMaxSalary: 0, caoId: "",
   },
   mobility: {
     choice: "ownCar", leaseBudget: 625, mobilityBudget: 850,
@@ -360,6 +362,7 @@ const CALCULATOR_PATHS: Record<Exclude<keyof CalculatorInputs, "businessKm">, Mo
   pensionEmployeeShare: salaryPath("pensionEmployeeSharePct"),
   pensionFranchise: salaryPath("pensionFranchise"),
   pensionIncludesHoliday: salaryPath("pensionIncludesHoliday"),
+  pensionMaxSalary: salaryPath("pensionMaxSalary"),
   age: personalPath("age"),
   taxYear: personalPath("taxYear"),
   leaseBudget: mobilityPath("leaseBudget"),
@@ -488,6 +491,7 @@ export function toCalculatorInputs(state: NettoplaatjeState, job: JobKey): Calcu
     pensionEmployeeShare: salary.pensionEmployeeSharePct,
     pensionFranchise: salary.pensionFranchise,
     pensionIncludesHoliday: salary.pensionIncludesHoliday,
+    pensionMaxSalary: salary.pensionMaxSalary,
     age: state.personal.age,
     leaseBudget: mobility.leaseBudget,
     mobilityBudget: mobility.mobilityBudget,

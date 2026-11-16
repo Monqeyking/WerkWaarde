@@ -17,6 +17,8 @@ export type CaoPension = {
   franchise: number;
   /** Whether the holiday allowance counts as pensionable salary. */
   includesHoliday: boolean;
+  /** The fund's cap on pensionable salary per year, when it is below the fiscal maximum. */
+  maxSalary?: number;
   sourceUrl: string;
 };
 
@@ -42,54 +44,143 @@ export type Cao = {
 };
 
 const CHECKED = "2026-11-16";
-const ABP_2026 = "https://www.abp.nl/content/dam/abp/documenten/formulieren-tabellen/premietabel-2026.pdf";
 const MAX_SHARE_NOTE = "Het werknemersdeel van de pensioenpremie is het maximum dat je werkgever mag inhouden.";
 
+/** ABP 2026: 27.1% over (pensionable income − € 19.200), 70% employer / 30% employee. */
+const ABP: CaoPension = {
+  fund: "ABP", totalRatePct: 27.1, employeeSharePct: 30, franchise: 19_200, includesHoliday: true,
+  sourceUrl: "https://www.abp.nl/content/dam/abp/documenten/formulieren-tabellen/premietabel-2026.pdf",
+};
+
+/** PFZW 2026: 25.9% over (pensionable salary − € 17.283); the split differs per cao. */
+const pfzw = (employeeSharePct: number, sourceUrl = "https://www.pfzw.nl/werkgevers/premie-en-factuur/premiepercentages-en-franchises.html"): CaoPension => ({
+  fund: "PFZW", totalRatePct: 25.9, employeeSharePct, franchise: 17_283, includesHoliday: true, sourceUrl,
+});
+
 export const CAOS: readonly Cao[] = [
+  // Overheid en onderwijs (ABP)
   {
-    id: "rijk", name: "Cao Rijk", sector: "Rijksoverheid", period: "1 januari – 31 december 2026",
-    fullTimeHours: 36, holidayAllowancePct: 8, yearEndBonusPct: 8.5,
-    pension: { fund: "ABP", totalRatePct: 27.1, employeeSharePct: 30, franchise: 19_200, includesHoliday: true, sourceUrl: ABP_2026 },
+    id: "rijk", name: "Cao Rijk", sector: "Overheid", period: "1 januari – 31 december 2026",
+    fullTimeHours: 36, holidayAllowancePct: 8, yearEndBonusPct: 8.5, pension: ABP,
     sourceUrl: "https://www.caorijk.nl/cao-rijk/1.-algemeen/hoofdstuk-9/individueel-keuzebudget",
     note: "Vakantiegeld en 13e maand komen samen uit het Individueel Keuzebudget van 16,5%.",
     checkedOn: CHECKED,
   },
   {
-    id: "gemeenten", name: "Cao Gemeenten", sector: "Gemeenten", period: "1 april 2025 – 31 maart 2027",
-    fullTimeHours: 36, holidayAllowancePct: 8, yearEndBonusPct: 9.05,
-    pension: { fund: "ABP", totalRatePct: 27.1, employeeSharePct: 30, franchise: 19_200, includesHoliday: true, sourceUrl: ABP_2026 },
+    id: "gemeenten", name: "Cao Gemeenten", sector: "Overheid", period: "1 april 2025 – 31 maart 2027",
+    fullTimeHours: 36, holidayAllowancePct: 8, yearEndBonusPct: 9.05, pension: ABP,
     sourceUrl: "https://www.caogemeenten.nl/cao-gemeenten-2025-2027/individueel-keuzebudget",
     note: "Vakantiegeld en 13e maand komen samen uit het Individueel Keuzebudget van 17,05%.",
     checkedOn: CHECKED,
   },
   {
+    id: "politie", name: "Cao Politie", sector: "Overheid", period: "1 december 2025 – 15 december 2027",
+    fullTimeHours: 36, holidayAllowancePct: 8, yearEndBonusPct: 9.86, pension: ABP,
+    sourceUrl: "https://wetten.overheid.nl/BWBR0006517/",
+    note: "Vakantiegeld en 13e maand komen samen uit het Individueel Keuzebudget van 17,86%. Het netto IKB-bedrag zit hier niet in.",
+    checkedOn: CHECKED,
+  },
+  {
     id: "primair-onderwijs", name: "Cao Primair onderwijs", sector: "Onderwijs", period: "1 november 2025 – 28 februari 2027",
-    fullTimeHours: 40, holidayAllowancePct: 8, yearEndBonusPct: 8.33,
-    pension: { fund: "ABP", totalRatePct: 27.1, employeeSharePct: 30, franchise: 19_200, includesHoliday: true, sourceUrl: ABP_2026 },
+    fullTimeHours: 40, holidayAllowancePct: 8, yearEndBonusPct: 8.33, pension: ABP,
     sourceUrl: "https://www.cnv.nl/documents/5312/Cao_PO_2025-2027.pdf",
     note: "De oktobertoelage is een vast bedrag; vul die in bij bonus als je hem krijgt.",
     checkedOn: CHECKED,
   },
   {
+    id: "voortgezet-onderwijs", name: "Cao Voortgezet onderwijs", sector: "Onderwijs", period: "1 november 2025 – 1 maart 2027",
+    fullTimeHours: null, holidayAllowancePct: 8, yearEndBonusPct: 8.33, pension: ABP,
+    sourceUrl: "https://www.cnv.nl/documents/5393/Herzien_CAO-VO_2025-2027_WEB.pdf",
+    note: "Een voltijdbaan is 1.659 uur per jaar. De oktobertoelage is een vast bedrag; vul die in bij bonus als je hem krijgt.",
+    checkedOn: CHECKED,
+  },
+  {
+    id: "mbo", name: "Cao MBO", sector: "Onderwijs", period: "1 oktober 2026 – 1 maart 2028",
+    fullTimeHours: null, holidayAllowancePct: 8, yearEndBonusPct: 8.33, pension: ABP,
+    sourceUrl: "https://www.mboraad.nl/sites/default/files/2025-10/CAO%20MBO%202025-2026%20-%20def%202.pdf",
+    note: "Een voltijdbaan is 1.659 uur per jaar. De nieuwe cao laat vakantiegeld en eindejaarsuitkering ongewijzigd.",
+    checkedOn: CHECKED,
+  },
+  {
+    id: "universiteiten", name: "Cao Nederlandse Universiteiten", sector: "Onderwijs", period: "1 juli 2026 – 30 juni 2027",
+    fullTimeHours: 38, holidayAllowancePct: 8, yearEndBonusPct: 8.3, pension: ABP,
+    sourceUrl: "https://www.universiteitenvannederland.nl/files/publications/UNL-20879-10-CAO%20Nederlandse%20Universiteiten%20NL%202025-2026_0.pdf",
+    checkedOn: CHECKED,
+  },
+  // Zorg en welzijn (PFZW)
+  {
     id: "ziekenhuizen", name: "Cao Ziekenhuizen", sector: "Zorg", period: "1 februari 2025 – 31 januari 2027",
-    fullTimeHours: 36, holidayAllowancePct: 8.33, yearEndBonusPct: 8.33,
-    pension: { fund: "PFZW", totalRatePct: 25.9, employeeSharePct: 50, franchise: 17_283, includesHoliday: true, sourceUrl: "https://www.pfzw.nl/werkgevers/premie-en-factuur/premiepercentages-en-franchises.html" },
+    fullTimeHours: 36, holidayAllowancePct: 8.33, yearEndBonusPct: 8.33, pension: pfzw(50),
     sourceUrl: "https://www.fnv.nl/getmedia/f920eb0e-c6c2-4fe0-a943-ad54741630f9/1158-ziekenhuizen-cao-01-02-2025-tm-31-01-2027-v20102025.pdf?ext=.pdf",
     checkedOn: CHECKED,
   },
   {
     id: "vvt", name: "Cao VVT (verpleeg- en verzorgingshuizen, thuiszorg)", sector: "Zorg", period: "1 september 2026 – 15 september 2028",
     fullTimeHours: 36, holidayAllowancePct: 8, yearEndBonusPct: 8.33,
-    pension: { fund: "PFZW", totalRatePct: 25.9, employeeSharePct: 50, franchise: 17_283, includesHoliday: true, sourceUrl: "https://www.actiz.nl/sites/default/files/2026-01/Salarisinformatie%202026%20%28versie%20januari%202026%29.pdf" },
+    pension: pfzw(50, "https://www.actiz.nl/sites/default/files/2026-01/Salarisinformatie%202026%20%28versie%20januari%202026%29.pdf"),
     sourceUrl: "https://zoek.officielebekendmakingen.nl/stcrt-2025-25154.html",
     checkedOn: CHECKED,
   },
   {
+    id: "gehandicaptenzorg", name: "Cao Gehandicaptenzorg", sector: "Zorg", period: "1 januari 2025 – 31 december 2026",
+    fullTimeHours: 36, holidayAllowancePct: 8, yearEndBonusPct: 8.33,
+    pension: pfzw(50, "https://www.vgn.nl/system/files/2025-12/Belangrijke%20wijzigingen%20in%20de%20CAO%20Gehandicaptenzorg%20en%20wetgeving%20in%202026.pdf"),
+    sourceUrl: "https://www.vgn.nl/system/files/2025-07/CAO%202025-2026_Juli2025_DEF.pdf",
+    checkedOn: CHECKED,
+  },
+  {
+    id: "ggz", name: "Cao GGZ", sector: "Zorg", period: "1 januari 2025 – 31 juli 2026, nieuwe cao in onderhandeling",
+    fullTimeHours: 36, holidayAllowancePct: 8.33, yearEndBonusPct: 8.33, pension: pfzw(50),
+    sourceUrl: "https://www.fnv.nl/getmedia/eaac7ec4-fdb8-425e-9f6f-da415ba034d7/1089-geestelijke-gezondheidszorg-ggz-cao-01-01-2025-tm-31-07-2026-v11062026.pdf?ext=.pdf",
+    note: "De cao is verlopen, maar de afspraken blijven gelden tot er een nieuwe is.",
+    checkedOn: CHECKED,
+  },
+  {
+    id: "sociaal-werk", name: "Cao Sociaal Werk", sector: "Welzijn", period: "1 augustus 2025 – 31 mei 2027",
+    fullTimeHours: 36, holidayAllowancePct: 8, yearEndBonusPct: 9.07,
+    pension: pfzw(49.81, "https://www.sociaalwerk-werkt.nl/cao/pensioenpremies-2026"),
+    sourceUrl: "https://www.sociaalwerk-werkt.nl/media/2184",
+    note: "Vakantiegeld en eindejaarsuitkering komen samen uit het Individueel Keuzebudget van ruim 17%.",
+    checkedOn: CHECKED,
+  },
+  {
+    id: "kinderopvang", name: "Cao Kinderopvang", sector: "Welzijn", period: "1 januari 2025 – 31 december 2026",
+    fullTimeHours: 36, holidayAllowancePct: 8, yearEndBonusPct: 8,
+    pension: pfzw(49.81, "https://www.kinderopvang-werkt.nl/nieuws/pensioenpremies-2026"),
+    sourceUrl: "https://www.kinderopvang-werkt.nl/media/1699",
+    checkedOn: CHECKED,
+  },
+  // Handel, horeca en diensten
+  {
     id: "supermarkten", name: "Cao Supermarkten (VGL)", sector: "Retail", period: "2 juli 2024 – 31 maart 2026, nieuwe cao in onderhandeling",
     fullTimeHours: 40, holidayAllowancePct: 8, yearEndBonusPct: 0,
-    pension: { fund: "Bpf Levensmiddelen", totalRatePct: 27.6, employeeSharePct: 28.84, franchise: 19_583.5, includesHoliday: true, sourceUrl: "https://werkgever.bpfl.nl/api/cms/media/4306a409-067b-4b4a-a8e2-9432f5934222" },
+    pension: { fund: "Bpf Levensmiddelen", totalRatePct: 27.6, employeeSharePct: 28.84, franchise: 19_583.5, includesHoliday: true, maxSalary: 79_409, sourceUrl: "https://werkgever.bpfl.nl/api/cms/media/4306a409-067b-4b4a-a8e2-9432f5934222" },
     sourceUrl: "https://www.fnv.nl/getmedia/18c9c6e7-339c-46d3-963e-af97eb245d25/608-vgl-cao-2024-2026-v10032025.pdf?ext=.pdf",
     note: "Sommige ketens hebben een eigen pensioenregeling; check dan je loonstrook.",
+    checkedOn: CHECKED,
+  },
+  {
+    id: "retail-non-food", name: "Cao Retail Non-Food", sector: "Retail", period: "1 januari 2026 – 31 december 2027",
+    fullTimeHours: 38, holidayAllowancePct: 8, yearEndBonusPct: 0,
+    pension: { fund: "Pensioenfonds Detailhandel", totalRatePct: 24.75, employeeSharePct: 25, franchise: 18_680, includesHoliday: true, maxSalary: 79_409, sourceUrl: "https://pensioenfondsdetailhandel.nl/content/pdfs/Premieoverzicht-2026.pdf" },
+    sourceUrl: "https://www.fnv.nl/getmedia/d5d6fe1c-9382-4a9f-9d77-709752ec5dd8/547-retail-non-food-cao-01-01-2026-tm-31-12-2027-v04022026.pdf?ext=.pdf",
+    note: "In de woonbranche is voltijd 37 uur. Boven € 79.409 kan een aanvullende pensioenregeling gelden.",
+    checkedOn: CHECKED,
+  },
+  {
+    id: "horeca", name: "Cao Horeca", sector: "Horeca", period: "1 januari – 31 december 2026",
+    fullTimeHours: 38, holidayAllowancePct: 8, yearEndBonusPct: 0,
+    pension: { fund: "PH&C", totalRatePct: 16.8, employeeSharePct: 50, franchise: 15_308, includesHoliday: true, maxSalary: 52_294, sourceUrl: "https://www.phenc.nl/werkgever/pensioen-bij-ons/pensioenadministratie/premiegegevens" },
+    sourceUrl: "https://assets.khn.nl/uploads/downloads/Horeca-cao-2025-2026_2024-12-30-142048_kgjp.pdf",
+    note: "Daarnaast betaal je een kleine nabestaandenpremie van 0,17% van je salaris.",
+    checkedOn: CHECKED,
+  },
+  {
+    id: "schoonmaak", name: "Cao Schoonmaak en glazenwassers", sector: "Schoonmaak", period: "1 juli 2026 – 30 juni 2028",
+    fullTimeHours: 38, holidayAllowancePct: 8, yearEndBonusPct: 5,
+    pension: { fund: "Pensioenfonds Schoonmaak", totalRatePct: 21.4, employeeSharePct: 50, franchise: 15_255, includesHoliday: true, maxSalary: 79_409, sourceUrl: "https://werkgevers.pensioenschoonmaak.nl/content/dam/dep-wg/bpfs/documenten/rekenregels/2026/Verkorte-premies-Schoonmaak.pdf" },
+    sourceUrl: "https://comform.cnv.nl/action/attachment?s=r909EFIu0W1zHlPEPjF1W8iJ0BDDrZ0%2FceRRrhOuK7DEqCymFC%2F5b%2BJ%2BtUdwL9Ia6L6GbrsAhtunQaH5Npa7B3t%2Fyq8VDWa1hzQBPc%2BmjtquOaWNQ1OecbFCrF7qhH0%3D",
+    note: "De eindejaarsuitkering krijg je na minimaal zes maanden in dienst. De franchise is omgerekend van € 7,72 per uur bij 38 uur per week.",
     checkedOn: CHECKED,
   },
   {
@@ -100,28 +191,37 @@ export const CAOS: readonly Cao[] = [
     note: "Vakantiegeld, 13e maand en uren volgen de regeling van de opdrachtgever (minimaal 8% vakantiegeld). De franchise is omgerekend van € 9,24 per uur bij 36 uur per week.",
     checkedOn: CHECKED,
   },
+  // Techniek, bouw en vervoer
   {
     id: "metaal-en-techniek", name: "Cao Metaal en Techniek", sector: "Techniek", period: "1 februari 2026 – 31 januari 2028",
     fullTimeHours: 38, holidayAllowancePct: 8, yearEndBonusPct: 0,
-    pension: { fund: "PMT", totalRatePct: 27.98, employeeSharePct: 36.74, franchise: 19_172, includesHoliday: true, sourceUrl: "https://www.pmt.nl/media/to5b5hdk/pmt402_laag2_2026.pdf" },
+    pension: { fund: "PMT", totalRatePct: 27.98, employeeSharePct: 36.74, franchise: 19_172, includesHoliday: true, maxSalary: 99_321, sourceUrl: "https://www.pmt.nl/media/to5b5hdk/pmt402_laag2_2026.pdf" },
     sourceUrl: "https://www.fnv.nl/getmedia/a448b42a-3973-4332-b70c-ef914eb250c7/529-metaal-en-techniek-metaalbewerkingsbedrijf-cao-01-02-2026-31-01-2028-v19032026.pdf?ext=.pdf",
-    note: `${MAX_SHARE_NOTE} Pensioen wordt opgebouwd tot € 99.321 salaris per jaar.`,
+    note: MAX_SHARE_NOTE,
     checkedOn: CHECKED,
   },
   {
     id: "metalektro", name: "Cao Metalektro", sector: "Techniek", period: "1 januari – 31 december 2026",
     fullTimeHours: 40, holidayAllowancePct: 8, yearEndBonusPct: 0,
-    pension: { fund: "PME", totalRatePct: 27.98, employeeSharePct: 38.92, franchise: 19_172, includesHoliday: true, sourceUrl: "https://www.pmepensioen.nl/rekencijfers" },
+    pension: { fund: "PME", totalRatePct: 27.98, employeeSharePct: 38.92, franchise: 19_172, includesHoliday: true, maxSalary: 100_731, sourceUrl: "https://www.pmepensioen.nl/rekencijfers" },
     sourceUrl: "https://www.fnv.nl/getmedia/5d171cbc-1373-43c9-9d71-06fd03042fbf/315-metalektro-cao-01-01-2026-tm-31-12-2026-v06032026.pdf?ext=.pdf",
-    note: `${MAX_SHARE_NOTE} Pensioen wordt opgebouwd tot € 100.731 salaris per jaar.`,
+    note: MAX_SHARE_NOTE,
     checkedOn: CHECKED,
   },
   {
     id: "bouw-en-infra", name: "Cao Bouw & Infra", sector: "Bouw", period: "1 januari 2025 – 31 maart 2027",
     fullTimeHours: 40, holidayAllowancePct: 8, yearEndBonusPct: 0,
-    pension: { fund: "bpfBOUW", totalRatePct: 25.93, employeeSharePct: 36.64, franchise: 19_172, includesHoliday: true, sourceUrl: "https://werkgevers.bpfbouw.nl/content/dam/dep-wg/bpfbouw/documenten/rekenregels/totaal/Verkorte-versie-totaal-2026.pdf" },
+    pension: { fund: "bpfBOUW", totalRatePct: 25.93, employeeSharePct: 36.64, franchise: 19_172, includesHoliday: true, maxSalary: 82_495, sourceUrl: "https://werkgevers.bpfbouw.nl/content/dam/dep-wg/bpfbouw/documenten/rekenregels/totaal/Verkorte-versie-totaal-2026.pdf" },
     sourceUrl: "https://www.bter-bouw.nl/content/dam/bter/documenten/juridisch/cao%20bouw%20infra%202025%202027.pdf",
-    note: "Pensioenpremie voor bouwplaatsmedewerkers; voor UTA-personeel is de verdeling iets anders. Pensioen wordt opgebouwd tot € 82.495 salaris per jaar.",
+    note: "Pensioenpremie voor bouwplaatsmedewerkers; voor UTA-personeel is de verdeling iets anders.",
+    checkedOn: CHECKED,
+  },
+  {
+    id: "beroepsgoederenvervoer", name: "Cao Beroepsgoederenvervoer", sector: "Transport", period: "1 januari – 31 december 2026",
+    fullTimeHours: 40, holidayAllowancePct: 8, yearEndBonusPct: 0,
+    pension: { fund: "Pensioenfonds Vervoer", totalRatePct: 30, employeeSharePct: 33.87, franchise: 17_283, includesHoliday: true, maxSalary: 79_409, sourceUrl: "https://www.pfvervoer.nl/sites/default/files/documenten/premieberekening-2026-sector-goederen-vervoer-maandverloning.pdf" },
+    sourceUrl: "https://www.fnv.nl/getmedia/8722c0b0-ecb3-4b77-afa1-561a9b5bae1c/498-beroepsgoederenvervoer-over-de-weg-en-verhuur-van-mobiele-kranen-cao-01-01-2026-tm-31-12-2026-v10022026.pdf?ext=.pdf",
+    note: "Daarnaast betaal je zelf een WIA-premie van 0,9% over dezelfde grondslag.",
     checkedOn: CHECKED,
   },
 ];
@@ -142,6 +242,7 @@ export function caoSalaryPatch(cao: Cao): Partial<JobProfile["salary"]> {
       pensionEmployeeSharePct: cao.pension.employeeSharePct,
       pensionFranchise: cao.pension.franchise,
       pensionIncludesHoliday: cao.pension.includesHoliday,
+      pensionMaxSalary: cao.pension.maxSalary ?? 0,
     }),
   };
 }

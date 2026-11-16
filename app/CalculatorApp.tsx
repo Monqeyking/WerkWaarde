@@ -280,6 +280,7 @@ export default function CalculatorApp({ initialView }: { initialView: AppView })
             <Field label="Totale pensioenpremie" value={inputs.pensionTotalRate} onChange={update("pensionTotalRate")} suffix="%" hint="De totale premie van werkgever en werknemer samen, berekend over de pensioengrondslag." step={0.1} max={100} />
             <Field label="Werknemersdeel van premie" value={inputs.pensionEmployeeShare} onChange={update("pensionEmployeeShare")} suffix="%" hint="Welk percentage van de totale pensioenpremie je zelf betaalt. De rest is het werkgeversdeel." step={0.1} max={100} />
             <Field label="AOW-franchise per jaar" value={inputs.pensionFranchise} onChange={update("pensionFranchise")} suffix="€" hint="Het deel van het pensioengevende loon waarover je geen aanvullend pensioen opbouwt. Voor veel regelingen is de indicatie voor 2026 €19.172." step={1} />
+            <Field label="Maximaal pensioengevend salaris" value={inputs.pensionMaxSalary ?? 0} onChange={update("pensionMaxSalary")} suffix="€/jaar" hint="Sommige pensioenfondsen bouwen maar op tot een bepaald jaarsalaris. Vul 0 in als dat het wettelijke maximum is." step={100} />
             <label className="checkbox-row compact-checkbox">
               <input type="checkbox" checked={inputs.pensionIncludesHoliday} onChange={(event) => setInput("pensionIncludesHoliday", event.target.checked)} />
               <span className="checkbox-box">✓</span>

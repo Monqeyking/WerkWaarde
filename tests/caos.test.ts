@@ -69,6 +69,23 @@ describe("applying a cao", () => {
     assert.ok(Math.abs(expected - 221.14) < 0.01);
   });
 
+  test("the fund's salary cap limits the pension base (Horeca: € 52.294)", () => {
+    const state = createDefaultState();
+    state.jobs.current.salary = { ...state.jobs.current.salary, grossMonthly: 5000, ...caoSalaryPatch(findCao("horeca")!) };
+    const pension = calculatePensionBreakdown(toCalculatorInputs(state, "current"));
+    assert.equal(pension.pensionableAnnual, 52_294);
+    const expected = (52_294 - 15_308) * 0.168 * 0.5 / 12;
+    assert.ok(Math.abs(pension.employeeMonthly - expected) < 0.01, `${pension.employeeMonthly} vs ${expected}`);
+    // Without a cao the fiscal maximum applies, so the same salary is fully pensionable.
+    state.jobs.current.salary.pensionMaxSalary = 0;
+    assert.equal(calculatePensionBreakdown(toCalculatorInputs(state, "current")).pensionableAnnual, 5000 * 12 * 1.08);
+  });
+
+  test("picking a cao without a cap clears a cap from an earlier pick", () => {
+    assert.equal(caoSalaryPatch(findCao("horeca")!).pensionMaxSalary, 52_294);
+    assert.equal(caoSalaryPatch(findCao("rijk")!).pensionMaxSalary, 0);
+  });
+
   test("findCao and the checked-on date", () => {
     assert.equal(findCao(""), undefined);
     assert.equal(checkedOnText(CAOS[0]), "16 november 2026");
