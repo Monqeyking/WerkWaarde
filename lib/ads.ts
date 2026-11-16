@@ -45,7 +45,7 @@ export const HOUSE_ADS: readonly HouseAd[] = [
     audience: "candidate",
     advertiser: "Virtrust",
     logo: "/ads/virtrust.svg",
-    title: "Toe aan een volgende stap in HSEQ?",
+    title: "Toe aan een volgende stap in veiligheid?",
     body: "Virtrust bemiddelt en detacheert specialisten in veiligheid, kwaliteit en milieu.",
     cta: "Meer informatie",
     path: "/",
