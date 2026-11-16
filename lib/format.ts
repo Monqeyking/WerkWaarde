@@ -23,3 +23,5 @@ export const moneyCents = (value: number) => formatSigned(euroCentsFormat, value
 export const signedMoneyCents = (value: number) => formatSigned(euroCentsFormat, value, 100, true);
 export const decimal = (value: number) => formatSigned(decimalFormat, value, 10, false);
 export const signedDecimal = (value: number) => formatSigned(decimalFormat, value, 10, true);
+/** Share as a percentage: 0.4947 → "49,5%" */
+export const percent = (share: number) => `${decimal(share * 100)}%`;

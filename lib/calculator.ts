@@ -179,12 +179,17 @@ export function calculateSalaryBreakdown(inputs: CalculatorInputs) {
   return { grossMonthly, holidayMonthly, grossMonthlyAverage, pensionMonthly, employerPensionMonthly: pension.employerMonthly, totalPensionMonthly: pension.totalMonthly, pensionableAnnual: pension.pensionableAnnual, pensionBase: pension.pensionBase, taxableAnnual, taxMonthly, taxBenefitMonthly, netMonthlyRegular, netMonthlyAverage };
 }
 
-export function calculateLease(inputs: CalculatorInputs) {
-  const carValue = Math.max(0, inputs.carValue);
-  const annualBenefit = inputs.leaseIsElectric
+/** Annual bijtelling (taxable benefit of a company car) before any own contribution. */
+export function annualCarBenefit(catalogValue: number, isElectric: boolean, benefitRatePct: number) {
+  const carValue = Math.max(0, catalogValue);
+  return isElectric
     ? Math.min(carValue, EV_BIJTELLING_THRESHOLD_2026) * EV_BIJTELLING_RATE_2026
       + Math.max(0, carValue - EV_BIJTELLING_THRESHOLD_2026) * STANDARD_BIJTELLING_RATE_2026
-    : carValue * Math.max(0, inputs.benefitRate) / 100;
+    : carValue * Math.max(0, benefitRatePct) / 100;
+}
+
+export function calculateLease(inputs: CalculatorInputs) {
+  const annualBenefit = annualCarBenefit(inputs.carValue, inputs.leaseIsElectric, inputs.benefitRate);
   const annualContribution = Math.max(0, inputs.employeeContribution) * 12;
   const taxableBenefit = Math.max(0, annualBenefit - annualContribution);
   const taxCost = taxDelta(inputs, taxableBenefit) / 12;

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Field } from "./components/Field";
 import AdSlot from "./components/AdSlot";
+import { CALCULATORS } from "../lib/calculators";
 import { SiteFooter, SiteNav } from "./components/SiteChrome";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -162,9 +163,8 @@ function Landing() {
       <h1>Wat houd je écht over van je werk?</h1><p>Vergelijk je huidige en nieuwe baan in één overzicht: salaris, pensioen, auto, reiskosten en reistijd. Of bekijk één onderdeel in detail.</p><div className="hero-actions"><Link className="primary-button" href="/totaal">Vergelijk twee banen →</Link></div>
       <div className="hero-trust"><span className="trust-check">✓</span> Direct resultaat <span className="trust-divider"></span> Geen account nodig <span className="trust-divider"></span> Indicatief</div>
     </div></section>
-    <section className="tool-grid shell"><Link className="tool-card teal" href="/mobiliteit"><span className="tool-number">01</span><span className="section-kicker">Leaseauto, budget of eigen auto</span><h2>Vergelijk je mobiliteitskeuze</h2><p>Zie wat je netto overhoudt met een leaseauto, mobiliteitsbudget of eigen auto met kilometervergoeding.</p><span className="tool-link">Naar mobiliteitsvergelijking →</span></Link>
-      <Link className="tool-card blue" href="/werkpatroon"><span className="tool-number">02</span><span className="section-kicker">Thuiswerken versus kantoor</span><h2>Wat kost vaker naar kantoor?</h2><p>Bereken extra reistijd, autokosten, parkeren, kinderopvang en andere kosten van een gewijzigd werkpatroon.</p><span className="tool-link">Naar werkpatroon-calculator →</span></Link></section>
-    <section className="landing-note shell"><span className="formula-mark">∑</span><div><strong>Van bruto loon naar werkelijke waarde</strong><p>De twee calculators gebruiken dezelfde heldere uitgangspunten, maar beantwoorden elk één concrete vraag. Zo blijft de invoer overzichtelijk en voorkom je dat kosten dubbel worden meegerekend.</p></div></section>
+    <section className="tool-grid tool-grid-all shell" aria-label="Alle calculators">{CALCULATORS.filter((tool) => tool.href !== "/totaal").map((tool, index) => <Link key={tool.href} className={`tool-card ${index % 2 === 0 ? "teal" : "blue"}`} href={tool.href}><span className="tool-number">{String(index + 1).padStart(2, "0")}</span><span className="section-kicker">{tool.kicker}</span><h2>{tool.title}</h2><p>{tool.text}</p><span className="tool-link">Bereken →</span></Link>)}</section>
+    <section className="landing-note shell"><span className="formula-mark">∑</span><div><strong>Van bruto loon naar werkelijke waarde</strong><p>Elke calculator beantwoordt één concrete vraag en gebruikt dezelfde gegevens. Wat je ergens invult, staat ook klaar in het <Link href="/totaal">totaaloverzicht</Link>. Meer uitleg vind je bij de <Link href="/vragen">vragen en antwoorden</Link>.</p></div></section>
     <section className="landing-content shell" aria-label="Hoe Nettoplaatje werk en mobiliteit vergelijkt">
       <span className="section-kicker">Wat je vergelijkt</span><h2>Een baan beoordelen op meer dan het brutoloon</h2>
       <div><h3>Salaris en mobiliteit samen bekijken</h3><p>Een leaseauto, een uitbetaald mobiliteitsbudget en een eigen auto hebben verschillende gevolgen voor je nettoloon en je maandelijkse kosten. Nettoplaatje zet die onderdelen naast elkaar en laat zien welke invoer de uitkomst bepaalt. Pas de bedragen aan je aanbod, loonstrook en verwachte gebruik aan.</p></div>

@@ -1,12 +1,14 @@
 import Link from "next/link";
+import { CALCULATORS } from "../../lib/calculators";
 
-export type NavKey = "home" | "total" | "mobility" | "work";
+export type NavKey = "home" | "total" | "mobility" | "work" | "questions";
 
 const navItems: Array<{ key: NavKey; href: string; label: string }> = [
   { key: "home", href: "/", label: "Start" },
   { key: "total", href: "/totaal", label: "Banen vergelijken" },
   { key: "mobility", href: "/mobiliteit", label: "Lease & mobiliteit" },
   { key: "work", href: "/werkpatroon", label: "Wat kost werken?" },
+  { key: "questions", href: "/vragen", label: "Vragen" },
 ];
 
 function Brand() {
@@ -32,6 +34,7 @@ export function SiteFooter() {
   return <footer className="footer shell">
     <div className="brand"><Brand /></div>
     <span>Een heldere indicatie voor jouw werk- en mobiliteitskeuze.</span>
+    <nav className="footer-tools" aria-label="Calculators">{CALCULATORS.map((tool) => <Link key={tool.href} href={tool.href}>{tool.title}</Link>)}<Link href="/vragen">Vragen en antwoorden</Link></nav>
     <span className="footer-links"><Link href="/uitleg">Uitleg</Link><Link href="/privacy">Privacy</Link><Link href="/cookies">Cookies</Link><Link href="/contact">Contact</Link></span>
   </footer>;
 }
