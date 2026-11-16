@@ -10,7 +10,12 @@ const navItems: Array<{ key: NavKey; href: string; label: string }> = [
 ];
 
 function Brand() {
-  return <><span className="brand-mark">WW</span><span>Werk<span>Waarde</span></span></>;
+  return <>
+    <span className="brand-mark" aria-hidden="true">
+      <svg viewBox="8 12 48 44" width="22" height="22"><rect x="12" y="40" width="9" height="12" rx="2.5" fill="#5c7a92" /><rect x="27.5" y="30" width="9" height="22" rx="2.5" fill="#8fd9cc" /><rect x="43" y="16" width="9" height="36" rx="2.5" fill="#129783" /></svg>
+    </span>
+    <span>Netto<span>plaatje</span></span>
+  </>;
 }
 
 export function SiteNav({ active }: { active?: NavKey }) {

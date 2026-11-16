@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "../lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://werk-waarde-khaki.vercel.app"),
-  title: "WerkWaarde | Wat houd je écht over van je werk?",
-  description: "Vergelijk salaris, pensioen, mobiliteit, reistijd en de totale waarde van een baan.",
-  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+  metadataBase: new URL(SITE_URL),
+  title: { default: `${SITE_NAME} | ${SITE_TAGLINE}`, template: `%s | ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: {
+    type: "website",
+    locale: "nl_NL",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME}: ${SITE_TAGLINE.toLowerCase()}`,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import LegalPage from "../components/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Cookiebeleid | WerkWaarde",
-  description: "Het cookiebeleid van WerkWaarde.",
+  title: "Cookiebeleid",
+  description: "Het cookiebeleid van Nettoplaatje.",
 };
 
 export default function CookiesPage() {
-  return <LegalPage eyebrow="WerkWaarde" title="Cookiebeleid" intro="Laatst bijgewerkt: 17 september 2026.">
+  return <LegalPage eyebrow="Nettoplaatje" title="Cookiebeleid" intro="Laatst bijgewerkt: 17 september 2026.">
     <h2>Functionele werking</h2>
-    <p>De calculators werken zonder account. WerkWaarde gebruikt in deze versie geen eigen trackingcookies om je invoer op te slaan.</p>
+    <p>De calculators werken zonder account. Nettoplaatje gebruikt in deze versie geen eigen trackingcookies om je invoer op te slaan.</p>
 
     <h2>AdSense en toestemmingen</h2>
     <p>Wanneer Google AdSense actief is, kunnen Google en advertentiepartners cookies of vergelijkbare opslag gebruiken. Bezoekers uit de Europese Economische Ruimte, het Verenigd Koninkrijk en Zwitserland krijgen via de ingestelde gecertificeerde toestemmingspartner informatie over deze verwerking en kunnen hun keuze beheren.</p>

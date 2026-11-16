@@ -2,12 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AdSenseSlot from "../components/AdSenseSlot";
 import { SiteFooter, SiteNav } from "../components/SiteChrome";
+import { SITE_NAME } from "../../lib/site";
 import TotalCalculator from "./TotalCalculator";
 
 export const metadata: Metadata = {
-  title: "Twee banen vergelijken: wat houd je netto over? | WerkWaarde",
+  title: "Twee banen vergelijken: wat houd je netto over?",
   description: "Vergelijk je huidige en nieuwe baan in één overzicht: netto salaris, bonus, pensioen, leaseauto of mobiliteitsbudget, reiskosten, reistijd en je netto uurloon.",
   alternates: { canonical: "/totaal" },
+  openGraph: {
+    type: "website",
+    locale: "nl_NL",
+    siteName: SITE_NAME,
+    title: "Wat levert een nieuwe baan je écht op?",
+    description: "Vergelijk je huidige en nieuwe baan in één overzicht: netto salaris, pensioen, auto, reiskosten, reistijd en je netto uurloon.",
+  },
 };
 
 const faqs = [

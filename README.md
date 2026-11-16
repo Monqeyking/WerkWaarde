@@ -1,4 +1,4 @@
-# Nettoplaatje (voorheen WerkWaarde)
+# Nettoplaatje
 
 Gratis, onafhankelijke rekentool die laat zien wat een baan je netto écht oplevert:
 salaris, pensioen, mobiliteit (leaseauto, mobiliteitsbudget, eigen auto), reiskosten,

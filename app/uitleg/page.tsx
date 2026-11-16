@@ -3,21 +3,21 @@ import LegalPage from "../components/LegalPage";
 import AdSenseSlot from "../components/AdSenseSlot";
 
 export const metadata: Metadata = {
-  title: "Hoe werkt WerkWaarde? | WerkWaarde",
-  description: "Lees hoe WerkWaarde salaris, mobiliteit, reistijd en werkgerelateerde kosten vergelijkt.",
+  title: "Hoe werkt Nettoplaatje?",
+  description: "Lees hoe Nettoplaatje salaris, mobiliteit, reistijd en werkgerelateerde kosten vergelijkt.",
 };
 
 const faqs = [
-  ["Is WerkWaarde financieel advies?", "Nee. De uitkomsten zijn indicaties op basis van de ingevulde gegevens. Je eigen loonstrook, pensioenregeling, cao en persoonlijke omstandigheden kunnen tot andere bedragen leiden."],
+  ["Is Nettoplaatje financieel advies?", "Nee. De uitkomsten zijn indicaties op basis van de ingevulde gegevens. Je eigen loonstrook, pensioenregeling, cao en persoonlijke omstandigheden kunnen tot andere bedragen leiden."],
   ["Welke keuzes kan ik vergelijken?", "Je kunt een leaseauto, een uitbetaald mobiliteitsbudget en een eigen auto met kilometervergoeding naast elkaar zetten. In de tweede calculator vergelijk je een huidige en een nieuwe werksituatie."],
   ["Hoe wordt het netto loon berekend?", "We rekenen vanuit het bruto maandsalaris, vakantiegeld en de ingevulde pensioenbijdrage naar een indicatie van de loonheffing. De berekening gebruikt het gekozen belastingjaar."],
   ["Welke autokosten zijn meegenomen?", "Brandstof of laden, variabele autokosten, kilometervergoeding en optioneel afschrijving of een reserve. Parkeren en tol worden niet automatisch meegenomen omdat die sterk per situatie verschillen."],
-  ["Waarom kan mijn loonstrook afwijken?", "Werkelijke loonheffing hangt onder meer af van heffingskortingen, pensioenregels, bijtelling, cao-afspraken en andere inhoudingen. WerkWaarde geeft daarom een vergelijkingsbeeld en geen exacte loonstrook."],
-  ["Worden mijn gegevens opgeslagen?", "De calculators verwerken je invoer in je browser. In deze versie is geen account nodig en slaat WerkWaarde de ingevulde bedragen niet op een eigen server op."],
+  ["Waarom kan mijn loonstrook afwijken?", "Werkelijke loonheffing hangt onder meer af van heffingskortingen, pensioenregels, bijtelling, cao-afspraken en andere inhoudingen. Nettoplaatje geeft daarom een vergelijkingsbeeld en geen exacte loonstrook."],
+  ["Worden mijn gegevens opgeslagen?", "De calculators verwerken je invoer in je browser. In deze versie is geen account nodig en slaat Nettoplaatje de ingevulde bedragen niet op een eigen server op."],
 ] as const;
 
 export default function ExplanationPage() {
-  return <LegalPage eyebrow="Transparant rekenen" title="Hoe werkt WerkWaarde?" intro="WerkWaarde maakt de waarde van een baan en mobiliteitskeuze inzichtelijk. Hieronder leggen we uit welke stappen en aannames de calculators gebruiken.">
+  return <LegalPage eyebrow="Transparant rekenen" title="Hoe werkt Nettoplaatje?" intro="Nettoplaatje maakt de waarde van een baan en mobiliteitskeuze inzichtelijk. Hieronder leggen we uit welke stappen en aannames de calculators gebruiken.">
     <h2>1. Bruto naar netto</h2>
     <p>We starten met het bruto maandsalaris en het vakantiegeld. De werknemersbijdrage voor pensioen verlaagt in deze indicatie het belastbare loon. Daarna berekenen we een geschatte loonheffing voor het gekozen belastingjaar. De werkgeversbijdrage pensioen tonen we apart als onderdeel van de arbeidsvoorwaarden.</p>
 
