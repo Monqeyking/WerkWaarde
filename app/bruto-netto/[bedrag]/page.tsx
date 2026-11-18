@@ -115,6 +115,7 @@ export default async function AmountPage({ params }: Props) {
           </div>
           <h2 className="amount-side-title">Parttime, zelfde uurloon</h2>
           <SpokeTable head={["Uren per week", "Netto per maand"]} rows={hourRows} />
+          <p className="amount-neighbour-links"><Link href="/deeltijd">Met kinderopvang en toeslagen: wat levert een dag extra werken op? →</Link></p>
           <h2 className="amount-side-title">Bedragen in de buurt</h2>
           <SpokeTable head={[monthly ? "Bruto per maand" : "Bruto per jaar", monthly ? "Netto per maand" : "Netto per jaar"]}
             rows={neighbours.map((row) => ({ label: euro(row.page.amount), value: money(row.net), total: row.page.slug === page.slug }))} />

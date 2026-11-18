@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CaoSelect } from "../components/CaoSelect";
 import { Field } from "../components/Field";
+import { HouseholdInputs } from "../components/HouseholdInputs";
+import { hasFormalChildcare } from "../../lib/household";
 import { calculatePensionBreakdown } from "../../lib/calculator";
 import { TaxYearSelect } from "../components/TaxYearSelect";
 import { electricBijtellingText, kmLimitText } from "../../lib/tax-years";
@@ -94,6 +96,7 @@ function Inputs({ state, setState }: { state: NettoplaatjeState; setState: SetSt
   const benefits = (job: JobKey) => section(job, "benefits");
   const personal = (patch: Partial<PersonalSettings>) => setState((current) => updatePersonal(current, patch));
   const car = (patch: Partial<PersonalSettings["car"]>) => setState((current) => updatePersonal(current, { car: { ...current.personal.car, ...patch } }));
+  const detailedChildcare = state.personal.household.enabled && hasFormalChildcare(state);
   const usesOwnCar = (["current", "next"] as JobKey[]).some((job) => ["ownCar", "mobilityBudget"].includes(state.jobs[job].mobility.choice));
   const { car: carSettings } = state.personal;
 
@@ -157,7 +160,9 @@ function Inputs({ state, setState }: { state: NettoplaatjeState; setState: SetSt
           <Field label="Opvangdagen per week" value={state.jobs[job].childcareDaysPerWeek} onChange={(childcareDaysPerWeek) => setState((current) => markFilled(updateJob(current, job, { childcareDaysPerWeek }), job, "commute"))} suffix="dagen" step={0.5} max={7} />
         </>;
       }} />
-      <Field label="Kinderopvang per opvangdag" value={state.personal.childcareCostPerDay} onChange={(childcareCostPerDay) => personal({ childcareCostPerDay })} suffix="€" hint="Wat je per dag netto betaalt, na eventuele kinderopvangtoeslag." />
+      {detailedChildcare
+        ? <p className="choice-note">Opvangkosten en kinderopvangtoeslag rekenen we uit met je kinderen bij &lsquo;Huishouden en toeslagen&rsquo;.</p>
+        : <Field label="Kinderopvang per opvangdag" value={state.personal.childcareCostPerDay} onChange={(childcareCostPerDay) => personal({ childcareCostPerDay })} suffix="€" hint="Wat je per dag netto betaalt, na eventuele kinderopvangtoeslag. Of laat de toeslag uitrekenen bij 'Huishouden en toeslagen'." />}
     </InputSection>
 
     <InputSection number="04" title="Overige arbeidsvoorwaarden" section="benefits" state={state} setState={setState}>
@@ -172,7 +177,12 @@ function Inputs({ state, setState }: { state: NettoplaatjeState; setState: SetSt
       }} />
     </InputSection>
 
-    <InputSection number="05" title="Over jou en je auto" state={state} setState={setState}>
+    <InputSection number="05" title="Huishouden en toeslagen" state={state} setState={setState} open={state.personal.household.enabled}>
+      <HouseholdInputs model={state} setModel={setState} partnerHint="Is in beide banen gelijk." />
+      <p className="choice-note">Toeslagen hangen af van je inkomen, ook van de bijtelling van een leaseauto. Zo zie je of de nieuwe baan je toeslag kost. Meer per aantal uren zie je bij <Link href="/deeltijd">Deeltijd of voltijd</Link>.</p>
+    </InputSection>
+
+    <InputSection number="06" title="Over jou en je auto" state={state} setState={setState}>
       <div className="two-fields">
         <Field label="Leeftijd" value={state.personal.age} onChange={(age) => personal({ age })} suffix="jaar" min={16} max={100} />
         <Field label="Werkweken per jaar" value={state.personal.workWeeksPerYear} onChange={(workWeeksPerYear) => personal({ workWeeksPerYear })} suffix="weken" hint="52 weken minus vakantie en feestdagen. 46 is een gebruikelijke schatting." max={52} />
@@ -211,6 +221,8 @@ function BreakdownTable({ current, next, period }: { current: JobTotal; next: Jo
     { label: "Lunch en koffie", pick: (total) => -total.commute.lunchMonthly, hideWhenZero: true },
     { label: "Overige kosten", pick: (total) => -total.commute.otherMonthly, hideWhenZero: true },
     { label: "Kinderopvang", pick: (total) => -total.commute.childcareMonthly, hideWhenZero: true },
+    { label: "Kinderopvangtoeslag", pick: (total) => total.allowances?.kinderopvangtoeslagMonthly ?? 0, hideWhenZero: true },
+    { label: "Kindgebonden budget en zorgtoeslag", pick: (total) => (total.allowances?.kindgebondenBudgetMonthly ?? 0) + (total.allowances?.zorgtoeslagMonthly ?? 0), hideWhenZero: true },
   ];
   const rows = allRows.filter((row) => !row.hideWhenZero || row.pick(current) !== 0 || row.pick(next) !== 0);
   return <div className="work-table">
@@ -278,6 +290,7 @@ function Results({ state, setState }: { state: NettoplaatjeState; setState: SetS
           <button type="button" className={period === "year" ? "active" : ""} onClick={() => setPeriod("year")}>Jaar</button>
         </div></div>
       <BreakdownTable current={current} next={next} period={period} />
+      {current.allowances && next.allowances && <p className="choice-note">Toeslagen gerekend op een toetsingsinkomen van {money(current.allowances.toetsingsinkomen)} (huidig) en {money(next.allowances.toetsingsinkomen)} (nieuw), inclusief je partner.{state.personal.household.receivesRentAllowance && " Huurtoeslag rekenen we niet mee; die daalt meestal ook als je meer verdient."}</p>}
       {timeIncluded && <div className="work-table time-table">
         <div><span>Waarde reistijd</span><strong>{money(-current.commute.timeValueMonthly * (period === "year" ? 12 : 1))}</strong><strong>{money(-next.commute.timeValueMonthly * (period === "year" ? 12 : 1))}</strong><strong>{signedMoney(-(next.commute.timeValueMonthly - current.commute.timeValueMonthly) * (period === "year" ? 12 : 1))}</strong></div>
         <div className="work-total"><span>Netto over, incl. reistijd</span><strong>{money(current.netAfterCostsAndTimeMonthly * (period === "year" ? 12 : 1))}</strong><strong>{money(next.netAfterCostsAndTimeMonthly * (period === "year" ? 12 : 1))}</strong><strong>{signedMoney((next.netAfterCostsAndTimeMonthly - current.netAfterCostsAndTimeMonthly) * (period === "year" ? 12 : 1))}</strong></div>

@@ -7,6 +7,7 @@ export const CALCULATORS: readonly CalculatorLink[] = [
   { href: "/mobiliteit", kicker: "Auto", title: "Leaseauto of mobiliteitsbudget", text: "Vergelijk een leaseauto, mobiliteitsbudget en eigen auto met kilometervergoeding." },
   { href: "/bijtelling", kicker: "Leaseauto", title: "Bijtelling berekenen", text: "Wat kost een leaseauto je netto per maand, met de bijtelling van 2026?" },
   { href: "/kilometervergoeding", kicker: "Eigen auto", title: "Kilometervergoeding", text: "Dekt je vergoeding de kosten van je auto, en hoeveel is onbelast?" },
+  { href: "/deeltijd", kicker: "Deeltijd of voltijd", title: "Wat levert een dag extra werken op?", text: "Netto, na toeslagen en kinderopvang: wat je huishouden overhoudt bij 24 tot 40 uur." },
   { href: "/werkpatroon", kicker: "Thuis of kantoor", title: "Wat kost vaker naar kantoor?", text: "Reistijd, autokosten, parkeren, lunch en opvang bij meer kantoordagen." },
   { href: "/arbeidsvoorwaarden", kicker: "Totale beloning", title: "Arbeidsvoorwaarden", text: "Tel pensioen, bonus, opleidingsbudget en extra vakantiedagen op tot je totale beloning." },
 ];

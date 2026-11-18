@@ -12,6 +12,12 @@ export type CalculatorInputs = {
   pensionIncludesHoliday: boolean;
   /** The pension fund's own cap on pensionable salary per year; 0 or absent means only the fiscal maximum applies. */
   pensionMaxSalary?: number;
+  /**
+   * Contract hours ÷ full-time hours (at most 1). Pension schemes apply the franchise and the
+   * salary caps to the full-time salary, so for a part-timer they shrink by this factor.
+   * Absent or 1 means full time.
+   */
+  pensionPartTimeFactor?: number;
   age: number;
   leaseBudget: number;
   mobilityBudget: number;
@@ -99,17 +105,22 @@ function annualGrossSalary(inputs: CalculatorInputs) {
   return Math.max(0, inputs.salary) * 12 * (1 + Math.max(0, inputs.holidayAllowance) / 100);
 }
 
+function partTimeFactorOf(factor: number | undefined) {
+  return factor !== undefined && Number.isFinite(factor) && factor > 0 ? Math.min(1, factor) : 1;
+}
+
 export function calculatePensionBreakdown(inputs: CalculatorInputs) {
   const grossAnnual = Math.max(0, inputs.salary) * 12;
+  const factor = partTimeFactorOf(inputs.pensionPartTimeFactor);
   const fundCap = inputs.pensionMaxSalary && inputs.pensionMaxSalary > 0 ? inputs.pensionMaxSalary : Infinity;
   const pensionableAnnual = Math.min(
-    taxYear(inputs.taxYear).maxPensionableSalary,
-    fundCap,
+    taxYear(inputs.taxYear).maxPensionableSalary * factor,
+    fundCap * factor,
     grossAnnual * (inputs.pensionIncludesHoliday ? 1 + Math.max(0, inputs.holidayAllowance) / 100 : 1),
   );
 
   if (inputs.pensionInputMode === "scheme") {
-    const franchise = Math.max(0, inputs.pensionFranchise);
+    const franchise = Math.max(0, inputs.pensionFranchise) * factor;
     const pensionBase = Math.max(0, pensionableAnnual - franchise);
     const totalAnnual = pensionBase * Math.max(0, inputs.pensionTotalRate) / 100;
     const employeeAnnual = totalAnnual * Math.min(100, Math.max(0, inputs.pensionEmployeeShare)) / 100;

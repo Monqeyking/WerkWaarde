@@ -172,7 +172,7 @@ describe("writing calculator edits back into the model", () => {
   test("every mobility-calculator field round-trips through the model", () => {
     const base = toCalculatorInputs(createDefaultState(), "next");
     for (const key of Object.keys(base) as Array<keyof typeof base>) {
-      if (key === "businessKm") continue;
+      if (key === "businessKm" || key === "pensionPartTimeFactor") continue;
       const original = base[key];
       const changed = typeof original === "boolean" ? !original
         : typeof original === "number" ? original + 7

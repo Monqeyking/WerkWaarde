@@ -102,3 +102,34 @@ describe("compareJobs", () => {
     assert.ok(!compareJobs(state).unfilled.some((item) => item.job === "next" && item.section === "salary"));
   });
 });
+
+describe("part time and toeslagen inputs", () => {
+  const scheme = (hoursPerWeek: number, fullTimeHours: number, grossMonthly: number) => {
+    const state = createDefaultState();
+    return updateJobSection(state, "current", "salary", {
+      grossMonthly, hoursPerWeek, fullTimeHours, pensionMode: "scheme",
+      pensionTotalRatePct: 25, pensionEmployeeSharePct: 40, pensionFranchise: 19_000, pensionIncludesHoliday: true,
+    });
+  };
+
+  test("unknown full-time hours keep the pension as before", () => {
+    assert.equal(toCalculatorInputs(scheme(32, 0, 4_000), "current").pensionPartTimeFactor, 1);
+    assert.equal(toCalculatorInputs(scheme(40, 36, 4_000), "current").pensionPartTimeFactor, 1, "never above full time");
+    assert.equal(toCalculatorInputs(scheme(32, 40, 4_000), "current").pensionPartTimeFactor, 0.8);
+  });
+
+  test("32 of 40 hours pays 80% of the full-time pension premium", () => {
+    const full = calculateJobTotal(scheme(40, 40, 5_000), "current");
+    const partTime = calculateJobTotal(scheme(32, 40, 4_000), "current");
+    near(partTime.income.pensionEmployeeMonthly, full.income.pensionEmployeeMonthly * 0.8);
+    near(partTime.benefits.employerPensionMonthly, full.benefits.employerPensionMonthly * 0.8);
+  });
+
+  test("taxableAnnual includes the lease car's bijtelling", () => {
+    const state = updateJobSection(createDefaultState(), "current", "mobility", { choice: "none" });
+    const without = calculateJobTotal(state, "current");
+    near(without.taxableAnnual, (without.income.netPayMonthly + without.income.taxMonthly) * 12);
+    const lease = calculateJobTotal(updateJobSection(state, "current", "mobility", { choice: "lease" }), "current");
+    assert.ok(lease.taxableAnnual > without.taxableAnnual);
+  });
+});

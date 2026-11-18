@@ -184,11 +184,11 @@ button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; ba
 .total-calculator { grid-template-columns:minmax(360px,460px) minmax(0,1fr); }
 .total-calculator .work-results { position:sticky; top:16px; }
 .total-section { border-top:1px solid var(--line); }
-.total-section summary { display:flex; align-items:center; gap:9px; padding:15px 0; cursor:pointer; list-style:none; font-size:12px; }
-.total-section summary::-webkit-details-marker { display:none; }
-.total-section summary::after { content:"›"; margin-left:8px; color:var(--teal); font-size:18px; line-height:1; transition:transform .15s; }
-.total-section[open] summary::after { transform:rotate(90deg); }
-.total-section summary strong { margin-right:auto; color:var(--ink); }
+.total-section > summary { display:flex; align-items:center; gap:9px; padding:15px 0; cursor:pointer; list-style:none; font-size:12px; }
+.total-section > summary::-webkit-details-marker { display:none; }
+.total-section > summary::after { content:"›"; margin-left:8px; color:var(--teal); font-size:18px; line-height:1; transition:transform .15s; }
+.total-section[open] > summary::after { transform:rotate(90deg); }
+.total-section > summary strong { margin-right:auto; color:var(--ink); }
 .section-status { padding:3px 7px; border-radius:10px; color:#8a6d4f; background:var(--orange-soft); font-size:9px; font-weight:800; }
 .section-status.done { color:var(--teal); background:var(--teal-soft); }
 .total-section-body { padding-bottom:16px; }
@@ -336,3 +336,45 @@ button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; ba
 .cao-note p { margin-top:5px; }
 .cao-note a { color:var(--teal); font-weight:700; }
 .link-button { padding:0; border:0; color:var(--teal); background:none; font:inherit; font-weight:700; text-decoration:underline; cursor:pointer; }
+/* Deeltijd */
+.hours-details { margin-top:20px; }
+.hours-details summary,.child-more summary { cursor:pointer; color:var(--teal); font-size:11px; font-weight:800; }
+.hours-details .hours-table { margin-top:8px; }
+.child-more { margin-top:10px; }
+.child-more summary { font-size:10px; }
+.household-section { margin-top:16px; }
+.child-card { margin-top:14px; padding:12px 12px 14px; border:1px solid #e0e9ec; border-radius:10px; background:#fbfcfd; }
+.child-card-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:11px; }
+.child-card .field:first-child,.child-card .two-fields .field { margin-top:8px; }
+.hours-picker { display:grid; gap:10px; margin-top:16px; }
+.hours-choice { display:flex; align-items:center; gap:12px; }
+.hours-choice .section-kicker { width:38px; flex:0 0 auto; }
+.hours-choice .period-toggle { flex-wrap:wrap; }
+.hours-choice .period-toggle button { min-width:40px; font-weight:800; }
+.waterfall .bar-row+.bar-row { margin-top:11px; }
+.waterfall-total { padding-top:12px; border-top:1px solid #dfe8eb; }
+.waterfall-total .bar-label span,.waterfall-total .bar-label strong { color:var(--ink); font-weight:800; }
+.hours-table { margin-top:24px; font-size:11px; color:var(--muted); }
+.hours-table-row { display:grid; grid-template-columns:.7fr 1fr 1fr 1fr 1fr 1fr .9fr; gap:8px; padding:9px 8px; border-top:1px solid var(--line); text-align:right; }
+.hours-table-row>:first-child { text-align:left; }
+.hours-table-row strong { color:var(--ink); }
+.hours-table-head { border-top:0; color:#9aa8b1; font-size:9px; text-transform:uppercase; letter-spacing:.06em; }
+.hours-table-head strong { color:#7a8c96; }
+.hours-table-row.selected { border-radius:8px; background:var(--teal-soft); }
+.hours-table-row.selected strong { color:var(--teal); }
+.hours-table-note { display:block; margin-top:8px; color:#8a99a6; font-size:9px; line-height:1.5; }
+@media (max-width:760px) {
+  .hours-table-row { grid-template-columns:.6fr 1fr 1fr 1fr 1fr; font-size:10px; gap:6px; padding:8px 4px; }
+  .hours-table-row>:nth-child(3),.hours-table-row>:nth-child(7) { display:none; }
+  .hours-table-head { letter-spacing:.02em; }
+  /* "+€ 275 per maand" on one line on a phone. */
+  .work-highlight strong { font-size:30px; }
+}
+/* Comparison tables on a phone: the label on its own line, then current, new and difference side by side. */
+@media (max-width:760px) {
+  .work-table { overflow-x:visible; }
+  .work-table>div { grid-template-columns:repeat(3,minmax(0,1fr)); gap:3px 8px; padding:9px 0; }
+  .work-table>div>span:first-child { grid-column:1 / -1; }
+  .work-table-head>span:first-child { display:none; }
+  .work-table .work-total { padding-top:11px; }
+}

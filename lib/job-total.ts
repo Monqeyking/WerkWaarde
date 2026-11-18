@@ -15,6 +15,8 @@ import {
   incomeTax,
 } from "./calculator.ts";
 import { taxYear } from "./tax-years.ts";
+import { allowancesFor, hasFormalChildcare } from "./household.ts";
+import type { AllowancesResult } from "./toeslagen.ts";
 import {
   JOB_KEYS,
   SECTION_KEYS,
@@ -55,17 +57,30 @@ export type JobTotal = {
     parkingMonthly: number;
     lunchMonthly: number;
     otherMonthly: number;
+    /**
+     * Childcare costs. With toeslagen on and children in formal childcare: the full bill
+     * before kinderopvangtoeslag (the toeslag is in `allowances`). Otherwise the user's own
+     * net amount per opvangdag.
+     */
     childcareMonthly: number;
     homeWorkAllowanceMonthly: number;
     timeValueMonthly: number;
   };
-  /** What is left each month after mobility, work-related costs and childcare. */
+  /** Toeslagen at this job's income, or null when the user has not switched them on. */
+  allowances: AllowancesResult | null;
+  /** What is left each month after mobility, work-related costs and childcare, toeslagen included. */
   netAfterCostsMonthly: number;
   /** Same, minus the money value of travel time if the user enabled it. */
   netAfterCostsAndTimeMonthly: number;
   workHoursPerMonth: number;
   /** Net amount left per hour spent on the job, travel time included. */
   netPerHourInclTravel: number;
+  /**
+   * Box 1 income from this job per year: salary, holiday allowance and bonuses minus the
+   * employee's pension premium, plus taxable mobility (bijtelling). The own part of the
+   * toetsingsinkomen for toeslagen.
+   */
+  taxableAnnual: number;
   benefits: {
     employerPensionMonthly: number;
     vacationDays: number;
@@ -76,7 +91,8 @@ export type JobTotal = {
   totalRewardAnnual: number;
 };
 
-function workingDaysPerWeek(hoursPerWeek: number) {
+/** Working days per week from contract hours, at 8 hours a day and at most 5 days. */
+export function workingDaysPerWeek(hoursPerWeek: number) {
   return Math.min(5, Math.max(0, hoursPerWeek) / HOURS_PER_WORKING_DAY);
 }
 
@@ -126,6 +142,12 @@ export function calculateJobTotal(state: NettoplaatjeState, job: JobKey): JobTot
   const netPayMonthly = (salaryTaxable - salaryTax) / 12;
   const mobilityNetMonthly = mobility.cashMonthly - mobilityTaxMonthly;
 
+  const taxableAnnual = salaryTaxable + mobility.taxableAnnual;
+  const allowances = allowancesFor(state, job, taxableAnnual);
+  // With toeslagen on and children in formal childcare, the detailed calculation replaces
+  // the simple "net cost per opvangdag" field.
+  const detailedChildcare = allowances !== null && hasFormalChildcare(state);
+
   // Commuting and other work-related costs
   const daysPerMonth = officeDaysPerMonth(state, job);
   const travelHoursPerMonth = daysPerMonth * commute.oneWayMinutes * 2 / 60;
@@ -137,14 +159,15 @@ export function calculateJobTotal(state: NettoplaatjeState, job: JobKey): JobTot
     parkingMonthly: daysPerMonth * commute.parkingPerOfficeDay,
     lunchMonthly: daysPerMonth * commute.lunchPerOfficeDay,
     otherMonthly: daysPerMonth * commute.otherPerOfficeDay,
-    childcareMonthly: profile.childcareDaysPerWeek * personal.childcareCostPerDay * weeks / 12,
+    childcareMonthly: detailedChildcare ? allowances.childcareGrossMonthly : profile.childcareDaysPerWeek * personal.childcareCostPerDay * weeks / 12,
     // Thuiswerkvergoeding is usually tax-free within the legal limit, so it counts as net.
     homeWorkAllowanceMonthly: homeDaysPerWeek * weeks / 12 * commute.homeWorkAllowancePerDay,
     timeValueMonthly: personal.timeValue.include ? travelHoursPerMonth * personal.timeValue.perHour : 0,
   };
 
   const netAfterCostsMonthly = netPayMonthly + mobilityNetMonthly + commuteTotals.homeWorkAllowanceMonthly
-    - commuteTotals.parkingMonthly - commuteTotals.lunchMonthly - commuteTotals.otherMonthly - commuteTotals.childcareMonthly;
+    - commuteTotals.parkingMonthly - commuteTotals.lunchMonthly - commuteTotals.otherMonthly - commuteTotals.childcareMonthly
+    + (allowances?.totalAllowancesMonthly ?? 0);
   const workHoursPerMonth = salary.hoursPerWeek * weeks / 12;
   const hoursIncludingTravel = workHoursPerMonth + travelHoursPerMonth;
 
@@ -164,6 +187,8 @@ export function calculateJobTotal(state: NettoplaatjeState, job: JobKey): JobTot
       taxMonthly: mobilityTaxMonthly,
       netMonthly: mobilityNetMonthly,
     },
+    taxableAnnual,
+    allowances,
     commute: commuteTotals,
     netAfterCostsMonthly,
     netAfterCostsAndTimeMonthly: netAfterCostsMonthly - commuteTotals.timeValueMonthly,

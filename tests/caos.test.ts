@@ -38,6 +38,7 @@ describe("applying a cao", () => {
     assert.equal(patch.pensionTotalRatePct, withPension!.pension!.totalRatePct);
     assert.equal(patch.grossMonthly, undefined);
     assert.equal(patch.hoursPerWeek, undefined);
+    assert.equal(patch.fullTimeHours, withPension!.fullTimeHours ?? 0);
   });
 
   test("a stored cao id survives sanitizing, an unknown one is dropped", () => {

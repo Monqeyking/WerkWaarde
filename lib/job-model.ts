@@ -53,12 +53,51 @@ export type PersonalSettings = {
   };
   childcareCostPerDay: number;
   timeValue: { include: boolean; perHour: number };
+  household: Household;
+};
+
+export type ChildCare = "none" | "dagopvang" | "bso" | "gastouder";
+export const CHILD_CARE_TYPES: ChildCare[] = ["none", "dagopvang", "bso", "gastouder"];
+
+export type Child = {
+  active: boolean;
+  /** Age in the calculation year. */
+  age: number;
+  care: ChildCare;
+  /** Childcare hours per opvangdag. */
+  hoursPerDay: number;
+  /** What the childcare organisation actually charges per hour. */
+  hourlyPrice: number;
+  /** Weeks per year in the childcare contract (52 for most dagopvang, often 40 or 48 for bso). */
+  weeksPerYear: number;
+};
+
+/** Fixed slots instead of an array: the model's overlay and diff only handle plain objects. */
+export const CHILD_SLOTS = ["c1", "c2", "c3", "c4"] as const;
+export type ChildSlot = (typeof CHILD_SLOTS)[number];
+
+/** The household, needed for toeslagen. The same for both jobs. */
+export type Household = {
+  /** "Toeslagen meerekenen": off keeps the calculations without toeslagen. */
+  enabled: boolean;
+  hasPartner: boolean;
+  /** The toeslagpartner's box 1 income per year (gross minus own pension premium). */
+  partnerTaxableAnnual: number;
+  /** Deductions that lower the toetsingsinkomen, such as mortgage interest. */
+  deductionsAnnual: number;
+  /** Wealth above the limit: no zorgtoeslag and no kindgebonden budget. */
+  assetsAboveLimit: boolean;
+  /** Huurtoeslag is not calculated; this only shows a pointer to the Belastingdienst. */
+  receivesRentAllowance: boolean;
+  children: Record<ChildSlot, Child>;
 };
 
 export type JobProfile = {
   salary: {
     grossMonthly: number;
     hoursPerWeek: number;
+    /** Full-time hours at this employer (from the cao); 0 = unknown, treated as full time. */
+    fullTimeHours: number;
     holidayAllowancePct: number;
     /** 13th month / end-of-year bonus as % of annual base salary. */
     yearEndBonusPct: number;
@@ -120,7 +159,7 @@ export type NettoplaatjeState = {
 
 const defaultJob = (officeDaysPerWeek: number): JobProfile => ({
   salary: {
-    grossMonthly: 4500, hoursPerWeek: 40, holidayAllowancePct: 8, yearEndBonusPct: 0, annualBonus: 0,
+    grossMonthly: 4500, hoursPerWeek: 40, fullTimeHours: 0, holidayAllowancePct: 8, yearEndBonusPct: 0, annualBonus: 0,
     pensionMode: "monthly", pensionEmployeeMonthly: 0, pensionEmployerMonthly: 0,
     pensionTotalRatePct: 20, pensionEmployeeSharePct: 33.33, pensionFranchise: 19172, pensionIncludesHoliday: true, pensionMaxSalary: 0, caoId: "",
   },
@@ -141,6 +180,9 @@ const defaultJob = (officeDaysPerWeek: number): JobProfile => ({
 
 const noneFilled = (): Record<SectionKey, boolean> => ({ salary: false, mobility: false, commute: false, benefits: false });
 
+/** An empty child slot: a toddler on a full dagopvang day, at the 2026 maximum hourly price. */
+const defaultChild = (): Child => ({ active: false, age: 2, care: "dagopvang", hoursPerDay: 11, hourlyPrice: 11.23, weeksPerYear: 52 });
+
 export function createDefaultState(): NettoplaatjeState {
   return {
     version: MODEL_VERSION,
@@ -152,6 +194,11 @@ export function createDefaultState(): NettoplaatjeState {
       },
       childcareCostPerDay: 0,
       timeValue: { include: false, perHour: 0 },
+      household: {
+        enabled: false, hasPartner: true, partnerTaxableAnnual: 0, deductionsAnnual: 0,
+        assetsAboveLimit: false, receivesRentAllowance: false,
+        children: { c1: defaultChild(), c2: defaultChild(), c3: defaultChild(), c4: defaultChild() },
+      },
     },
     jobs: { current: defaultJob(1), next: defaultJob(4) },
     filled: { current: noneFilled(), next: noneFilled() },
@@ -194,9 +241,17 @@ export function sanitizeState(input: unknown): NettoplaatjeState {
     job.commute.officeDaysPerWeek = Math.min(7, job.commute.officeDaysPerWeek);
     job.childcareDaysPerWeek = Math.min(7, job.childcareDaysPerWeek);
     job.salary.pensionEmployeeSharePct = Math.min(100, job.salary.pensionEmployeeSharePct);
+    job.salary.fullTimeHours = Math.min(60, job.salary.fullTimeHours);
     if (!findCao(job.salary.caoId)) job.salary.caoId = "";
   }
   state.personal.workWeeksPerYear = Math.min(52, state.personal.workWeeksPerYear);
+  for (const slot of CHILD_SLOTS) {
+    const child = state.personal.household.children[slot];
+    if (!CHILD_CARE_TYPES.includes(child.care)) child.care = "none";
+    child.age = Math.min(17, Math.floor(child.age));
+    child.hoursPerDay = Math.min(24, child.hoursPerDay);
+    child.weeksPerYear = Math.min(52, child.weeksPerYear);
+  }
   // Only years the interface offers; an unpublished or unknown year falls back to the default.
   if (!selectableTaxYears().includes(state.personal.taxYear)) state.personal.taxYear = DEFAULT_TAX_YEAR;
   return state;
@@ -321,6 +376,15 @@ export function updatePersonal(state: NettoplaatjeState, patch: Partial<Personal
   return { ...state, personal: { ...state.personal, ...patch } };
 }
 
+export function updateHousehold(state: NettoplaatjeState, patch: Partial<Omit<Household, "children">>): NettoplaatjeState {
+  return updatePersonal(state, { household: { ...state.personal.household, ...patch } });
+}
+
+export function updateChild(state: NettoplaatjeState, slot: ChildSlot, patch: Partial<Child>): NettoplaatjeState {
+  const { household } = state.personal;
+  return updatePersonal(state, { household: { ...household, children: { ...household.children, [slot]: { ...household.children[slot], ...patch } } } });
+}
+
 /** "Same as current job" for one section of the new job. */
 export function copySectionToNext(state: NettoplaatjeState, section: SectionKey): NettoplaatjeState {
   return updateJobSection(state, "next", section, structuredClone(state.jobs.current[section]));
@@ -352,7 +416,10 @@ const mobilityPath = (key: string, group?: "lease" | "mix"): ModelPath => ({ sco
 const commutePath = (key: string): ModelPath => ({ scope: "job", section: "commute", key });
 const personalPath = (key: string, group?: "car" | "timeValue"): ModelPath => ({ scope: "personal", key, group });
 
-const CALCULATOR_PATHS: Record<Exclude<keyof CalculatorInputs, "businessKm">, ModelPath> = {
+/** Calculator inputs that are derived from other model fields instead of stored. */
+type DerivedCalculatorKey = "businessKm" | "pensionPartTimeFactor";
+
+const CALCULATOR_PATHS: Record<Exclude<keyof CalculatorInputs, DerivedCalculatorKey>, ModelPath> = {
   salary: salaryPath("grossMonthly"),
   holidayAllowance: salaryPath("holidayAllowancePct"),
   pensionInputMode: salaryPath("pensionMode"),
@@ -461,7 +528,9 @@ export function applyCalculatorInput<K extends keyof CalculatorInputs>(
     const extra = Math.max(0, (value as number) - commuteKmPerYear(state, job));
     return updateJobSection(state, job, "mobility", { extraBusinessKmPerYear: extra });
   }
-  return applyPath(state, job, CALCULATOR_PATHS[key as Exclude<keyof CalculatorInputs, "businessKm">], value as Value);
+  // Follows from contract and full-time hours; no calculator edits it directly.
+  if (key === "pensionPartTimeFactor") return state;
+  return applyPath(state, job, CALCULATOR_PATHS[key as Exclude<keyof CalculatorInputs, DerivedCalculatorKey>], value as Value);
 }
 
 /** Write one field of the work-pattern calculator back into the model. */
@@ -476,6 +545,15 @@ export function applyWorkPatternInput<K extends keyof WorkPatternInputs>(
 
 /** Map the mobility calculator's scenario names to the model's choices. */
 export const SCENARIO_TO_CHOICE = { lease: "lease", mobility: "mobilityBudget", ownCar: "ownCar" } as const satisfies Record<string, MobilityChoice>;
+
+/**
+ * Contract hours as a share of full time (at most 1). Unknown full-time hours count as
+ * full time, so the pension is calculated as before until the user or a cao fills them in.
+ */
+export function partTimeFactor(salary: Pick<JobProfile["salary"], "hoursPerWeek" | "fullTimeHours">) {
+  if (salary.fullTimeHours <= 0 || salary.hoursPerWeek <= 0) return 1;
+  return Math.min(1, salary.hoursPerWeek / salary.fullTimeHours);
+}
 
 /** Inputs for the existing mobility/salary calculator, for one job. */
 export function toCalculatorInputs(state: NettoplaatjeState, job: JobKey): CalculatorInputs {
@@ -492,6 +570,7 @@ export function toCalculatorInputs(state: NettoplaatjeState, job: JobKey): Calcu
     pensionFranchise: salary.pensionFranchise,
     pensionIncludesHoliday: salary.pensionIncludesHoliday,
     pensionMaxSalary: salary.pensionMaxSalary,
+    pensionPartTimeFactor: partTimeFactor(salary),
     age: state.personal.age,
     leaseBudget: mobility.leaseBudget,
     mobilityBudget: mobility.mobilityBudget,

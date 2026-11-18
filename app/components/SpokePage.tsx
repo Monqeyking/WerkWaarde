@@ -7,7 +7,7 @@ import { SiteFooter, SiteNav, type NavKey } from "./SiteChrome";
 export type Faq = readonly [question: string, answer: string];
 
 /** Page frame for a single-topic calculator: hero, calculator, explanation, FAQ, related articles, ad. */
-export default function SpokePage({ active, kicker, title, intro, calculator, how, faqs, articles, adPlacement, extra }: {
+export default function SpokePage({ active, kicker, title, intro, calculator, how, faqs, articles, adPlacement, extra, disclaimer }: {
   active?: NavKey;
   kicker: string;
   title: string;
@@ -20,6 +20,8 @@ export default function SpokePage({ active, kicker, title, intro, calculator, ho
   adPlacement: string;
   /** Optional block between the explanation and the FAQ. */
   extra?: ReactNode;
+  /** Replaces the standard disclaimer text, for pages with their own assumptions and sources. */
+  disclaimer?: ReactNode;
 }) {
   const related = articles.map((slug) => getArticle(slug)).filter((article) => article !== undefined);
   const faqJsonLd = {
@@ -44,7 +46,7 @@ export default function SpokePage({ active, kicker, title, intro, calculator, ho
       <div className="how-grid">
         {how.map(([heading, text], index) => <div className="how-card" key={heading}><span className={`how-icon ${colors[index % colors.length]}`}>{String(index + 1).padStart(2, "0")}</span><h3>{heading}</h3><p>{text}</p></div>)}
       </div>
-      <div className="disclaimer"><span className="disclaimer-icon">!</span><div><strong>Een indicatie, geen financieel advies.</strong><p>De uitkomst is een schatting op basis van je invoer en de tarieven van 2026. Toeslagen, persoonlijke aftrekposten, cao-regelingen en de exacte loonheffing per maand kunnen tot andere bedragen leiden. Lees meer in de <Link href="/uitleg">uitleg over de rekenmethode</Link>.</p></div></div>
+      <div className="disclaimer"><span className="disclaimer-icon">!</span><div><strong>Een indicatie, geen financieel advies.</strong>{disclaimer ?? <p>De uitkomst is een schatting op basis van je invoer en de tarieven van 2026. Toeslagen, persoonlijke aftrekposten, cao-regelingen en de exacte loonheffing per maand kunnen tot andere bedragen leiden. Lees meer in de <Link href="/uitleg">uitleg over de rekenmethode</Link>.</p>}</div></div>
 
       {extra}
 

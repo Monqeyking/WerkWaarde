@@ -67,6 +67,29 @@ describe("pension", () => {
     near(pension.pensionableAnnual, 137_800);
   });
 
+  test("part time: franchise scales with the part-time factor, so the premium is pro rata", () => {
+    const full = calculatePensionBreakdown({ ...base, pensionInputMode: "scheme" });
+    const partTime = calculatePensionBreakdown({ ...base, pensionInputMode: "scheme", salary: base.salary * 0.8, pensionPartTimeFactor: 0.8 });
+    near(partTime.pensionBase, full.pensionBase * 0.8);
+    near(partTime.totalAnnual, full.totalAnnual * 0.8);
+    const unscaled = calculatePensionBreakdown({ ...base, pensionInputMode: "scheme", salary: base.salary * 0.8 });
+    assert.ok(unscaled.totalAnnual < partTime.totalAnnual, "without the factor a part-timer pays too little");
+  });
+
+  test("part time: salary caps apply to the full-time salary", () => {
+    const pension = calculatePensionBreakdown({ ...base, pensionInputMode: "scheme", salary: 16_000, pensionPartTimeFactor: 0.5 });
+    near(pension.pensionableAnnual, 137_800 * 0.5);
+    const fund = calculatePensionBreakdown({ ...base, pensionInputMode: "scheme", salary: 8_000, pensionMaxSalary: 79_409, pensionPartTimeFactor: 0.5 });
+    near(fund.pensionableAnnual, 79_409 * 0.5);
+  });
+
+  test("part-time factor is ignored when missing, invalid or above 1", () => {
+    const full = calculatePensionBreakdown({ ...base, pensionInputMode: "scheme" });
+    for (const factor of [undefined, 0, -1, Number.NaN, 1.2]) {
+      near(calculatePensionBreakdown({ ...base, pensionInputMode: "scheme", pensionPartTimeFactor: factor }).totalAnnual, full.totalAnnual);
+    }
+  });
+
   test("employee contribution lowers tax but is still deducted", () => {
     const without = calculateSalaryBreakdown(base);
     const withPension = calculateSalaryBreakdown({ ...base, pensionEmployeeMonthly: 200 });

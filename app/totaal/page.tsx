@@ -52,7 +52,7 @@ export default function TotalPage() {
         <div className="how-card"><span className="how-icon blue">03</span><h3>Kosten van werken</h3><p>Uit je kantoordagen en werkweken volgen de kilometers, reistijd, parkeer- en lunchkosten per maand. Thuiswerkvergoeding en kinderopvang tellen per dag mee.</p></div>
         <div className="how-card"><span className="how-icon orange">04</span><h3>Tijd en extra&apos;s</h3><p>Reistijd telt mee in je netto uurloon. Pensioen van je werkgever, opleidingsbudget en vakantiedagen staan apart, omdat je ze niet als salaris ontvangt.</p></div>
       </div>
-      <div className="disclaimer"><span className="disclaimer-icon">!</span><div><strong>Een indicatie, geen financieel advies.</strong><p>De uitkomst is een schatting op basis van je invoer en de tarieven van 2026. Toeslagen, persoonlijke aftrekposten, cao-regelingen en de exacte loonheffing per maand kunnen tot andere bedragen leiden. Lees meer in de <Link href="/uitleg">uitleg over de rekenmethode</Link>.</p></div></div>
+      <div className="disclaimer"><span className="disclaimer-icon">!</span><div><strong>Een indicatie, geen financieel advies.</strong><p>De uitkomst is een schatting op basis van je invoer en de tarieven van 2026. Toeslagen (als je ze meerekent een indicatie, zonder huurtoeslag), persoonlijke aftrekposten, cao-regelingen en de exacte loonheffing per maand kunnen tot andere bedragen leiden. Lees meer in de <Link href="/uitleg">uitleg over de rekenmethode</Link>.</p></div></div>
 
       <div className="faq-block">
         <h2>Veelgestelde vragen</h2>

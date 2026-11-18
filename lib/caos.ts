@@ -28,7 +28,7 @@ export type Cao = {
   sector: string;
   /** Term of the agreement, written out in Dutch. */
   period: string;
-  /** Full-time hours per week; shown as information, not prefilled. Null when the cao sets none. */
+  /** Full-time hours per week; prefills the full-time hours (not the contract hours). Null when the cao sets none. */
   fullTimeHours: number | null;
   /** Null when the cao leaves it to the employer; the field is then left alone. */
   holidayAllowancePct: number | null;
@@ -230,10 +230,12 @@ export function findCao(id: string): Cao | undefined {
   return CAOS.find((cao) => cao.id === id);
 }
 
-/** Salary fields to set when the user picks this cao. Gross salary and hours are left alone. */
+/** Salary fields to set when the user picks this cao. Gross salary and contract hours are left alone. */
 export function caoSalaryPatch(cao: Cao): Partial<JobProfile["salary"]> {
   return {
     caoId: cao.id,
+    // Needed to scale the pension franchise for part-timers; 0 when the cao sets no full-time week.
+    fullTimeHours: cao.fullTimeHours ?? 0,
     ...(cao.holidayAllowancePct !== null && { holidayAllowancePct: cao.holidayAllowancePct }),
     ...(cao.yearEndBonusPct !== null && { yearEndBonusPct: cao.yearEndBonusPct }),
     ...(cao.pension && {

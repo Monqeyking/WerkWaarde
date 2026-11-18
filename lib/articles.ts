@@ -194,7 +194,7 @@ export const ARTICLES: Article[] = [
         heading: "Wat betekent dit bij een nieuwe baan?",
         paragraphs: [
           "Biedt een nieuwe werkgever € 300 bruto per maand meer, dan is dat bij een middeninkomen netto ongeveer € 150. Moet je voor die baan verder reizen, dan kunnen hogere reiskosten een groot deel daarvan opeten. Ook een lagere pensioenbijdrage van de werkgever of minder vakantiedagen kunnen het verschil kleiner maken.",
-          "Wil je precies zien wat een loonsverhoging netto oplevert? Reken je huidige en je nieuwe salaris door in de rekenhulp. De uitkomst is een indicatie op basis van de regels van 2026. Persoonlijke zaken zoals toeslagen of andere inkomsten kunnen de uitkomst veranderen.",
+          "Wil je precies zien wat een loonsverhoging netto oplevert? Reken je huidige en je nieuwe salaris door in de rekenhulp. De uitkomst is een indicatie op basis van de regels van 2026. Krijg je toeslagen of kinderopvangtoeslag, dan houd je vaak nog minder over: lees [loont het om meer uren te gaan werken?](/vragen/loont-meer-uren-werken).",
         ],
       },
     ],
@@ -432,6 +432,143 @@ export const ARTICLES: Article[] = [
       "banen-eerlijk-vergelijken",
       "minder-over-van-vakantiegeld-en-bonus",
       "bruto-naar-netto",
+    ],
+  },
+  {
+    slug: "loont-meer-uren-werken",
+    title: "Loont het om meer uren te gaan werken?",
+    description:
+      "Een dag extra werken levert 25% meer bruto op, maar soms maar een kwart daarvan netto. Zo werken belasting, toeslagen en kinderopvang samen.",
+    updated: "2026-11-18",
+    intro:
+      "Meer uren werken levert altijd iets op, maar vaak minder dan je denkt. Zonder kinderen houd je bij een middeninkomen ongeveer de helft van je extra bruto over. Met kinderen op de opvang kan dat zakken naar een kwart, of nog minder.",
+    sections: [
+      {
+        heading: "Wat is marginale druk?",
+        paragraphs: [
+          "Marginale druk is het deel van een extra euro bruto dat je niet overhoudt. Daarin zit de belasting over die euro, maar ook alles wat lager wordt omdat je meer verdient: heffingskortingen en toeslagen. En de kosten die je extra maakt, zoals een extra opvangdag of reiskosten.",
+          "Bij een marginale druk van 75% houd je van € 100 bruto extra € 25 over. Je inkomen gaat dus wel omhoog, alleen veel minder hard dan je brutoloon.",
+        ],
+      },
+      {
+        heading: "Belasting: ongeveer de helft",
+        paragraphs: [
+          "Tussen ongeveer € 45.600 en € 78.400 per jaar betaal je over een extra euro ongeveer 50% belasting. Dat komt door het tarief van 37,56% en de afbouw van de algemene heffingskorting en de arbeidskorting. Hoe dat werkt, lees je in [hoeveel bruto heb je nodig voor € 100 netto meer?](/vragen/bruto-voor-100-euro-netto-meer).",
+          "Een voorbeeld. Je verdient € 4.250 bruto per maand bij 40 uur. Bij 32 uur is dat € 3.400. Met vakantiegeld is het verschil € 918 per maand. Zonder kinderen en zonder toeslagen houd je daar ongeveer € 465 van over: 51 cent per euro.",
+        ],
+      },
+      {
+        heading: "Kinderopvang en toeslagen",
+        paragraphs: [
+          "Werk je een dag meer, dan heb je vaak ook een opvangdag meer nodig. De kinderopvangtoeslag vergoedt een groot deel, maar niet alles. En omdat je meer verdient, krijg je over álle opvanguren een iets lager percentage. Lees meer in [kinderopvangtoeslag 2026](/vragen/kinderopvangtoeslag-2026).",
+          "In hetzelfde voorbeeld met een partner die € 40.000 verdient en een peuter die 4 dagen naar de dagopvang gaat, houdt het huishouden van de € 918 extra bruto maar ongeveer € 228 over. Dat is 25 cent per euro. Met twee kinderen op de dagopvang kan het zakken tot onder de 10 cent.",
+          "Ook het [kindgebonden budget](/vragen/kindgebonden-budget-2026) en de zorgtoeslag worden lager als je meer verdient. Bij lagere inkomens telt dat flink mee: de zorgtoeslag daalt met bijna 14 cent per extra euro, het kindgebonden budget met 7,6 cent.",
+        ],
+      },
+      {
+        heading: "Wat het wel oplevert",
+        paragraphs: [
+          "Meer uren werken betekent ook meer pensioenopbouw. In de meeste regelingen bouw je naar rato van je uren op, en die waarde zie je niet terug in je netto loon. Kinderen gaan ook ooit naar school: de opvangkosten zijn tijdelijk, je loopbaan en pensioen niet.",
+          "Andersom kost minder werken je dus vaak minder dan het lijkt. Wie een dag minder gaat werken voor de zorg of voor zichzelf, levert netto soms maar een kwart van het bruto in. Reken het voor je eigen situatie door voordat je beslist.",
+        ],
+      },
+    ],
+    calculator: { href: "/deeltijd", label: "Bereken wat een dag extra werken oplevert" },
+    related: [
+      "kinderopvangtoeslag-2026",
+      "kindgebonden-budget-2026",
+      "bruto-voor-100-euro-netto-meer",
+    ],
+  },
+  {
+    slug: "kinderopvangtoeslag-2026",
+    title: "Kinderopvangtoeslag 2026: hoeveel krijg je?",
+    description:
+      "In 2026 krijg je tot 96% van de maximum uurprijs vergoed. Zo werken de uurprijzen, de tabel per inkomen en de regel voor het eerste kind.",
+    updated: "2026-11-18",
+    intro:
+      "Met kinderopvangtoeslag krijg je in 2026 tussen 36,5% en 96% van je opvangkosten vergoed, tot een maximum uurprijs. Hoeveel precies, hangt af van het gezamenlijke inkomen van jou en je partner. Tot een toetsingsinkomen van € 56.412 krijg je het maximum van 96%.",
+    sections: [
+      {
+        heading: "Maximum uurprijs en uren",
+        paragraphs: [
+          "De toeslag gaat over een maximum uurprijs. In 2026 is dat € 11,23 voor dagopvang, € 9,98 voor buitenschoolse opvang en € 8,49 voor gastouderopvang. Rekent je opvang meer, dan betaal je het verschil helemaal zelf.",
+          "Je krijgt toeslag voor maximaal 230 uur per kind per maand. Sinds 2023 hangt dat niet meer af van hoeveel uur je werkt. Wel moeten jij en je toeslagpartner allebei werken, of bijvoorbeeld een opleiding of traject naar werk volgen.",
+        ],
+      },
+      {
+        heading: "Het percentage per inkomen",
+        paragraphs: [
+          "Het percentage hangt af van je toetsingsinkomen: jouw inkomen plus dat van je toeslagpartner. Tot € 56.412 is het 96%. Daarboven daalt het stap voor stap, tot 36,5% vanaf € 165.658. Dat lagere percentage geldt voor álle opvanguren, niet alleen voor de uren boven een grens.",
+          "Voor het tweede en volgende kind krijg je een hoger percentage: nooit minder dan 68,2%. Het eerste kind is het kind met de meeste opvanguren. Zitten er twee kinderen op de opvang, dan krijgt het kind met minder uren het hogere percentage.",
+          "Let op als je een leaseauto hebt. De bijtelling telt mee in je toetsingsinkomen, en kan je percentage dus verlagen.",
+        ],
+      },
+      {
+        heading: "Rekenvoorbeeld",
+        paragraphs: [
+          "Partners verdienen samen € 84.000. Hun peuter gaat 4 dagen per week 11 uur naar de dagopvang, 52 weken per jaar. Dat is gemiddeld bijna 191 uur per maand. Tegen € 11,23 per uur kost de opvang € 2.141 per maand. Bij hun inkomen is de toeslag 83,7%: € 1.792. Ze betalen zelf € 349 per maand.",
+          "Rekent de opvang € 12,50 per uur, dan stijgt de rekening naar € 2.383, maar de toeslag blijft € 1.792. Ze betalen dan zelf € 591 per maand. Een opvang boven de maximum uurprijs is dus flink duurder dan het verschil per uur doet denken.",
+        ],
+      },
+      {
+        heading: "Wat verandert er na 2026?",
+        paragraphs: [
+          "Het kabinet wil de vergoedingspercentages in 2027 verhogen. De definitieve tabel voor 2027 is nog niet gepubliceerd. Het grotere plan, een vergoeding van 96% voor alle werkende ouders, is uitgesteld naar 2029.",
+          "Wil je weten wat een dag meer of minder werken doet met je toeslag en je opvangkosten? Reken het door in de calculator. Lees ook [loont het om meer uren te gaan werken?](/vragen/loont-meer-uren-werken).",
+        ],
+      },
+    ],
+    calculator: { href: "/deeltijd", label: "Bereken je kinderopvangtoeslag" },
+    related: [
+      "loont-meer-uren-werken",
+      "kindgebonden-budget-2026",
+      "wat-is-bijtelling",
+    ],
+  },
+  {
+    slug: "kindgebonden-budget-2026",
+    title: "Kindgebonden budget 2026: hoeveel krijg je?",
+    description:
+      "In 2026 is het kindgebonden budget maximaal € 2.580 per kind per jaar, met extra voor oudere kinderen en alleenstaande ouders. Zo bereken je het.",
+    updated: "2026-11-18",
+    intro:
+      "Het kindgebonden budget is in 2026 maximaal € 2.580 per kind per jaar. Voor kinderen vanaf 12 en 16 jaar komt er een bedrag bij, en alleenstaande ouders krijgen € 3.416 extra. Boven een inkomensgrens daalt het met 7,6 cent per extra euro.",
+    sections: [
+      {
+        heading: "De bedragen in 2026",
+        paragraphs: [
+          "Per kind is het maximum € 2.580 per jaar. Voor een kind van 12 tot en met 15 jaar komt er € 724 bij, voor een kind van 16 of 17 jaar € 964. Een alleenstaande ouder krijgt daarbovenop de alleenstaande-ouderkop van € 3.416 per jaar.",
+          "Een gezin met twee jonge kinderen krijgt dus maximaal € 5.160 per jaar. Een alleenstaande ouder met één kind maximaal € 5.996.",
+        ],
+      },
+      {
+        heading: "Hoe het afneemt met je inkomen",
+        paragraphs: [
+          "Je krijgt het volle bedrag tot een toetsingsinkomen van € 39.141 met een toeslagpartner, of € 29.736 als je alleen bent. Boven die grens gaat er 7,6% van elke extra euro af. Elke € 1.000 meer inkomen kost je dus € 76 kindgebonden budget.",
+          "Met een partner en één kind is het budget op bij ongeveer € 73.100 samen. Met twee kinderen bij ongeveer € 107.000. Heb je meer vermogen dan € 146.011, of € 184.633 samen, dan heb je geen recht.",
+        ],
+      },
+      {
+        heading: "Rekenvoorbeeld",
+        paragraphs: [
+          "Partners met kinderen van 4 en 8 jaar verdienen samen € 44.000. Het maximum is € 5.160. Ze zitten € 4.859 boven de grens, dus er gaat 7,6% daarvan af: € 369. Ze krijgen € 4.791 per jaar, ongeveer € 399 per maand.",
+          "Gaat een van beiden meer werken en stijgt hun inkomen naar € 54.000, dan zakt het budget naar € 4.031. Van die € 10.000 extra bruto gaat dus € 760 aan kindgebonden budget af, bovenop de belasting. Meer daarover in [loont het om meer uren te gaan werken?](/vragen/loont-meer-uren-werken).",
+        ],
+      },
+      {
+        heading: "Aanvragen en wat er verandert",
+        paragraphs: [
+          "Krijg je kinderbijslag en is je inkomen bekend bij de Belastingdienst, dan krijg je het kindgebonden budget meestal vanzelf. Anders vraag je het aan bij Dienst Toeslagen. Geef wijzigingen in je inkomen op tijd door, zodat je niet hoeft terug te betalen.",
+          "Er ligt een wetsvoorstel om het kindgebonden budget vanaf 2027 sneller af te bouwen bij een inkomen boven € 60.000. Dat is nog niet aangenomen. In de calculator zie je wat het kindgebonden budget in jouw situatie doet als je meer of minder gaat werken.",
+        ],
+      },
+    ],
+    calculator: { href: "/deeltijd", label: "Bereken je toeslagen per aantal uren" },
+    related: [
+      "loont-meer-uren-werken",
+      "kinderopvangtoeslag-2026",
+      "bruto-voor-100-euro-netto-meer",
     ],
   },
 ];

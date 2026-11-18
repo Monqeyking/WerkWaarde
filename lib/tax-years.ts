@@ -26,6 +26,74 @@ export type TaxYearParams = {
   bijtelling: { standardRate: number; electricRate: number; electricCap: number };
   /** Maximum tax-free reimbursement per business km. */
   taxFreeKmRate: number;
+  allowances: AllowanceParams;
+};
+
+export type ChildcareType = "dagopvang" | "bso" | "gastouder";
+
+/** Toeslagen: zorgtoeslag, kindgebonden budget and kinderopvangtoeslag. Huurtoeslag is not calculated. */
+export type AllowanceParams = {
+  /** Wealth above which there is no zorgtoeslag or kindgebonden budget (kinderopvangtoeslag has no wealth test). */
+  assetLimit: { single: number; partner: number };
+  zorgtoeslag: {
+    /** Annual standard premium per adult. */
+    standardPremium: number;
+    /** Drempelinkomen: the minimum wage on which the norm premium is based. */
+    thresholdIncome: number;
+    /** Normpercentage over the drempelinkomen. */
+    normRateSingle: number;
+    normRatePartner: number;
+    /** Afbouwpercentage over the toetsingsinkomen above the drempelinkomen. */
+    phaseOutRate: number;
+  };
+  kindgebondenBudget: {
+    perChild: number;
+    /** Extra per child of 12 to 15 years old. */
+    age12: number;
+    /** Extra per child of 16 or 17 years old. */
+    age16: number;
+    /** Alleenstaande-ouderkop. */
+    singleParent: number;
+    thresholdSingle: number;
+    thresholdPartner: number;
+    phaseOutRate: number;
+  };
+  kinderopvangtoeslag: {
+    maxHourlyPrice: Record<ChildcareType, number>;
+    maxHoursPerMonth: number;
+    /** Rows sorted by `from`: percentage for the child with the most hours, and for every other child. */
+    table: ReadonlyArray<readonly [from: number, firstChildPct: number, otherChildPct: number]>;
+  };
+};
+
+/** Rijksoverheid, "Bedragen kinderopvangtoeslag 2026". Below € 56.413 everyone gets 96%. */
+const KOT_TABLE_2026: AllowanceParams["kinderopvangtoeslag"]["table"] = [
+  [0, 96, 96], [56_413, 95.5, 95.6], [58_185, 94.8, 95.6], [59_958, 93.9, 95.6], [61_896, 92.4, 95.6],
+  [65_696, 91.6, 95.2], [69_493, 90.5, 94.6], [73_293, 88.2, 94.2], [77_095, 85.9, 93.9], [80_892, 83.7, 93.2],
+  [84_694, 81.2, 92.7], [88_492, 78.9, 92.2], [92_292, 76.7, 91.5], [96_092, 74.3, 90.9], [99_890, 72.1, 90.5],
+  [103_695, 69.6, 90.2], [107_493, 67.3, 89.5], [111_291, 65.1, 89.1], [115_091, 62.7, 88.6], [118_964, 60.6, 87.9],
+  [122_858, 58.5, 87.4], [126_748, 56.4, 87.0], [130_639, 54.2, 86.7], [134_528, 52.3, 86.0], [138_421, 50.4, 85.4],
+  [142_313, 48.5, 85.0], [146_206, 46.5, 84.4], [150_093, 44.5, 84.0], [153_983, 42.5, 83.3], [157_878, 40.5, 82.7],
+  [161_767, 38.5, 81.7], [165_658, 36.5, 81.4], [169_548, 36.5, 80.6], [173_441, 36.5, 79.7], [177_336, 36.5, 79.1],
+  [181_224, 36.5, 78.2], [185_115, 36.5, 77.7], [189_003, 36.5, 76.9], [192_897, 36.5, 76.2], [196_790, 36.5, 75.5],
+  [200_682, 36.5, 74.5], [204_572, 36.5, 74.0], [208_459, 36.5, 73.3], [212_354, 36.5, 72.5], [216_243, 36.5, 71.8],
+  [220_135, 36.5, 71.2], [224_027, 36.5, 70.4], [227_916, 36.5, 69.6], [231_808, 36.5, 69.1], [235_698, 36.5, 68.2],
+];
+
+const ALLOWANCES_2026: AllowanceParams = {
+  assetLimit: { single: 146_011, partner: 184_633 },
+  // Norm percentages: Staatscourant 2025, 42977. Standard premium and drempelinkomen reproduce
+  // the Belastingdienst table (maximum € 129 / € 246 per month).
+  zorgtoeslag: { standardPremium: 2_119, thresholdIncome: 29_736, normRateSingle: 0.01912, normRatePartner: 0.04289, phaseOutRate: 0.1373 },
+  kindgebondenBudget: {
+    perChild: 2_580, age12: 724, age16: 964, singleParent: 3_416,
+    thresholdSingle: 29_736, thresholdPartner: 39_141, phaseOutRate: 0.076,
+  },
+  kinderopvangtoeslag: {
+    maxHourlyPrice: { dagopvang: 11.23, bso: 9.98, gastouder: 8.49 },
+    maxHoursPerMonth: 230,
+    table: KOT_TABLE_2026,
+  },
 };
 
 const TOP_RATE = 0.495;
@@ -60,6 +128,7 @@ const TAX_2026: TaxYearParams = {
   maxPensionableSalary: 137_800,
   bijtelling: { standardRate: 0.22, electricRate: 0.18, electricCap: 30_000 },
   taxFreeKmRate: 0.25,
+  allowances: ALLOWANCES_2026,
 };
 
 /**
@@ -104,6 +173,10 @@ const TAX_2027: TaxYearParams = {
   maxPensionableSalary: 137_800, // estimated: 2026 value until the 2027 figure is published
   bijtelling: { standardRate: 0.22, electricRate: 0.20, electricCap: 30_000 },
   taxFreeKmRate: 0.25,
+  // ESTIMATED: 2026 values. Still open for 2027: the kinderopvangtoeslag table of the
+  // Prinsjesdag wijzigingsbesluit (vaste voet first child 39.1%), the proposed second
+  // kindgebonden budget phase-out from € 60.000, and the final zorgtoeslag figures.
+  allowances: ALLOWANCES_2026,
 };
 
 export const TAX_YEARS: readonly TaxYearParams[] = [TAX_2026, TAX_2027];
