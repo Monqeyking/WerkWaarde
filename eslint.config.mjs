@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Wrangler (Cloudflare Pages dev server) temp files:
     ".wrangler/**",
+    // Browser extension build output:
+    "extension/dist/**",
   ]),
 ]);
 

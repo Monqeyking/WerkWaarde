@@ -17,7 +17,7 @@ function Contact() {
 }
 
 export default function PrivacyPage() {
-  return <><JsonLd data={breadcrumbJsonLd([["Privacy", "/privacy"]])} /><LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 16 november 2026.">
+  return <><JsonLd data={breadcrumbJsonLd([["Privacy", "/privacy"]])} /><LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 19 november 2026.">
     <h2>Wie we zijn</h2>
     <p>{SITE_NAME} biedt gratis calculators voor salaris, mobiliteit en de kosten van werken. Je kunt ze gebruiken zonder account.{OPERATOR.name && <> {SITE_NAME} wordt beheerd door {OPERATOR.name}{OPERATOR.address && <>, {OPERATOR.address}</>}{OPERATOR.kvk && <> (KvK {OPERATOR.kvk})</>}. {OPERATOR.name} is verantwoordelijk voor de verwerking van persoonsgegevens op deze site.</>} Vragen over privacy stel je via <Contact />.</p>
 
@@ -33,6 +33,12 @@ export default function PrivacyPage() {
     <p>{SITE_NAME} is gratis dankzij advertenties van Google AdSense. Google en zijn partners gebruiken cookies om advertenties te tonen op basis van je bezoek aan deze en andere websites.</p>
     <p>Bezoekers uit de Europese Economische Ruimte, het Verenigd Koninkrijk en Zwitserland krijgen eerst een toestemmingsmelding. Zonder toestemming krijg je alleen niet-gepersonaliseerde advertenties. Je kunt gepersonaliseerde advertenties ook uitzetten via de <a href="https://adssettings.google.com" rel="noopener" target="_blank">advertentie-instellingen van Google</a>. Lees meer over <a href="https://policies.google.com/technologies/partner-sites" rel="noopener" target="_blank">hoe Google gegevens gebruikt op sites van partners</a>.</p>
     <p>Een deel van de advertenties plaatsen we zelf, voor {houseAdAdvertisers().join(" en ")}. Die gebruiken geen cookies en volgen je niet. Alleen als je erop klikt, ziet de adverteerder via de link dat je van {SITE_NAME} komt.</p>
+
+    <h2>De calculator op andere websites</h2>
+    <p>Andere sites kunnen onze bruto-nettocalculator op hun pagina zetten. Die ingesloten calculator rekent ook alleen in je browser, bewaart niets, plaatst geen cookies en toont geen advertenties. Cloudflare verwerkt bij het laden dezelfde technische gegevens als bij een gewoon bezoek.</p>
+
+    <h2>De browserextensie</h2>
+    <p>De extensie &lsquo;Nettoplaatje: netto salaris in vacatures&rsquo; werkt alleen op Indeed, Nationale Vacaturebank en Werkzoeken.nl. Ze leest daar de salarisbedragen op de pagina en rekent het netto uit in je browser. Ze stuurt niets naar ons of naar anderen, bewaart geen gegevens en volgt niet welke vacatures je bekijkt. Pas als je op een bedrag klikt, open je {SITE_NAME} met dat salaris in de link, in het deel na het hekje.</p>
 
     <h2>Geen analytics, geen verkoop</h2>
     <p>We gebruiken geen eigen analytics- of trackingdiensten en verkopen geen gegevens.</p>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdSlot from "../../components/AdSlot";
+import EmbedCta from "../../components/EmbedCta";
 import { SiteFooter, SiteNav } from "../../components/SiteChrome";
 import { Highlight, Metrics, SpokeTable, type TableRow } from "../../components/Spoke";
 import AmountLinks from "../AmountLinks";
@@ -109,6 +110,7 @@ export default async function AmountPage({ params }: Props) {
           <SpokeTable head={["Uren per week", "Netto per maand"]} rows={hourRows} />
           <p className="amount-neighbour-links"><Link href="/deeltijd">Met kinderopvang en toeslagen: wat levert een dag extra werken op? →</Link></p>
           <p className="amount-neighbour-links"><Link href="/cao">Met pensioenpremie en 13e maand van jouw cao →</Link></p>
+          <EmbedCta className="" />
           <h2 className="amount-side-title">Bedragen in de buurt</h2>
           <SpokeTable head={[monthly ? "Bruto per maand" : "Bruto per jaar", monthly ? "Netto per maand" : "Netto per jaar"]}
             rows={neighbours.map((row) => ({ label: euro(row.page.amount), value: money(row.net), total: row.page.slug === page.slug }))} />

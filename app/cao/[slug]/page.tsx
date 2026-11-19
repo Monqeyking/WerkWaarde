@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdSlot from "../../components/AdSlot";
+import EmbedCta from "../../components/EmbedCta";
 import JsonLd from "../../components/JsonLd";
 import { SiteFooter, SiteNav } from "../../components/SiteChrome";
 import { Highlight, SpokeTable, type TableRow } from "../../components/Spoke";
@@ -135,6 +136,7 @@ export default async function CaoPage({ params }: Props) {
             <p className="amount-neighbour-links">{siblings.map((other) => <Link key={other.id} href={caoPath(other)}>{other.name}</Link>)}</p>
           </>}
           <p className="amount-neighbour-links"><Link href="/cao">Alle cao&apos;s →</Link></p>
+          <EmbedCta className="" />
         </aside>
       </div>
     </section>
