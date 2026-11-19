@@ -298,6 +298,9 @@ button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; ba
 .tax-year-box { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 12px; margin:12px 0; padding:12px 14px; border:1px solid var(--line); border-radius:12px; background:#fbfcfc; }
 .tax-year-note { width:100%; color:#a0622f; font-size:10px; line-height:1.5; }
 .legal-card p + p { margin-top:10px; }
+.about-list { margin:8px 0 10px; padding-left:18px; color:var(--muted); font-size:12px; line-height:1.7; }
+.about-list li + li { margin-top:4px; }
+.about-list strong { color:var(--ink); }
 
 /* Amount pages (/bruto-netto/3500-per-maand): answer left, extras right */
 .amount-shell { grid-template-columns:1fr 360px; }

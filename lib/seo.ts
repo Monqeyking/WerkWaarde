@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "./site";
+import { OPERATOR, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "./site";
 
 /** The share image from app/opengraph-image.tsx, exported to /opengraph-image. */
 export const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE_NAME}: wat levert een nieuwe baan je écht op?` };
@@ -55,7 +55,10 @@ export function pageMetadata({ path, title, description, socialTitle, socialDesc
 export const SITE_JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "Organization", "@id": ORGANIZATION_ID, name: SITE_NAME, url: SITE_URL },
+    {
+      "@type": "Organization", "@id": ORGANIZATION_ID, name: SITE_NAME, url: SITE_URL,
+      ...(OPERATOR.name && { parentOrganization: { "@type": "Organization", name: OPERATOR.name, ...(OPERATOR.website && { url: OPERATOR.website }) } }),
+    },
     { "@type": "WebSite", "@id": WEBSITE_ID, url: SITE_URL, name: SITE_NAME, description: SITE_DESCRIPTION, inLanguage: "nl-NL", publisher: { "@id": ORGANIZATION_ID } },
   ],
 };

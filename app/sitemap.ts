@@ -26,6 +26,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...CAOS.map((cao) => page(caoPath(cao), cao.checkedOn)),
     page("/vragen", latestArticle),
     ...ARTICLES.map((article) => page(`/vragen/${article.slug}`, article.updated)),
-    ...["/uitleg", "/privacy", "/cookies", "/disclaimer", "/contact"].map((path) => page(path)),
+    ...["/over", "/uitleg","/privacy", "/cookies", "/disclaimer", "/contact"].map((path) => page(path)),
   ];
 }

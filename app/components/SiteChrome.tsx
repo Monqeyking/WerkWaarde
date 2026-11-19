@@ -36,6 +36,6 @@ export function SiteFooter() {
     <div className="brand"><Brand /></div>
     <span>Een heldere indicatie voor jouw werk- en mobiliteitskeuze.</span>
     <nav className="footer-tools" aria-label="Calculators">{CALCULATORS.map((tool) => <Link key={tool.href} href={tool.href}>{tool.title}</Link>)}<Link href="/cao">Netto per cao</Link><Link href="/vragen">Vragen en antwoorden</Link></nav>
-    <span className="footer-links"><Link href="/uitleg">Uitleg</Link><Link href="/privacy">Privacy</Link><Link href="/cookies">Cookies</Link><Link href="/disclaimer">Disclaimer</Link><Link href="/contact">Contact</Link></span>
+    <span className="footer-links"><Link href="/over">Over</Link><Link href="/uitleg">Uitleg</Link><Link href="/privacy">Privacy</Link><Link href="/cookies">Cookies</Link><Link href="/disclaimer">Disclaimer</Link><Link href="/contact">Contact</Link></span>
   </footer>;
 }
