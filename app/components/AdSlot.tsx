@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { adsEnabled, pickAd, readAdConfig, type AdChoice } from "../../lib/ads.ts";
+import { adsenseUnit, houseAdsEnabled, pickHouseAd, readAdConfig, type HouseAdChoice } from "../../lib/ads.ts";
 
 declare global {
   interface Window {
@@ -10,11 +10,16 @@ declare global {
 }
 
 const config = readAdConfig();
+const adsense = adsenseUnit(config);
+const houseAds = houseAdsEnabled(config);
 
 /** House ads already shown on the current page, so a second box picks another one. */
 let shownOnPage: { path: string; ids: string[] } = { path: "", ids: [] };
 
-function AdSenseUnit({ publisherId, slotId }: { publisherId: string; slotId: string }) {
+/** Which boxes an ad spot shows. Pages with one spot show both; pages with two split them. */
+export type AdShow = "both" | "house" | "adsense";
+
+function AdSenseBox({ publisherId, slotId }: { publisherId: string; slotId: string }) {
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -22,38 +27,33 @@ function AdSenseUnit({ publisherId, slotId }: { publisherId: string; slotId: str
       // AdSense can be blocked by a browser extension or consent settings.
     }
   }, []);
-  return <ins className="adsbygoogle ad-unit"
-    style={{ display: "block" }}
-    data-ad-client={publisherId}
-    data-ad-slot={slotId}
-    data-ad-format="auto"
-    data-full-width-responsive="true" />;
+  return <aside className="ad-box shell" aria-label="Advertentie" data-ad-kind="adsense">
+    <span className="ad-label">Advertentie</span>
+    <ins className="adsbygoogle ad-unit"
+      style={{ display: "block" }}
+      data-ad-client={publisherId}
+      data-ad-slot={slotId}
+      data-ad-format="auto"
+      data-full-width-responsive="true" />
+  </aside>;
 }
 
-/**
- * One labelled ad box. Place it between content sections, never next to
- * inputs, buttons or results. The choice is made after mount so server and
- * client render the same empty box first; the box reserves its height.
- */
-export default function AdSlot({ placement }: { placement: string }) {
-  const [choice, setChoice] = useState<AdChoice | null>(null);
+function HouseAdBox({ placement }: { placement: string }) {
+  const [choice, setChoice] = useState<HouseAdChoice | null>(null);
 
   useEffect(() => {
     // Picking is random, so it must run on the client only (no hydration mismatch).
     const path = window.location.pathname;
     if (shownOnPage.path !== path) shownOnPage = { path, ids: [] };
-    const next = pickAd(config, { placement, exclude: shownOnPage.ids });
-    if (next?.kind === "house") shownOnPage.ids.push(next.ad.id);
+    const next = pickHouseAd({ placement, exclude: shownOnPage.ids });
+    shownOnPage.ids.push(next.ad.id);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setChoice(next);
   }, [placement]);
 
-  if (!adsEnabled(config)) return null;
-
-  return <aside className="ad-box shell" aria-label="Advertentie" data-ad-kind={choice?.kind}>
+  return <aside className="ad-box shell" aria-label="Advertentie" data-ad-kind="house">
     <span className="ad-label">Advertentie</span>
-    {choice?.kind === "adsense" && <AdSenseUnit publisherId={choice.publisherId} slotId={choice.slotId} />}
-    {choice?.kind === "house" && <a className="house-ad" href={choice.href} target="_blank" rel="sponsored noopener">
+    {choice && <a className="house-ad" href={choice.href} target="_blank" rel="sponsored noopener">
       {/* Plain img: the site is a static export without the image optimizer. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {choice.ad.logo && <img className="house-ad-logo" src={choice.ad.logo} alt={choice.ad.advertiser} width={82} height={28} />}
@@ -65,4 +65,19 @@ export default function AdSlot({ placement }: { placement: string }) {
       <span className="house-ad-cta">{choice.ad.cta} →</span>
     </a>}
   </aside>;
+}
+
+/**
+ * An ad spot: a Virtrust house ad and, when AdSense is configured, a separate
+ * Google ad box. Place it between content sections, never next to inputs,
+ * buttons or results. Each box reserves its height.
+ */
+export default function AdSlot({ placement, show = "both" }: { placement: string; show?: AdShow }) {
+  const house = houseAds && show !== "adsense";
+  const google = adsense && show !== "house" ? adsense : null;
+  if (!house && !google) return null;
+  return <>
+    {house && <HouseAdBox placement={placement} />}
+    {google && <AdSenseBox publisherId={google.publisherId} slotId={google.slotId} />}
+  </>;
 }

@@ -1,48 +1,39 @@
 import { existsSync } from "node:fs";
 import assert from "node:assert/strict";
 import test from "node:test";
-import { HOUSE_ADS, adsEnabled, houseAdAdvertisers, houseAdHref, houseAdShare, pickAd } from "../lib/ads.ts";
+import { HOUSE_ADS, adsenseUnit, houseAdAdvertisers, houseAdHref, houseAdsEnabled, pickHouseAd } from "../lib/ads.ts";
 
 const adsense = { publisherId: "ca-pub-123", slotId: "456" };
 const sequence = (...values: number[]) => () => values.shift() ?? 0;
 
-test("house ad share defaults to 50% with AdSense and 100% without", () => {
-  assert.equal(houseAdShare(adsense), 50);
-  assert.equal(houseAdShare({}), 100);
-  assert.equal(houseAdShare({ ...adsense, houseShare: "80" }), 80);
-  assert.equal(houseAdShare({ ...adsense, houseShare: "250" }), 100);
-  assert.equal(houseAdShare({ houseShare: "30" }), 100, "nothing else to show without AdSense");
-  assert.equal(houseAdShare({ houseShare: "0" }), 0);
-  assert.equal(houseAdShare({ houseShare: "abc" }), 100);
+test("the AdSense box needs both a publisher and a slot id", () => {
+  assert.deepEqual(adsenseUnit(adsense), adsense);
+  assert.equal(adsenseUnit({ publisherId: "ca-pub-123" }), null);
+  assert.equal(adsenseUnit({}), null);
 });
 
-test("ads are off only when AdSense is missing and house ads are disabled", () => {
-  assert.equal(adsEnabled({}), true);
-  assert.equal(adsEnabled({ houseShare: "0" }), false);
-  assert.equal(adsEnabled({ ...adsense, houseShare: "0" }), true);
-  assert.equal(pickAd({ houseShare: "0" }, { placement: "home" }), null);
+test("house ads are on by default and off only with 0", () => {
+  assert.equal(houseAdsEnabled({}), true);
+  assert.equal(houseAdsEnabled({ houseAds: "" }), true);
+  assert.equal(houseAdsEnabled({ houseAds: "1" }), true);
+  assert.equal(houseAdsEnabled({ houseAds: " 0 " }), false);
+  assert.equal(houseAdsEnabled({ ...adsense, houseAds: "0" }), false, "independent of AdSense");
 });
 
-test("pickAd splits between house ads and AdSense by share", () => {
-  const config = { ...adsense, houseShare: "60" };
-  assert.equal(pickAd(config, { placement: "home", random: sequence(0.59, 0) })?.kind, "house");
-  assert.deepEqual(pickAd(config, { placement: "home", random: sequence(0.6) }), { kind: "adsense", publisherId: "ca-pub-123", slotId: "456" });
-  assert.equal(pickAd({ ...adsense, houseShare: "0" }, { placement: "home", random: sequence(0) })?.kind, "adsense");
-});
-
-test("pickAd skips house ads already on the page while others are left", () => {
+test("pickHouseAd skips house ads already on the page while others are left", () => {
   const first = HOUSE_ADS[0].id;
   for (const draw of [0, 0.5, 0.999999]) {
-    const choice = pickAd({}, { placement: "totaal", exclude: [first], random: sequence(draw) });
-    assert.ok(choice?.kind === "house" && choice.ad.id !== first);
+    const choice = pickHouseAd({ placement: "totaal", exclude: [first], random: sequence(draw) });
+    assert.notEqual(choice.ad.id, first);
   }
-  const all = pickAd({}, { placement: "totaal", exclude: HOUSE_ADS.map((ad) => ad.id), random: sequence(0) });
-  assert.equal(all?.kind, "house");
+  const all = pickHouseAd({ placement: "totaal", exclude: HOUSE_ADS.map((ad) => ad.id), random: sequence(0) });
+  assert.equal(all.ad.id, HOUSE_ADS[0].id);
 });
 
-test("pickAd never indexes past the pool", () => {
-  const choice = pickAd({}, { placement: "totaal", random: sequence(0.999999) });
-  assert.ok(choice?.kind === "house" && choice.ad.id === HOUSE_ADS[HOUSE_ADS.length - 1].id);
+test("pickHouseAd never indexes past the pool and tags the link", () => {
+  const choice = pickHouseAd({ placement: "totaal", random: sequence(0.999999) });
+  assert.equal(choice.ad.id, HOUSE_ADS[HOUSE_ADS.length - 1].id);
+  assert.match(choice.href, /utm_content=totaal/);
 });
 
 test("house ads promote services, not vacancies", () => {

@@ -89,6 +89,7 @@ button,input { font:inherit; } a { color:inherit; }
 .ad-label { display:block; margin-bottom:8px; color:#8a99a6; font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
 .ad-unit { min-height:90px; }
 .ad-box:has(ins[data-ad-status="unfilled"]) { display:none; }
+.ad-box + .ad-box { margin-top:12px; }
 .house-ad { display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:72px; padding:4px 2px; color:var(--ink); text-decoration:none; }
 .house-ad-logo { flex:0 0 auto; width:auto; height:28px; }
 .house-ad-text { display:grid; flex:1 1 auto; gap:3px; }
