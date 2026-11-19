@@ -42,6 +42,8 @@ export type HoursScenario = {
   childcareNetMonthly: number;
   zorgtoeslagMonthly: number;
   kindgebondenBudgetMonthly: number;
+  /** Inkomensafhankelijke combinatiekorting (via the tax return, not the payslip). */
+  combinatiekortingMonthly: number;
   /** What this job adds to the household each month: net pay + mobility − work costs − childcare + toeslagen. */
   householdNetMonthly: number;
   /** householdNetMonthly per hour spent on the job, travel time included. */
@@ -95,6 +97,7 @@ export function hoursScenario(state: NettoplaatjeState, job: JobKey, hours: numb
   const childcareNetMonthly = childcareGrossMonthly - kinderopvangtoeslagMonthly;
   const zorgtoeslagMonthly = allowances?.zorgtoeslagMonthly ?? 0;
   const kindgebondenBudgetMonthly = allowances?.kindgebondenBudgetMonthly ?? 0;
+  const combinatiekortingMonthly = allowances?.combinatiekortingMonthly ?? 0;
   const { income, commute } = total;
   const grossMonthly = income.grossMonthly + income.holidayMonthly + income.yearEndMonthly + income.bonusMonthly;
   const workCostsMonthly = commute.parkingMonthly + commute.lunchMonthly + commute.otherMonthly - commute.homeWorkAllowanceMonthly;
@@ -116,6 +119,7 @@ export function hoursScenario(state: NettoplaatjeState, job: JobKey, hours: numb
     childcareNetMonthly,
     zorgtoeslagMonthly,
     kindgebondenBudgetMonthly,
+    combinatiekortingMonthly,
     householdNetMonthly,
     netPerHour: hoursSpent > 0 ? householdNetMonthly / hoursSpent : 0,
     toetsingsinkomen: allowances?.toetsingsinkomen ?? null,
@@ -147,9 +151,10 @@ export type ScenarioComparison = {
   kinderopvangtoeslag: number;
   /** Zorgtoeslag + kindgebonden budget. */
   otherAllowances: number;
+  combinatiekorting: number;
   /**
    * Change in what the household keeps. Adds up as
-   * gross − pension − tax + mobility − workCosts − childcareGross + kinderopvangtoeslag + otherAllowances.
+   * gross − pension − tax + mobility − workCosts − childcareGross + kinderopvangtoeslag + otherAllowances + combinatiekorting.
    */
   householdNet: number;
   /** Euros kept per extra euro gross (0–1 in normal cases); null when gross does not change. */
@@ -174,6 +179,7 @@ export function compareScenarios(from: HoursScenario, to: HoursScenario): Scenar
     childcareGross: to.childcareGrossMonthly - from.childcareGrossMonthly,
     kinderopvangtoeslag: to.kinderopvangtoeslagMonthly - from.kinderopvangtoeslagMonthly,
     otherAllowances: (to.zorgtoeslagMonthly + to.kindgebondenBudgetMonthly) - (from.zorgtoeslagMonthly + from.kindgebondenBudgetMonthly),
+    combinatiekorting: to.combinatiekortingMonthly - from.combinatiekortingMonthly,
     householdNet,
     keptPerEuro,
     marginalPressure: keptPerEuro === null ? null : 1 - keptPerEuro,

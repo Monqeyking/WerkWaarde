@@ -12,7 +12,8 @@ import {
   type Household,
   type NettoplaatjeState,
 } from "../../lib/job-model";
-import { taxYear } from "../../lib/tax-years";
+import { taxYear, type ChildcareType } from "../../lib/tax-years";
+import { careChangePatch } from "../../lib/household";
 import { money } from "../../lib/format";
 
 const CARE_LABELS: Record<ChildCare, string> = {
@@ -34,18 +35,18 @@ export function HouseholdInputs({ model, setModel, partnerHint }: { model: Netto
   const setHousehold = (patch: Partial<Omit<Household, "children">>) => setModel((current) => updateHousehold(current, patch));
   const setChild = (slot: ChildSlot, patch: Partial<Child>) => setModel((current) => updateChild(current, slot, patch));
   const freeSlot = CHILD_SLOTS.find((slot) => !household.children[slot].active);
-  const limits = taxYear(model.personal.taxYear).allowances.assetLimit;
+  const { assetLimit: limits, kinderopvangtoeslag } = taxYear(model.personal.taxYear).allowances;
 
   return <>
     <Checkbox checked={household.enabled} onChange={(enabled) => setHousehold({ enabled })} label="Reken toeslagen mee"
-      small="Kinderopvangtoeslag, kindgebonden budget en zorgtoeslag, op het inkomen van je huishouden." />
+      small="Kinderopvangtoeslag, kindgebonden budget, zorgtoeslag en de combinatiekorting, op het inkomen van je huishouden." />
     {household.enabled && <>
       <Checkbox checked={household.hasPartner} onChange={(hasPartner) => setHousehold({ hasPartner })} label="Ik heb een toeslagpartner" />
       {household.hasPartner && <Field label="Bruto jaarinkomen partner" value={household.partnerTaxableAnnual} onChange={(partnerTaxableAnnual) => setHousehold({ partnerTaxableAnnual })} suffix="€/jr" step={1000}
         hint={`Inclusief vakantiegeld en bonus, min de eigen pensioenpremie van je partner.${partnerHint ? ` ${partnerHint}` : ""}`} />}
       <Field label="Aftrekposten per jaar" value={household.deductionsAnnual} onChange={(deductionsAnnual) => setHousehold({ deductionsAnnual })} suffix="€/jr" step={500}
         hint="Bijvoorbeeld hypotheekrente. Die verlaagt je toetsingsinkomen en dus verhoogt je toeslagen." />
-      <ChildrenInputs kids={household.children} onChange={setChild} />
+      <ChildrenInputs kids={household.children} onChange={setChild} prices={kinderopvangtoeslag.maxHourlyPrice} />
       {freeSlot && <button type="button" className="copy-button" onClick={() => setChild(freeSlot, { active: true })}>+ Kind toevoegen</button>}
       <Checkbox checked={household.assetsAboveLimit} onChange={(assetsAboveLimit) => setHousehold({ assetsAboveLimit })} label="Vermogen boven de grens"
         small={`Meer dan ${money(limits.single)} (alleen) of ${money(limits.partner)} (samen): geen zorgtoeslag en kindgebonden budget.`} />
@@ -55,7 +56,9 @@ export function HouseholdInputs({ model, setModel, partnerHint }: { model: Netto
   </>;
 }
 
-function ChildrenInputs({ kids, onChange }: { kids: Household["children"]; onChange: (slot: ChildSlot, patch: Partial<Child>) => void }) {
+function ChildrenInputs({ kids, onChange, prices }: {
+  kids: Household["children"]; onChange: (slot: ChildSlot, patch: Partial<Child>) => void; prices: Record<ChildcareType, number>;
+}) {
   const active = CHILD_SLOTS.filter((slot) => kids[slot].active);
   return <>{active.map((slot, index) => {
     const child = kids[slot];
@@ -66,7 +69,7 @@ function ChildrenInputs({ kids, onChange }: { kids: Household["children"]; onCha
         <Field label="Leeftijd" value={child.age} onChange={(age) => onChange(slot, { age })} suffix="jaar" max={17} />
         <div className="field">
           <span className="field-label"><label htmlFor={`care-${slot}`}>Opvang</label></span>
-          <span className="input-wrap"><select id={`care-${slot}`} value={child.care} onChange={(event) => onChange(slot, { care: event.target.value as ChildCare })}>
+          <span className="input-wrap"><select id={`care-${slot}`} value={child.care} onChange={(event) => onChange(slot, careChangePatch(child, event.target.value as ChildCare, prices))}>
             {(Object.keys(CARE_LABELS) as ChildCare[]).map((care) => <option key={care} value={care}>{CARE_LABELS[care]}</option>)}
           </select></span>
         </div>

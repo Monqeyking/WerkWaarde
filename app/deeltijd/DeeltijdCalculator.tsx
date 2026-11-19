@@ -7,6 +7,7 @@ import { HouseholdInputs } from "../components/HouseholdInputs";
 import { Checkbox, Highlight, SpokeCalculator, ToTotal, useSpokeModel } from "../components/Spoke";
 import { updateJob, updateJobSection, updatePersonal, type JobProfile, type NettoplaatjeState } from "../../lib/job-model";
 import { compareScenarios, fullTimeHoursFor, hoursTable, type HoursScenario, type ScenarioComparison } from "../../lib/part-time";
+import { toetsingsinkomenText } from "../../lib/household";
 import { decimal, money, signedMoney } from "../../lib/format";
 
 const PROEFBEREKENING = "https://www.belastingdienst.nl/wps/wcm/connect/nl/toeslagen/content/hulpmiddel-proefberekening-toeslagen";
@@ -54,7 +55,7 @@ export default function DeeltijdCalculator() {
         <ToTotal job={job} setModel={setModel} title="Vergelijk ook twee banen" note="Salaris, uren en opvang staan al in je totaaloverzicht. Vul daar auto, reizen en extra's in." button="Naar totaaloverzicht" />
       </>
       : <p className="choice-note">Vul je uren per week in om de vergelijking te zien.</p>}>
-    <Field label="Bruto per maand" value={salary.grossMonthly} onChange={(grossMonthly) => setSalary({ grossMonthly })} suffix="€" hint="Je vaste bruto maandsalaris bij je huidige uren, zonder vakantiegeld." step={50} />
+    <Field label="Bruto per maand" value={salary.grossMonthly} onChange={(grossMonthly) => setSalary({ grossMonthly })} suffix="€" hint="Je vaste bruto maandsalaris bij je huidige uren, zoals op je loonstrook: niet het voltijdbedrag uit de salarisschaal. Zonder vakantiegeld. Krijg je elke maand een vaste toeslag, zoals ORT of ploegentoeslag? Tel het gemiddelde erbij op." step={50} />
     <div className="two-fields">
       <Field label="Uren per week" value={salary.hoursPerWeek} onChange={(hoursPerWeek) => setSalary({ hoursPerWeek })} suffix="uur" max={60} />
       <Field label="Voltijd" value={fullTimeHoursFor(salary)} onChange={(fullTimeHours) => setSalary({ fullTimeHours })} suffix="uur" max={60}
@@ -92,6 +93,7 @@ function waterfallRows(step: ScenarioComparison): WaterfallRow[] {
     { label: "Kinderopvang", value: -step.childcareGross },
     { label: "Kinderopvangtoeslag", value: step.kinderopvangtoeslag },
     { label: "Kindgebonden budget en zorgtoeslag", value: step.otherAllowances },
+    { label: "Combinatiekorting", value: step.combinatiekorting },
     { label: "Wat je huishouden overhoudt", value: step.householdNet, kind: "total" },
   ];
   return rows.filter((row) => row.kind || Math.abs(row.value) >= 0.5);
@@ -101,12 +103,23 @@ function waterfallRows(step: ScenarioComparison): WaterfallRow[] {
 function biggestLeak(step: ScenarioComparison): string | null {
   const sign = Math.sign(step.gross) || 1;
   const leaks = [
-    { label: "loonheffing en pensioenpremie", value: step.tax + step.pension },
+    // The combinatiekorting is a tax credit, so it counts against the tax.
+    { label: "loonheffing en pensioenpremie", value: step.tax + step.pension - step.combinatiekorting },
     { label: "kinderopvang (na kinderopvangtoeslag)", value: step.childcareGross - step.kinderopvangtoeslag },
     { label: "kindgebonden budget en zorgtoeslag", value: -step.otherAllowances },
     { label: "werk- en reiskosten", value: step.workCosts - step.mobility },
   ].map((leak) => ({ ...leak, value: leak.value * sign })).sort((a, b) => b.value - a.value);
   return leaks[0] && leaks[0].value > 0.5 ? leaks[0].label : null;
+}
+
+/** What one euro of gross change does for the household, in words that also work when it costs money. */
+function HighlightText({ more, kept, step }: { more: boolean; kept: number; step: ScenarioComparison }) {
+  const cents = Math.round(Math.abs(kept) * 100);
+  const perYear = signedMoney(step.householdNet * 12);
+  if (more && kept >= 0) return <>Van elke extra euro bruto houdt je huishouden {cents} cent over: een marginale druk van {100 - cents}%. Per jaar is dat {perYear}.</>;
+  if (more) return <>Meer werken kost je huishouden hier geld: per extra euro bruto ga je er {cents} cent op achteruit. Per jaar is dat {perYear}.</>;
+  if (step.householdNet <= 0) return <>Je levert {money(-step.gross)} bruto per maand in, maar je huishouden houdt maar {money(-step.householdNet)} minder over: {cents} cent per euro.</>;
+  return <>Minder werken levert je huishouden hier geld op: {money(step.householdNet)} per maand meer, ondanks {money(-step.gross)} minder bruto.</>;
 }
 
 function Results({ model, table, from, to, step, steps, onPick }: {
@@ -130,9 +143,7 @@ function Results({ model, table, from, to, step, steps, onPick }: {
         onChange={(hours) => onPick(hours === from.hoursPerWeek ? to.hoursPerWeek : from.hoursPerWeek, hours)} />
     </div>
     <Highlight label={`Van ${hoursLabel(from.hoursPerWeek)} naar ${hoursLabel(to.hoursPerWeek)} per week`} value={`${signedMoney(step.householdNet)} per maand`}>
-      {kept !== null && (more
-        ? <>Van elke extra euro bruto houdt je huishouden {Math.round(kept * 100)} cent over: een marginale druk van {100 - Math.round(kept * 100)}%. Per jaar is dat {signedMoney(step.householdNet * 12)}.</>
-        : <>Je levert {money(-step.gross)} bruto per maand in, maar je huishouden houdt maar {money(-step.householdNet)} minder over: {Math.round(kept * 100)} cent per euro.</>)}
+      {kept !== null && <HighlightText more={more} kept={kept} step={step} />}
     </Highlight>
 
     <div className="comparison-panel">
@@ -146,7 +157,7 @@ function Results({ model, table, from, to, step, steps, onPick }: {
       {leak && <div className="difference-note"><span className="check">!</span><span>{more
         ? <>Het meeste van je extra bruto gaat op aan <strong>{leak}</strong>.</>
         : <>Je levert minder in dan je bruto daalt, vooral door <strong>{leak}</strong>.</>}</span></div>}
-      {from.toetsingsinkomen !== null && to.toetsingsinkomen !== null && <p className="choice-note">Toeslagen gerekend op een toetsingsinkomen van {money(from.toetsingsinkomen)} → {money(to.toetsingsinkomen)} per jaar, inclusief je partner.</p>}
+      {from.toetsingsinkomen !== null && to.toetsingsinkomen !== null && <p className="choice-note">Toeslagen gerekend op een toetsingsinkomen van {money(from.toetsingsinkomen)} → {money(to.toetsingsinkomen)} per jaar: {toetsingsinkomenText(household.hasPartner)}.</p>}
     </div>
 
     {partnerWithoutIncome && <p className="ev-rule-note">Zonder inkomen van je partner krijg je geen kinderopvangtoeslag: beide partners moeten werken.</p>}
@@ -180,11 +191,11 @@ function HoursTable({ table, highlight, allowances }: { table: HoursScenario[]; 
       <span role="cell">{decimal(row.hoursPerWeek)}</span>
       <span role="cell">{money(row.grossMonthly)}</span>
       <span role="cell">{money(row.netPayMonthly)}</span>
-      <span role="cell">{money(row.kinderopvangtoeslagMonthly + row.zorgtoeslagMonthly + row.kindgebondenBudgetMonthly)}</span>
+      <span role="cell">{money(row.kinderopvangtoeslagMonthly + row.zorgtoeslagMonthly + row.kindgebondenBudgetMonthly + row.combinatiekortingMonthly)}</span>
       <span role="cell">{money(-row.childcareGrossMonthly)}</span>
       <strong role="cell">{money(row.householdNetMonthly)}</strong>
       <span role="cell">{money(row.netPerHour)}</span>
     </div>)}
-    <small className="hours-table-note">Per maand, gemiddeld over het jaar. &lsquo;Over&rsquo; is netto loon plus toeslagen, min opvang, werkkosten en je auto-regeling. Het inkomen van je partner staat er niet in.</small>
+    <small className="hours-table-note">Per maand, gemiddeld over het jaar. &lsquo;Toeslagen&rsquo; is inclusief de combinatiekorting. &lsquo;Over&rsquo; is netto loon plus toeslagen, min opvang, werkkosten en je auto-regeling. Het inkomen van je partner staat er niet in.</small>
   </div>;
 }

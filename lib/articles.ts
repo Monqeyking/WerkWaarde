@@ -464,6 +464,7 @@ export const ARTICLES: Article[] = [
           "Werk je een dag meer, dan heb je vaak ook een opvangdag meer nodig. De kinderopvangtoeslag vergoedt een groot deel, maar niet alles. En omdat je meer verdient, krijg je over álle opvanguren een iets lager percentage. Lees meer in [kinderopvangtoeslag 2026](/vragen/kinderopvangtoeslag-2026).",
           "In hetzelfde voorbeeld met een partner die € 40.000 verdient en een peuter die 4 dagen naar de dagopvang gaat, houdt het huishouden van de € 918 extra bruto maar ongeveer € 228 over. Dat is 25 cent per euro. Met twee kinderen op de dagopvang kan het zakken tot onder de 10 cent.",
           "Ook het [kindgebonden budget](/vragen/kindgebonden-budget-2026) en de zorgtoeslag worden lager als je meer verdient. Bij lagere inkomens telt dat flink mee: de zorgtoeslag daalt met bijna 14 cent per extra euro, het kindgebonden budget met 7,6 cent.",
+          "Eén regeling werkt de andere kant op: de inkomensafhankelijke combinatiekorting. Heb je een kind onder de 12 en verdien je minder dan je partner, of ben je alleenstaand? Dan krijg je in 2026 11,45% van je inkomen uit werk boven € 6.239 als korting op je belasting, tot € 3.032 per jaar. Tot een inkomen van ongeveer € 32.720 levert meer werken dus ook meer korting op.",
         ],
       },
       {

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CaoSelect } from "../components/CaoSelect";
 import { Field } from "../components/Field";
 import { HouseholdInputs } from "../components/HouseholdInputs";
-import { hasFormalChildcare } from "../../lib/household";
+import { hasFormalChildcare, toetsingsinkomenText } from "../../lib/household";
 import { calculatePensionBreakdown } from "../../lib/calculator";
 import { TaxYearSelect } from "../components/TaxYearSelect";
 import { electricBijtellingText, kmLimitText } from "../../lib/tax-years";
@@ -106,14 +106,14 @@ function Inputs({ state, setState }: { state: NettoplaatjeState; setState: SetSt
         const value = state.jobs[job].salary;
         const set = salary(job);
         return <>
-          <Field label="Bruto per maand" value={value.grossMonthly} onChange={(grossMonthly) => set({ grossMonthly })} suffix="€" hint="Je vaste bruto maandsalaris, zonder vakantiegeld." step={50} />
+          <Field label="Bruto per maand" value={value.grossMonthly} onChange={(grossMonthly) => set({ grossMonthly })} suffix="€" hint="Je vaste bruto maandsalaris voor jouw uren, zoals op je loonstrook: niet het voltijdbedrag uit de salarisschaal. Zonder vakantiegeld. Krijg je elke maand een vaste toeslag, zoals ORT of ploegentoeslag? Tel het gemiddelde erbij op." step={50} />
           <Field label="Uren per week" value={value.hoursPerWeek} onChange={(hoursPerWeek) => set({ hoursPerWeek })} suffix="uur" max={60} />
           <CaoSelect salary={value} onChange={set} />
           <Field label="Vakantiegeld" value={value.holidayAllowancePct} onChange={(holidayAllowancePct) => set({ holidayAllowancePct })} suffix="%" step={0.1} max={20} />
           <Field label="13e maand / eindejaars" value={value.yearEndBonusPct} onChange={(yearEndBonusPct) => set({ yearEndBonusPct })} suffix="%" hint="Een 13e maand is 8,33% van het jaarsalaris. Vul 0 in als je die niet krijgt." step={0.01} max={50} />
           <Field label="Bonus per jaar" value={value.annualBonus} onChange={(annualBonus) => set({ annualBonus })} suffix="€" hint="Verwachte bruto bonus of winstdeling per jaar." step={100} />
           {value.pensionMode === "scheme" ? <SchemePension state={state} job={job} onManual={(amounts) => set({ ...amounts, pensionMode: "monthly" })} /> : <>
-            <Field label="Eigen pensioeninleg" value={value.pensionEmployeeMonthly} onChange={(pensionEmployeeMonthly) => set({ pensionEmployeeMonthly, pensionMode: "monthly" })} suffix="€/mnd" hint="De werknemersbijdrage pensioen op je loonstrook." />
+            <Field label="Eigen pensioeninleg" value={value.pensionEmployeeMonthly} onChange={(pensionEmployeeMonthly) => set({ pensionEmployeeMonthly, pensionMode: "monthly" })} suffix="€/mnd" hint="De werknemersbijdrage pensioen op je loonstrook. Weet je het niet? Kies hierboven je cao." />
             <Field label="Pensioen werkgever" value={value.pensionEmployerMonthly} onChange={(pensionEmployerMonthly) => set({ pensionEmployerMonthly, pensionMode: "monthly" })} suffix="€/mnd" hint="Wat je werkgever per maand aan je pensioen bijdraagt. Telt niet als netto, wel als totale beloning." />
           </>}
         </>;
@@ -223,6 +223,7 @@ function BreakdownTable({ current, next, period }: { current: JobTotal; next: Jo
     { label: "Kinderopvang", pick: (total) => -total.commute.childcareMonthly, hideWhenZero: true },
     { label: "Kinderopvangtoeslag", pick: (total) => total.allowances?.kinderopvangtoeslagMonthly ?? 0, hideWhenZero: true },
     { label: "Kindgebonden budget en zorgtoeslag", pick: (total) => (total.allowances?.kindgebondenBudgetMonthly ?? 0) + (total.allowances?.zorgtoeslagMonthly ?? 0), hideWhenZero: true },
+    { label: "Combinatiekorting", pick: (total) => total.allowances?.combinatiekortingMonthly ?? 0, hideWhenZero: true },
   ];
   const rows = allRows.filter((row) => !row.hideWhenZero || row.pick(current) !== 0 || row.pick(next) !== 0);
   return <div className="work-table">
@@ -290,7 +291,7 @@ function Results({ state, setState }: { state: NettoplaatjeState; setState: SetS
           <button type="button" className={period === "year" ? "active" : ""} onClick={() => setPeriod("year")}>Jaar</button>
         </div></div>
       <BreakdownTable current={current} next={next} period={period} />
-      {current.allowances && next.allowances && <p className="choice-note">Toeslagen gerekend op een toetsingsinkomen van {money(current.allowances.toetsingsinkomen)} (huidig) en {money(next.allowances.toetsingsinkomen)} (nieuw), inclusief je partner.{state.personal.household.receivesRentAllowance && " Huurtoeslag rekenen we niet mee; die daalt meestal ook als je meer verdient."}</p>}
+      {current.allowances && next.allowances && <p className="choice-note">Toeslagen gerekend op een toetsingsinkomen van {money(current.allowances.toetsingsinkomen)} (huidig) en {money(next.allowances.toetsingsinkomen)} (nieuw): {toetsingsinkomenText(state.personal.household.hasPartner)}.{state.personal.household.receivesRentAllowance && " Huurtoeslag rekenen we niet mee; die daalt meestal ook als je meer verdient."}</p>}
       {timeIncluded && <div className="work-table time-table">
         <div><span>Waarde reistijd</span><strong>{money(-current.commute.timeValueMonthly * (period === "year" ? 12 : 1))}</strong><strong>{money(-next.commute.timeValueMonthly * (period === "year" ? 12 : 1))}</strong><strong>{signedMoney(-(next.commute.timeValueMonthly - current.commute.timeValueMonthly) * (period === "year" ? 12 : 1))}</strong></div>
         <div className="work-total"><span>Netto over, incl. reistijd</span><strong>{money(current.netAfterCostsAndTimeMonthly * (period === "year" ? 12 : 1))}</strong><strong>{money(next.netAfterCostsAndTimeMonthly * (period === "year" ? 12 : 1))}</strong><strong>{signedMoney((next.netAfterCostsAndTimeMonthly - current.netAfterCostsAndTimeMonthly) * (period === "year" ? 12 : 1))}</strong></div>

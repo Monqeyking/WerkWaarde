@@ -22,7 +22,7 @@ function family(): NettoplaatjeState {
 }
 
 const sumOfParts = (scenario: HoursScenario) => scenario.netPayMonthly + scenario.mobilityMonthly - scenario.workCostsMonthly
-  - scenario.childcareNetMonthly + scenario.zorgtoeslagMonthly + scenario.kindgebondenBudgetMonthly;
+  - scenario.childcareNetMonthly + scenario.zorgtoeslagMonthly + scenario.kindgebondenBudgetMonthly + scenario.combinatiekortingMonthly;
 
 test("full-time hours: cao or user value, otherwise 40 or the contract when that is longer", () => {
   assert.equal(fullTimeHoursFor({ hoursPerWeek: 32, fullTimeHours: 36 }), 36);
@@ -83,7 +83,7 @@ test("the comparison's parts add up to the change in household amount", () => {
   const step = compareScenarios(table[2], table[4]);
   assert.equal(step.fromHours, 32);
   assert.equal(step.toHours, 40);
-  near(step.gross - step.pension - step.tax + step.mobility - step.workCosts - step.childcareGross + step.kinderopvangtoeslag + step.otherAllowances, step.householdNet);
+  near(step.gross - step.pension - step.tax + step.mobility - step.workCosts - step.childcareGross + step.kinderopvangtoeslag + step.otherAllowances + step.combinatiekorting, step.householdNet);
   near((step.keptPerEuro ?? 0) + (step.marginalPressure ?? 0), 1);
   assert.equal(compareScenarios(table[0], table[0]).keptPerEuro, null);
 });
@@ -112,4 +112,23 @@ test("gross and household amount rise with the hours", () => {
     assert.ok(table[index].grossMonthly > table[index - 1].grossMonthly);
     assert.ok(table[index].householdNetMonthly > table[index - 1].householdNetMonthly);
   }
+});
+
+/** Single parent at € 2.250 for 24 of 36 hours, toddler on dagopvang 3 days: gets the combinatiekorting. */
+function singleParent(): NettoplaatjeState {
+  let state = updateJobSection(single(), "current", "salary", { grossMonthly: 2_250, hoursPerWeek: 24, fullTimeHours: 36 });
+  state = updateHousehold(state, { enabled: true, hasPartner: false });
+  state = updateChild(state, "c1", { active: true, age: 2, care: "dagopvang", hoursPerDay: 11, hourlyPrice: 11.23, weeksPerYear: 52 });
+  return updateJob(state, "current", { childcareDaysPerWeek: 3 });
+}
+
+test("a single parent's extra hours also raise the combinatiekorting, and the parts still add up", () => {
+  const state = singleParent();
+  const from = hoursScenario(state, "current", 24);
+  const to = hoursScenario(state, "current", 32);
+  assert.ok(from.combinatiekortingMonthly > 0);
+  assert.ok(to.combinatiekortingMonthly > from.combinatiekortingMonthly);
+  near(sumOfParts(from), from.householdNetMonthly);
+  const step = compareScenarios(from, to);
+  near(step.gross - step.pension - step.tax + step.mobility - step.workCosts - step.childcareGross + step.kinderopvangtoeslag + step.otherAllowances + step.combinatiekorting, step.householdNet);
 });

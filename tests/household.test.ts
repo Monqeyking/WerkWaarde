@@ -14,10 +14,12 @@ import {
   type NettoplaatjeState,
 } from "../lib/job-model.ts";
 import { calculateJobTotal, compareJobs } from "../lib/job-total.ts";
-import { activeChildren, childcareHoursPerMonth, hasFormalChildcare, householdIncome, householdInput } from "../lib/household.ts";
+import { activeChildren, careChangePatch, combinatiekortingAnnual, combinatiekortingFor, childcareHoursPerMonth, hasFormalChildcare, householdIncome, householdInput, toetsingsinkomenText } from "../lib/household.ts";
+import { taxYear } from "../lib/tax-years.ts";
 
 const householdAllowances = (state: NettoplaatjeState, job: "current" | "next") => calculateJobTotal(state, job).allowances;
 import { calculateAllowances } from "../lib/toeslagen.ts";
+import { combinationCredit, incomeTax } from "../lib/calculator.ts";
 
 const near = (actual: number, expected: number, tolerance = 0.01) =>
   assert.ok(Math.abs(actual - expected) <= tolerance, `expected ${expected}, got ${actual}`);
@@ -33,6 +35,7 @@ function family(): NettoplaatjeState {
 test("household is off by default and changes nothing", () => {
   const state = createDefaultState();
   assert.equal(state.personal.household.enabled, false);
+  assert.equal(state.personal.household.hasPartner, false, "a partner without income would silently cancel kinderopvangtoeslag");
   assert.equal(householdAllowances(state, "current"), null);
   assert.deepEqual(activeChildren(state), []);
   assert.equal(encodeState(state), encodeState(sanitizeState({})), "defaults stay out of shared links");
@@ -146,4 +149,73 @@ test("comparing jobs: a lease car in the new job can cost toeslag", () => {
   const comparison = compareJobs(state);
   assert.ok(comparison.next.allowances!.toetsingsinkomen > comparison.current.allowances!.toetsingsinkomen);
   assert.ok(comparison.next.allowances!.totalAllowancesMonthly < comparison.current.allowances!.totalAllowancesMonthly);
+});
+
+const prices = taxYear(2026).allowances.kinderopvangtoeslag.maxHourlyPrice;
+
+test("switching to bso brings bso hours, weeks and maximum price", () => {
+  const child = createDefaultState().personal.household.children.c1;
+  assert.deepEqual(careChangePatch(child, "bso", prices), { care: "bso", hoursPerDay: 5, weeksPerYear: 48, hourlyPrice: prices.bso });
+  assert.deepEqual(careChangePatch(child, "gastouder", prices), { care: "gastouder", hoursPerDay: 10, weeksPerYear: 52, hourlyPrice: prices.gastouder });
+});
+
+test("switching childcare keeps values the user typed", () => {
+  const child = { ...createDefaultState().personal.household.children.c1, hourlyPrice: 12.5 };
+  assert.deepEqual(careChangePatch(child, "bso", prices), { care: "bso", hoursPerDay: 5, weeksPerYear: 48 });
+  assert.deepEqual(careChangePatch(child, "none", prices), { care: "none" });
+  const fromNone = { ...child, care: "none" as const };
+  assert.equal(careChangePatch(fromNone, "dagopvang", prices).hourlyPrice, prices.dagopvang, "coming from no childcare takes all defaults");
+});
+
+test("the toetsingsinkomen note mentions the partner only when there is one", () => {
+  assert.match(toetsingsinkomenText(true), /partner/);
+  assert.doesNotMatch(toetsingsinkomenText(false), /partner/);
+});
+
+test("combinatiekorting: 11,45% of labour income above the threshold, up to the maximum", () => {
+  assert.equal(combinationCredit(6_239), 0);
+  near(combinationCredit(20_000), (20_000 - 6_239) * 0.1145);
+  assert.equal(combinationCredit(32_720), 3_032);
+  assert.equal(combinationCredit(60_000), 3_032);
+  assert.equal(combinationCredit(60_000, 68), 1_513, "lower at AOW age");
+});
+
+test("combinatiekorting: only with a child under 12, for the partner who earns the least", () => {
+  let state = updateHousehold(createDefaultState(), { enabled: true, hasPartner: false });
+  assert.equal(combinatiekortingFor(state, 30_000), null, "no children");
+  state = updateChild(state, "c1", { active: true, age: 11, care: "none" });
+  assert.equal(combinatiekortingFor(state, 30_000), "self", "single parent");
+  assert.equal(combinatiekortingFor(updateChild(state, "c1", { age: 12 }), 30_000), null);
+  const partner = updateHousehold(state, { hasPartner: true, partnerTaxableAnnual: 40_000 });
+  assert.equal(combinatiekortingFor(partner, 30_000), "self");
+  assert.equal(combinatiekortingFor(partner, 50_000), "partner");
+  assert.equal(combinatiekortingFor(updateHousehold(state, { enabled: false }), 30_000), null);
+});
+
+test("combinatiekorting: earning more than the partner moves it to the partner instead of losing it", () => {
+  let state = updateHousehold(createDefaultState(), { enabled: true, hasPartner: true, partnerTaxableAnnual: 40_000 });
+  state = updateChild(state, "c1", { active: true, age: 4, care: "none" });
+  near(combinatiekortingAnnual(state, 50_000, incomeTax(50_000)), combinationCredit(40_000));
+  assert.equal(combinatiekortingAnnual(updateHousehold(state, { partnerTaxableAnnual: 0 }), 50_000, incomeTax(50_000)), 0, "a partner without work gets none");
+});
+
+test("combinatiekorting is never more than the tax left to pay", () => {
+  const state = updateChild(updateHousehold(createDefaultState(), { enabled: true }), "c1", { active: true, age: 4, care: "none" });
+  const tax = incomeTax(15_000);
+  assert.ok(tax < combinationCredit(15_000));
+  near(combinatiekortingAnnual(state, 15_000, tax), tax);
+  near(combinatiekortingAnnual(state, 30_000, incomeTax(30_000)), incomeTax(30_000)); // still capped at € 30.000
+  near(combinatiekortingAnnual(state, 40_000, incomeTax(40_000)), combinationCredit(40_000));
+});
+
+test("job total: the combinatiekorting is part of what is left", () => {
+  let state = updateHousehold(createDefaultState(), { enabled: true, hasPartner: false });
+  state = updateChild(state, "c1", { active: true, age: 4, care: "none" });
+  state = updateJobSection(state, "current", "salary", { grossMonthly: 2_400 });
+  state = updateJobSection(state, "current", "mobility", { choice: "none" });
+  const total = calculateJobTotal(state, "current");
+  const allowances = total.allowances!;
+  near(allowances.combinatiekortingMonthly, Math.min(combinationCredit(total.taxableAnnual), incomeTax(total.taxableAnnual)) / 12);
+  assert.ok(allowances.combinatiekortingMonthly > 0);
+  near(allowances.totalAllowancesMonthly, allowances.zorgtoeslagMonthly + allowances.kindgebondenBudgetMonthly + allowances.kinderopvangtoeslagMonthly + allowances.combinatiekortingMonthly);
 });

@@ -16,7 +16,7 @@ const PROEFBEREKENING = "https://www.belastingdienst.nl/wps/wcm/connect/nl/toesl
 const how = [
   ["Zelfde uurloon", "We rekenen met je huidige uurloon. Bruto salaris, vakantiegeld, bonus en pensioen schalen mee met je uren. De pensioenfranchise schaalt mee met je deeltijdfactor."],
   ["Belasting op je hoogste tarief", "Extra uren worden belast tegen je marginale tarief. Daarin zit ook de afbouw van de algemene heffingskorting en de arbeidskorting."],
-  ["Toeslagen op je huishouden", "Kinderopvangtoeslag, kindgebonden budget en zorgtoeslag hangen af van het toetsingsinkomen van jou en je partner. Een leaseauto telt daarin mee via de bijtelling."],
+  ["Toeslagen op je huishouden", "Kinderopvangtoeslag, kindgebonden budget en zorgtoeslag hangen af van het toetsingsinkomen van jou en je partner. Een leaseauto telt daarin mee via de bijtelling. Met een kind onder de 12 rekenen we ook de combinatiekorting mee."],
   ["Opvang en reizen", "Een dag meer werken is vaak ook een opvangdag en een kantoordag meer. Die kosten gaan er weer af."],
 ] as const;
 
@@ -25,6 +25,7 @@ const faqs = [
   ["Wat is marginale druk?", "Het deel van een extra euro bruto dat je niet overhoudt: belasting, wegvallende heffingskortingen en toeslagen, en extra kosten. Bij een marginale druk van 70% houd je van € 100 bruto extra € 30 over."],
   ["Telt mijn leaseauto mee voor toeslagen?", "Ja. De bijtelling hoort bij je inkomen in box 1, dus ook bij je toetsingsinkomen. Met een leaseauto kun je daardoor minder kinderopvangtoeslag of kindgebonden budget krijgen."],
   ["Hangt kinderopvangtoeslag af van hoeveel ik werk?", "Niet meer van het aantal uren: sinds 2023 krijg je toeslag voor alle opvanguren, tot 230 uur per maand per kind. Wel moeten jij en je toeslagpartner allebei werken, en het percentage hangt af van jullie gezamenlijke inkomen."],
+  ["Wat is de combinatiekorting?", "Een heffingskorting voor werkende ouders met een kind onder de 12. Met een partner krijgt degene die het minst verdient hem. Ga jij meer verdienen dan je partner, dan gaat de korting naar je partner; die rekenen we dan mee. In 2026 is het 11,45% van je inkomen uit werk boven € 6.239, met een maximum van € 3.032 per jaar. Meer uren werken levert dus extra korting op, tot een inkomen van ongeveer € 32.720. Je krijgt hem via je aangifte of een voorlopige aanslag, niet via je loonstrook. Hij kan niet hoger zijn dan de belasting die je betaalt."],
   ["Rekenen jullie huurtoeslag mee?", "Nee. Huurtoeslag hangt af van je huur, servicekosten en huishouden. Gebruik daarvoor de proefberekening van de Belastingdienst. Bedenk dat huurtoeslag ook daalt als je meer gaat verdienen."],
 ] as const;
 

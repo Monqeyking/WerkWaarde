@@ -195,7 +195,7 @@ export function createDefaultState(): NettoplaatjeState {
       childcareCostPerDay: 0,
       timeValue: { include: false, perHour: 0 },
       household: {
-        enabled: false, hasPartner: true, partnerTaxableAnnual: 0, deductionsAnnual: 0,
+        enabled: false, hasPartner: false, partnerTaxableAnnual: 0, deductionsAnnual: 0,
         assetsAboveLimit: false, receivesRentAllowance: false,
         children: { c1: defaultChild(), c2: defaultChild(), c3: defaultChild(), c4: defaultChild() },
       },

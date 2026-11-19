@@ -143,7 +143,7 @@ export function calculateJobTotal(state: NettoplaatjeState, job: JobKey): JobTot
   const mobilityNetMonthly = mobility.cashMonthly - mobilityTaxMonthly;
 
   const taxableAnnual = salaryTaxable + mobility.taxableAnnual;
-  const allowances = allowancesFor(state, job, taxableAnnual);
+  const allowances = allowancesFor(state, job, taxableAnnual, totalTax);
   // With toeslagen on and children in formal childcare, the detailed calculation replaces
   // the simple "net cost per opvangdag" field.
   const detailedChildcare = allowances !== null && hasFormalChildcare(state);

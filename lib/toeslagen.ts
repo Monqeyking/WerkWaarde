@@ -114,7 +114,12 @@ export type AllowancesResult = {
   kinderopvangtoeslagMonthly: number;
   childcareGrossMonthly: number;
   childcareNetMonthly: number;
-  /** Zorgtoeslag + kindgebonden budget + kinderopvangtoeslag. */
+  /**
+   * Inkomensafhankelijke combinatiekorting. A tax credit, not a toeslag, but it depends on
+   * the same household; 0 here, filled in by allowancesFor (it needs the tax due).
+   */
+  combinatiekortingMonthly: number;
+  /** Zorgtoeslag + kindgebonden budget + kinderopvangtoeslag + combinatiekorting. */
   totalAllowancesMonthly: number;
 };
 
@@ -134,6 +139,7 @@ export function calculateAllowances(income: number, household: HouseholdInput, y
     kinderopvangtoeslagMonthly,
     childcareGrossMonthly: sum("grossMonthly"),
     childcareNetMonthly: sum("netMonthly"),
+    combinatiekortingMonthly: 0,
     totalAllowancesMonthly: zorgtoeslagMonthly + kindgebondenBudgetMonthly + kinderopvangtoeslagMonthly,
   };
 }

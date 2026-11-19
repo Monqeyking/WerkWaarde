@@ -93,6 +93,17 @@ function employmentTaxCredit(income: number, age: number, params: TaxYearParams)
   return creditAt(age >= AOW_AGE ? params.employmentCreditAow : params.employmentCredit, income);
 }
 
+/**
+ * Inkomensafhankelijke combinatiekorting before it is capped at the tax due: a share of
+ * the labour income above the threshold, up to the maximum. Eligibility is checked by the caller.
+ */
+export function combinationCredit(labourIncome: number, age = 35, year = DEFAULT_TAX_YEAR) {
+  const { threshold, rate, max, rateAow, maxAow } = taxYear(year).combinationCredit;
+  if (labourIncome <= threshold) return 0;
+  const aow = age >= AOW_AGE;
+  return Math.min(aow ? maxAow : max, (labourIncome - threshold) * (aow ? rateAow : rate));
+}
+
 /** Indicative annual income tax for a Dutch employee for a tax year (default 2026). */
 export function incomeTax(annualIncome: number, age = 35, year = DEFAULT_TAX_YEAR) {
   const params = taxYear(year);

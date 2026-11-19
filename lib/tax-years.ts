@@ -26,6 +26,11 @@ export type TaxYearParams = {
   bijtelling: { standardRate: number; electricRate: number; electricCap: number };
   /** Maximum tax-free reimbursement per business km. */
   taxFreeKmRate: number;
+  /**
+   * Inkomensafhankelijke combinatiekorting: `rate` of the labour income above `threshold`,
+   * up to `max`. For a parent with a child under 12 who is single or earns less than the partner.
+   */
+  combinationCredit: { threshold: number; rate: number; max: number; rateAow: number; maxAow: number };
   allowances: AllowanceParams;
 };
 
@@ -128,6 +133,8 @@ const TAX_2026: TaxYearParams = {
   maxPensionableSalary: 137_800,
   bijtelling: { standardRate: 0.22, electricRate: 0.18, electricCap: 30_000 },
   taxFreeKmRate: 0.25,
+  // Rijksoverheid: maximum € 3.032 at € 32.720; Belastingdienst: threshold € 6.239.
+  combinationCredit: { threshold: 6_239, rate: 0.1145, max: 3_032, rateAow: 0.0572, maxAow: 1_513 },
   allowances: ALLOWANCES_2026,
 };
 
@@ -173,6 +180,9 @@ const TAX_2027: TaxYearParams = {
   maxPensionableSalary: 137_800, // estimated: 2026 value until the 2027 figure is published
   bijtelling: { standardRate: 0.22, electricRate: 0.20, electricCap: 30_000 },
   taxFreeKmRate: 0.25,
+  // ESTIMATED: 2026 values. The combinatiekorting is phased out from 2027; replace with
+  // the Belastingdienst figures once published.
+  combinationCredit: { threshold: 6_239, rate: 0.1145, max: 3_032, rateAow: 0.0572, maxAow: 1_513 },
   // ESTIMATED: 2026 values. Still open for 2027: the kinderopvangtoeslag table of the
   // Prinsjesdag wijzigingsbesluit (vaste voet first child 39.1%), the proposed second
   // kindgebonden budget phase-out from € 60.000, and the final zorgtoeslag figures.
