@@ -15,6 +15,7 @@ import {
   type KeyValueStorage,
   type NettoplaatjeState,
 } from "./job-model.ts";
+import { caoSalaryPatch, readPrefillCao } from "./caos.ts";
 
 /**
  * One in-memory store shared by every calculator on the page, persisted to
@@ -81,16 +82,21 @@ export function shareUrl(state: NettoplaatjeState, path = window.location.pathna
 }
 
 /**
- * If the page was opened from an amount page (#bruto=3500), put that gross
- * salary in the current job and clear the fragment. Other inputs stay as they are.
+ * If the page was opened from an amount page (#bruto=3500) or a cao page
+ * (#cao=ziekenhuizen), put that gross salary or cao in the current job and
+ * clear the fragment. Other inputs stay as they are.
  */
-export function applyGrossPrefillFromLocation() {
+export function applyPrefillFromLocation() {
   const url = new URL(window.location.href);
   const gross = readPrefillGross(url);
-  if (gross === null) return false;
+  const cao = readPrefillCao(url);
+  if (gross === null && cao === null) return false;
   url.hash = "";
   window.history.replaceState(window.history.state, "", url.toString());
-  setJobModel((state) => updateJobSection(state, "current", "salary", { grossMonthly: gross }));
+  setJobModel((state) => updateJobSection(state, "current", "salary", {
+    ...(gross !== null && { grossMonthly: gross }),
+    ...(cao && caoSalaryPatch(cao)),
+  }));
   return true;
 }
 

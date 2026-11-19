@@ -230,6 +230,15 @@ export function findCao(id: string): Cao | undefined {
   return CAOS.find((cao) => cao.id === id);
 }
 
+/** Fragment key the cao pages use to open the calculator with that cao picked (#cao=ziekenhuizen). */
+export const PREFILL_CAO_PARAM = "cao";
+
+/** The cao in a prefill link, or null when there is none or it is unknown. */
+export function readPrefillCao(url: URL): Cao | null {
+  const id = new URLSearchParams(url.hash.replace(/^#/, "")).get(PREFILL_CAO_PARAM);
+  return (id && findCao(id)) || null;
+}
+
 /** Salary fields to set when the user picks this cao. Gross salary and contract hours are left alone. */
 export function caoSalaryPatch(cao: Cao): Partial<JobProfile["salary"]> {
   return {

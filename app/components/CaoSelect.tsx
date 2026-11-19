@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useId } from "react";
 import { CAOS, caoFilledText, caoSalaryPatch, checkedOnText, findCao } from "../../lib/caos";
 import { money } from "../../lib/format";
@@ -45,7 +46,8 @@ export function CaoSelect({ salary, onChange }: {
         {cao.pension?.maxSalary && <> Pensioen wordt opgebouwd tot {money(cao.pension.maxSalary)} salaris per jaar.</>}
         {cao.note && <> {cao.note}</>}
         {" "}Gecontroleerd op {checkedOnText(cao)}: <a href={cao.sourceUrl} target="_blank" rel="noreferrer">cao</a>
-        {cao.pension && <>, <a href={cao.pension.sourceUrl} target="_blank" rel="noreferrer">{cao.pension.fund}</a></>}.</p>
+        {cao.pension && <>, <a href={cao.pension.sourceUrl} target="_blank" rel="noreferrer">{cao.pension.fund}</a></>}.
+        {" "}<Link href={`/cao/${cao.id}`}>Meer over de {cao.name.replace(/^Cao /, "cao ")}</Link>.</p>
     </details>}
   </div>;
 }
