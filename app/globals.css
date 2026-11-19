@@ -383,3 +383,22 @@ button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; ba
   .work-table-head>span:first-child { display:none; }
   .work-table .work-total { padding-top:11px; }
 }
+
+/* Embedded calculator (/embed/...): shown in other sites' iframes, so it is self-contained and compact. */
+body:has(.embed) { background:transparent; }
+.embed { max-width:640px; padding:16px; border:1px solid var(--line); border-radius:14px; background:#fff; color:var(--ink); }
+.embed-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; font-size:14px; }
+.embed-brand { color:var(--ink); font-weight:800; font-size:13px; text-decoration:none; }
+.embed-brand span { color:var(--teal-ink); }
+.embed-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.embed-inputs .field + .field { margin-top:10px; }
+.embed-results { padding:14px; border-radius:12px; background:#f8fbfb; }
+.embed-label { display:block; color:var(--muted); font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.embed-amount { display:block; margin-top:4px; color:var(--teal-ink); font-size:30px; letter-spacing:-.03em; }
+.embed-note { margin-top:10px; color:var(--muted); font-size:10px; line-height:1.5; }
+.embed-more { display:flex; margin-top:12px; }
+@media (max-width:520px) { .embed { padding:12px; } .embed-grid { grid-template-columns:1fr; } }
+.embed-preview { display:block; width:100%; max-width:640px; margin:12px 0 4px; border:0; }
+.embed-code { margin:10px 0 12px; }
+.embed-code pre { margin:0 0 10px; padding:12px 14px; overflow-x:auto; border-radius:10px; background:#172d42; color:#e3f5f0; font-size:11px; line-height:1.6; white-space:pre-wrap; word-break:break-all; }
+.embed-code small { display:block; margin-top:6px; color:var(--muted); font-size:11px; }
