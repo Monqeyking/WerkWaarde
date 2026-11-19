@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import SpokePage from "../components/SpokePage";
 import BijtellingCalculator from "./BijtellingCalculator";
 
-export const metadata: Metadata = {
-  title: "Bijtelling 2026: wat kost een leaseauto netto?",
-  description: "Bereken de bijtelling van je leaseauto in 2026 en wat die je netto per maand kost. Voor elektrische en brandstofauto's, met eigen bijdrage.",
-  alternates: { canonical: "/bijtelling" },
-};
+export const metadata: Metadata = pageMetadata({
+  path: "/bijtelling",
+  title: "Bijtelling 2026: wat kost een leaseauto?",
+  description: "Bereken je bijtelling in 2026 en wat een leaseauto je netto per maand kost. Elektrisch of brandstof, met eigen bijdrage.",
+});
 
 const how = [
   ["Bijtelling", "Een percentage van de cataloguswaarde telt als loon. In 2026 is dat 22%. Voor een volledig elektrische auto 18% over de eerste € 30.000 en 22% over de rest."],
@@ -23,8 +25,8 @@ const faqs = [
 ] as const;
 
 export default function BijtellingPage() {
-  return <SpokePage active="mobility" kicker="Bijtelling" title="Wat kost een leaseauto je netto?"
+  return <><JsonLd data={breadcrumbJsonLd([["Bijtelling berekenen", "/bijtelling"]])} /><SpokePage active="mobility" kicker="Bijtelling" title="Wat kost een leaseauto je netto?"
     intro="Bereken de bijtelling van je leaseauto en wat die je per maand echt kost: de extra belasting plus je eigen bijdrage."
     calculator={<BijtellingCalculator />} how={how} faqs={faqs} adPlacement="bijtelling"
-    articles={["wat-is-bijtelling", "leaseauto-of-mobiliteitsbudget", "kilometervergoeding-onbelast"]} />;
+    articles={["wat-is-bijtelling", "leaseauto-of-mobiliteitsbudget", "kilometervergoeding-onbelast"]} /></>;
 }

@@ -22,9 +22,9 @@ function Brand() {
 }
 
 export function SiteNav({ active }: { active?: NavKey }) {
-  return <nav className="topbar shell">
+  return <nav className="topbar shell" aria-label="Hoofdnavigatie">
     <Link className="brand" href="/"><Brand /></Link>
-    <div className="site-nav" role="navigation" aria-label="Hoofdnavigatie">
+    <div className="site-nav">
       {navItems.map((item) => <Link key={item.key} href={item.href} className={active === item.key ? "active" : ""} aria-current={active === item.key ? "page" : undefined}>{item.label}</Link>)}
     </div>
     <div className="nav-note"><span className="status-dot"></span> Indicatie voor {selectableTaxYears().join(" en ")}</div>

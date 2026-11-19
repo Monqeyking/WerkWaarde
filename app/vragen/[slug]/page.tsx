@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import AdSlot from "../../components/AdSlot";
 import { SiteFooter, SiteNav } from "../../components/SiteChrome";
 import { ARTICLES, getArticle } from "../../../lib/articles";
+import { OG_IMAGE, ORGANIZATION_ID, WEBSITE_ID, breadcrumbList, pageMetadata } from "../../../lib/seo";
 import { SITE_NAME, SITE_URL } from "../../../lib/site";
 import { RichText, stripLinks } from "../RichText";
 
@@ -18,12 +19,13 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticle((await params).slug);
   if (!article) return {};
-  return {
+  return pageMetadata({
+    path: `/vragen/${article.slug}`,
     title: article.seoTitle ?? article.title,
     description: article.description,
-    alternates: { canonical: `/vragen/${article.slug}` },
-    openGraph: { type: "article", locale: "nl_NL", siteName: SITE_NAME, title: article.title, description: article.description, modifiedTime: article.updated },
-  };
+    socialTitle: article.title,
+    article: { published: article.published ?? article.updated, modified: article.updated },
+  });
 }
 
 const dateFormat = new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "long", year: "numeric" });
@@ -32,25 +34,25 @@ export default async function ArticlePage({ params }: Props) {
   const article = getArticle((await params).slug);
   if (!article) notFound();
   const related = article.related.map((slug) => getArticle(slug)).filter((item) => item !== undefined);
+  const url = `${SITE_URL}/vragen/${article.slug}`;
+  const organization = { "@type": "Organization", "@id": ORGANIZATION_ID, name: SITE_NAME, url: SITE_URL };
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
+      { "@type": "WebPage", "@id": url, url, name: article.title, inLanguage: "nl-NL", isPartOf: { "@id": WEBSITE_ID } },
       {
         "@type": "Article",
         headline: article.title,
         description: article.description,
+        image: `${SITE_URL}${OG_IMAGE.url}`,
+        datePublished: article.published ?? article.updated,
         dateModified: article.updated,
         inLanguage: "nl-NL",
-        mainEntityOfPage: `${SITE_URL}/vragen/${article.slug}`,
-        publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+        mainEntityOfPage: { "@id": url },
+        author: organization,
+        publisher: organization,
       },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Vragen", item: `${SITE_URL}/vragen` },
-          { "@type": "ListItem", position: 2, name: article.title, item: `${SITE_URL}/vragen/${article.slug}` },
-        ],
-      },
+      breadcrumbList([["Vragen", "/vragen"], [article.title, `/vragen/${article.slug}`]]),
     ],
   };
 

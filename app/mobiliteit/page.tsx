@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import CalculatorApp from "../CalculatorApp";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/mobiliteit",
   title: "Leaseauto of mobiliteitsbudget vergelijken",
   description: "Vergelijk de indicatieve netto waarde van een leaseauto, mobiliteitsbudget of eigen auto met kilometervergoeding.",
-  alternates: { canonical: "/mobiliteit" },
-};
+});
 
 export default function MobilityPage() {
-  return <CalculatorApp initialView="mobility" />;
+  return <><JsonLd data={breadcrumbJsonLd([["Leaseauto of mobiliteitsbudget", "/mobiliteit"]])} /><CalculatorApp initialView="mobility" /></>;
 }

@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import Link from "next/link";
 import AdSlot from "../components/AdSlot";
 import { SiteFooter, SiteNav } from "../components/SiteChrome";
 import { ARTICLES } from "../../lib/articles";
 import { CALCULATORS } from "../../lib/calculators";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/vragen",
   title: "Vragen over salaris, lease en een nieuwe baan",
-  description: "Heldere antwoorden over bruto en netto, bijtelling, kilometervergoeding, vakantiegeld, pensioen en het vergelijken van twee banen. Met rekenvoorbeelden.",
-  alternates: { canonical: "/vragen" },
-};
+  description: "Heldere antwoorden over bruto en netto, bijtelling, kilometervergoeding, vakantiegeld en pensioen. Met rekenvoorbeelden.",
+});
 
 export default function QuestionsPage() {
-  return <main>
+  return <><JsonLd data={breadcrumbJsonLd([["Vragen", "/vragen"]])} /><main>
     <SiteNav active="questions" />
     <header className="sub-hero shell">
       <span className="hero-kicker"><span className="kicker-line"></span> Vragen en antwoorden</span>
@@ -32,5 +34,5 @@ export default function QuestionsPage() {
     </section>
     <AdSlot placement="vragen" />
     <SiteFooter />
-  </main>;
+  </main></>;
 }

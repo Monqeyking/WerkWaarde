@@ -10,7 +10,7 @@ import {
   euro, getAmountPage, neighbourPages, prefillPath,
 } from "../../../lib/amounts";
 import { money, percent } from "../../../lib/format";
-import { SITE_NAME, SITE_URL } from "../../../lib/site";
+import { breadcrumbList, pageMetadata } from "../../../lib/seo";
 
 type Props = { params: Promise<{ bedrag: string }> };
 
@@ -24,12 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const page = getAmountPage((await params).bedrag);
   if (!page) return {};
   const figures = amountFigures(page);
-  return {
-    title: amountTitle(figures),
-    description: amountDescription(figures),
-    alternates: { canonical: amountPath(page) },
-    openGraph: { locale: "nl_NL", siteName: SITE_NAME, title: amountTitle(figures), description: amountDescription(figures) },
-  };
+  return pageMetadata({ path: amountPath(page), title: amountTitle(figures), description: amountDescription(figures) });
 }
 
 export default async function AmountPage({ params }: Props) {
@@ -74,10 +69,7 @@ export default async function AmountPage({ params }: Props) {
     "@context": "https://schema.org",
     "@graph": [
       { "@type": "FAQPage", mainEntity: faqs.map(([question, answer]) => ({ "@type": "Question", name: question, acceptedAnswer: { "@type": "Answer", text: answer } })) },
-      { "@type": "BreadcrumbList", itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Bruto netto", item: `${SITE_URL}/bruto-netto` },
-        { "@type": "ListItem", position: 2, name: amountLabel(page), item: `${SITE_URL}${amountPath(page)}` },
-      ] },
+      breadcrumbList([["Bruto naar netto", "/bruto-netto"], [amountLabel(page), amountPath(page)]]),
     ],
   };
 

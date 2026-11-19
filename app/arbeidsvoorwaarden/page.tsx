@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import SpokePage from "../components/SpokePage";
 import ArbeidsvoorwaardenCalculator from "./ArbeidsvoorwaardenCalculator";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/arbeidsvoorwaarden",
   title: "Wat zijn je arbeidsvoorwaarden waard?",
-  description: "Tel je salaris, vakantiegeld, 13e maand, bonus, werkgeverspensioen, opleidingsbudget en extra vakantiedagen op tot je totale beloning per jaar en per uur.",
-  alternates: { canonical: "/arbeidsvoorwaarden" },
-};
+  description: "Tel salaris, vakantiegeld, 13e maand, bonus, pensioen en extra vakantiedagen op tot je totale beloning per jaar en per uur.",
+});
 
 const how = [
   ["Alles bruto op een rij", "Salaris, vakantiegeld, 13e maand en bonus tellen we op zoals je werkgever ze betaalt: bruto, per jaar."],
@@ -23,8 +25,8 @@ const faqs = [
 ] as const;
 
 export default function ArbeidsvoorwaardenPage() {
-  return <SpokePage kicker="Arbeidsvoorwaarden" title="Wat zijn je arbeidsvoorwaarden waard?"
+  return <><JsonLd data={breadcrumbJsonLd([["Arbeidsvoorwaarden", "/arbeidsvoorwaarden"]])} /><SpokePage kicker="Arbeidsvoorwaarden" title="Wat zijn je arbeidsvoorwaarden waard?"
     intro="Een baan is meer dan het maandsalaris. Tel vakantiegeld, bonus, pensioen van je werkgever, opleidingsbudget en extra vakantiedagen op tot je totale beloning."
     calculator={<ArbeidsvoorwaardenCalculator />} how={how} faqs={faqs} adPlacement="arbeidsvoorwaarden"
-    articles={["waarde-pensioen-en-arbeidsvoorwaarden", "banen-eerlijk-vergelijken", "minder-over-van-vakantiegeld-en-bonus"]} />;
+    articles={["waarde-pensioen-en-arbeidsvoorwaarden", "banen-eerlijk-vergelijken", "minder-over-van-vakantiegeld-en-bonus"]} /></>;
 }

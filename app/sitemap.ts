@@ -6,16 +6,21 @@ import { CALCULATORS } from "../lib/calculators";
 
 export const dynamic = "force-static";
 
+/**
+ * Only articles carry a lastmod: they have a real "updated" date. A build date
+ * on every URL tells Google nothing, so it would learn to ignore lastmod here.
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = SITE_URL;
-  const paths = [
-    "/",
-    ...CALCULATORS.map((tool) => tool.href),
-    ...AMOUNT_PAGES.map(amountPath),
-    "/vragen",
-    ...ARTICLES.map((article) => `/vragen/${article.slug}`),
-    "/uitleg", "/privacy", "/cookies", "/disclaimer", "/contact",
-  ];
+  const latestArticle = ARTICLES.map((article) => article.updated).sort().at(-1);
+  const page = (path: string, lastModified?: string) => ({ url: `${baseUrl}${path}`, ...(lastModified && { lastModified }) });
 
-  return paths.map((path) => ({ url: `${baseUrl}${path}`, lastModified: new Date() }));
+  return [
+    page("/"),
+    ...CALCULATORS.map((tool) => page(tool.href)),
+    ...AMOUNT_PAGES.map((amount) => page(amountPath(amount))),
+    page("/vragen", latestArticle),
+    ...ARTICLES.map((article) => page(`/vragen/${article.slug}`, article.updated)),
+    ...["/uitleg", "/privacy", "/cookies", "/disclaimer", "/contact"].map((path) => page(path)),
+  ];
 }

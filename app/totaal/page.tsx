@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import Link from "next/link";
 import AdSlot from "../components/AdSlot";
 import { SiteFooter, SiteNav } from "../components/SiteChrome";
-import { SITE_NAME } from "../../lib/site";
 import TotalCalculator from "./TotalCalculator";
 
-export const metadata: Metadata = {
-  title: "Twee banen vergelijken: wat houd je netto over?",
-  description: "Vergelijk je huidige en nieuwe baan in één overzicht: netto salaris, bonus, pensioen, leaseauto of mobiliteitsbudget, reiskosten, reistijd en je netto uurloon.",
-  alternates: { canonical: "/totaal" },
-  openGraph: {
-    type: "website",
-    locale: "nl_NL",
-    siteName: SITE_NAME,
-    title: "Wat levert een nieuwe baan je écht op?",
-    description: "Vergelijk je huidige en nieuwe baan in één overzicht: netto salaris, pensioen, auto, reiskosten, reistijd en je netto uurloon.",
-  },
-};
+export const metadata: Metadata = pageMetadata({
+  path: "/totaal",
+  title: "Banen vergelijken: wat houd je netto over?",
+  description: "Vergelijk je huidige en nieuwe baan: netto salaris, bonus, pensioen, leaseauto, reiskosten, reistijd en je netto uurloon.",
+  socialTitle: "Wat levert een nieuwe baan je écht op?",
+  socialDescription: "Vergelijk je huidige en nieuwe baan in één overzicht: netto salaris, pensioen, auto, reiskosten, reistijd en je netto uurloon.",
+});
 
 const faqs = [
   ["Hoe vergelijk ik twee banen eerlijk?", "Kijk niet alleen naar het bruto salaris. Reken alles om naar wat je netto per maand overhoudt: salaris, vakantiegeld, 13e maand en bonus na belasting, plus of min je auto- of mobiliteitsregeling, en min de kosten die je maakt om op je werk te komen. Zet daarnaast de reistijd en zaken als pensioen en vakantiedagen op een rij."],
@@ -34,7 +30,7 @@ const faqJsonLd = {
 };
 
 export default function TotalPage() {
-  return <main>
+  return <><JsonLd data={breadcrumbJsonLd([["Twee banen vergelijken", "/totaal"]])} /><main>
     <SiteNav active="total" />
     <header className="sub-hero shell">
       <span className="hero-kicker"><span className="kicker-line"></span> Het hele plaatje</span>
@@ -62,5 +58,5 @@ export default function TotalPage() {
     <AdSlot placement="totaal" />
     <SiteFooter />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
-  </main>;
+  </main></>;
 }

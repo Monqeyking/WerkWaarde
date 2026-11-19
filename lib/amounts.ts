@@ -89,7 +89,7 @@ export function amountTitle(figures: AmountFigures) {
 export function amountDescription(figures: AmountFigures) {
   const { page, year } = figures;
   return page.kind === "maand"
-    ? `Bij ${euro(page.amount)} bruto per maand houd je in ${year} ongeveer ${euro(figures.regularNetMonthly)} netto over. Met vakantiegeld, belasting, je marginale tarief en parttime.`
+    ? `Bij ${euro(page.amount)} bruto per maand houd je in ${year} ongeveer ${euro(figures.regularNetMonthly)} netto over. Met vakantiegeld, marginaal tarief en parttime.`
     : `Bij ${euro(page.amount)} bruto per jaar houd je in ${year} ongeveer ${euro(figures.netAnnual)} netto over, gemiddeld ${euro(figures.netMonthlyAverage)} per maand. Met belasting en parttime.`;
 }
 

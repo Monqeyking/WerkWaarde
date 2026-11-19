@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import Link from "next/link";
 import LegalPage from "../components/LegalPage";
 import { houseAdAdvertisers } from "../../lib/ads";
 import { CONTACT_EMAIL, OPERATOR, SITE_NAME } from "../../lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/privacy",
   title: "Privacybeleid",
   description: "Welke gegevens Nettoplaatje verwerkt: je invoer blijft in je eigen browser, wat de hosting logt en wat er gebeurt met advertenties.",
-  alternates: { canonical: "/privacy" },
-};
+});
 
 function Contact() {
   return CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : <Link href="/contact">de contactpagina</Link>;
 }
 
 export default function PrivacyPage() {
-  return <LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 16 november 2026.">
+  return <><JsonLd data={breadcrumbJsonLd([["Privacy", "/privacy"]])} /><LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 16 november 2026.">
     <h2>Wie we zijn</h2>
     <p>{SITE_NAME} biedt gratis calculators voor salaris, mobiliteit en de kosten van werken. Je kunt ze gebruiken zonder account.{OPERATOR.name && <> {SITE_NAME} wordt beheerd door {OPERATOR.name}{OPERATOR.address && <>, {OPERATOR.address}</>}{OPERATOR.kvk && <> (KvK {OPERATOR.kvk})</>}. {OPERATOR.name} is verantwoordelijk voor de verwerking van persoonsgegevens op deze site.</>} Vragen over privacy stel je via <Contact />.</p>
 
@@ -43,5 +45,5 @@ export default function PrivacyPage() {
 
     <h2>Wijzigingen</h2>
     <p>Verandert de werking van {SITE_NAME}, dan passen we dit beleid aan. Bovenaan staat de datum van de laatste wijziging.</p>
-  </LegalPage>;
+  </LegalPage></>;
 }

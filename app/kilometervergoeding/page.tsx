@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import SpokePage from "../components/SpokePage";
 import KilometerCalculator from "./KilometerCalculator";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/kilometervergoeding",
   title: "Kilometervergoeding 2026: dekt het je kosten?",
-  description: "Bereken wat je overhoudt aan je kilometervergoeding in 2026. Onbelast tot € 0,25 per km. Zie of de vergoeding je brandstof en autokosten dekt.",
-  alternates: { canonical: "/kilometervergoeding" },
-};
+  description: "Wat houd je over aan je kilometervergoeding in 2026? Onbelast tot € 0,25 per km. Zie of het je brandstof en autokosten dekt.",
+});
 
 const how = [
   ["Kilometers per jaar", "Uit je kantoordagen, werkweken en de afstand enkele reis rekenen we je woon-werkkilometers. Daar tellen we je overige zakelijke ritten bij op."],
@@ -23,8 +25,8 @@ const faqs = [
 ] as const;
 
 export default function KilometerPage() {
-  return <SpokePage active="mobility" kicker="Kilometervergoeding" title="Dekt je kilometervergoeding je autokosten?"
+  return <><JsonLd data={breadcrumbJsonLd([["Kilometervergoeding", "/kilometervergoeding"]])} /><SpokePage active="mobility" kicker="Kilometervergoeding" title="Dekt je kilometervergoeding je autokosten?"
     intro="Bereken hoeveel je overhoudt of toelegt als je met je eigen auto naar je werk rijdt. Met het onbelaste maximum van 2026 en de kosten van jouw auto."
     calculator={<KilometerCalculator />} how={how} faqs={faqs} adPlacement="kilometervergoeding"
-    articles={["kilometervergoeding-onbelast", "leaseauto-of-mobiliteitsbudget", "reistijd-meetellen-nieuwe-baan"]} />;
+    articles={["kilometervergoeding-onbelast", "leaseauto-of-mobiliteitsbudget", "reistijd-meetellen-nieuwe-baan"]} /></>;
 }

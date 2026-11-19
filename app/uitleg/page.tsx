@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import LegalPage from "../components/LegalPage";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/uitleg",
   title: "Hoe werkt Nettoplaatje?",
   description: "Lees hoe Nettoplaatje salaris, mobiliteit, reistijd en werkgerelateerde kosten vergelijkt.",
-  alternates: { canonical: "/uitleg" },
-};
+});
 
 const faqs = [
   ["Is Nettoplaatje financieel advies?", "Nee. De uitkomsten zijn indicaties op basis van de ingevulde gegevens. Je eigen loonstrook, pensioenregeling, cao en persoonlijke omstandigheden kunnen tot andere bedragen leiden."],
@@ -18,7 +20,7 @@ const faqs = [
 ] as const;
 
 export default function ExplanationPage() {
-  return <LegalPage adPlacement="uitleg" eyebrow="Transparant rekenen" title="Hoe werkt Nettoplaatje?" intro="Nettoplaatje maakt de waarde van een baan en mobiliteitskeuze inzichtelijk. Hieronder leggen we uit welke stappen en aannames de calculators gebruiken.">
+  return <><JsonLd data={breadcrumbJsonLd([["Uitleg", "/uitleg"]])} /><LegalPage adPlacement="uitleg" eyebrow="Transparant rekenen" title="Hoe werkt Nettoplaatje?" intro="Nettoplaatje maakt de waarde van een baan en mobiliteitskeuze inzichtelijk. Hieronder leggen we uit welke stappen en aannames de calculators gebruiken.">
     <h2>1. Bruto naar netto</h2>
     <p>We starten met het bruto maandsalaris en het vakantiegeld. De werknemersbijdrage voor pensioen verlaagt in deze indicatie het belastbare loon. Daarna berekenen we een geschatte loonheffing voor het gekozen belastingjaar. De werkgeversbijdrage pensioen tonen we apart als onderdeel van de arbeidsvoorwaarden.</p>
 
@@ -50,5 +52,5 @@ export default function ExplanationPage() {
 
     <h2>Bronnen</h2>
     <p>De calculator verwijst bij fiscale uitgangspunten naar de <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/voorlopige-aanslag/content/voorlopige-aanslag-tarieven-en-heffingskortingen" target="_blank" rel="noreferrer">Belastingdienst</a>, de informatie over <a href="https://centraalaanspreekpuntpensioenen.belastingdienst.nl/publicaties/overzicht-aow-inbouwbedragen-en-aow-franchises/" target="_blank" rel="noreferrer">AOW-franchises</a>, de regels voor <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/bijtelling-privegebruik-auto-2026" target="_blank" rel="noreferrer">bijtelling in 2026</a> de <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/berichten/nieuws/verhoging-onbelaste-kilometervergoeding-hoe-verwerkt-u-dit-in-de-loonaangifte" target="_blank" rel="noreferrer">verhoging van de kilometervergoeding in 2026</a>, de <a href="https://www.rijksoverheid.nl/onderwerpen/kinderopvangtoeslag/bedragen-kinderopvangtoeslag-2026" target="_blank" rel="noreferrer">bedragen kinderopvangtoeslag 2026</a>, de <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/zorgtoeslag/content/hoeveel-zorgtoeslag" target="_blank" rel="noreferrer">zorgtoeslag</a> en het <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/kindgebonden-budget/content/hoeveel-kindgebonden-budget" target="_blank" rel="noreferrer">kindgebonden budget</a>. Deze pagina is gecontroleerd op 6 oktober 2026, de toeslagen op 18 november 2026.</p>
-  </LegalPage>;
+  </LegalPage></>;
 }

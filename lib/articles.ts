@@ -5,6 +5,7 @@ export type Article = {
   seoTitle?: string; // shorter <title> when title plus " | Nettoplaatje" would exceed 60 chars
   description: string; // meta description, 120–155 chars, no quotes
   updated: string; // "2026-11-16"
+  published?: string; // first publication date, when it differs from `updated`
   intro: string; // 2–3 sentences answering the question directly (featured-snippet style)
   sections: ArticleSection[]; // 3–5 sections, each 1–3 paragraphs
   calculator: { href: string; label: string }; // primary call to action, label like "Bereken je bijtelling"

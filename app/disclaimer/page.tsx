@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import Link from "next/link";
 import LegalPage from "../components/LegalPage";
 import { houseAdAdvertisers } from "../../lib/ads";
 import { OPERATOR, SITE_NAME } from "../../lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/disclaimer",
   title: "Disclaimer en gebruiksvoorwaarden",
   description: "De uitkomsten van Nettoplaatje zijn indicaties, geen advies. Lees wat je wel en niet van de calculators mag verwachten.",
-  alternates: { canonical: "/disclaimer" },
-};
+});
 
 export default function DisclaimerPage() {
   const owner = OPERATOR.name || SITE_NAME;
-  return <LegalPage adPlacement="disclaimer" eyebrow="Nettoplaatje" title="Disclaimer en gebruiksvoorwaarden" intro="Laatst bijgewerkt: 18 november 2026. Door deze site te gebruiken, ga je akkoord met deze voorwaarden.">
+  return <><JsonLd data={breadcrumbJsonLd([["Disclaimer", "/disclaimer"]])} /><LegalPage adPlacement="disclaimer" eyebrow="Nettoplaatje" title="Disclaimer en gebruiksvoorwaarden" intro="Laatst bijgewerkt: 18 november 2026. Door deze site te gebruiken, ga je akkoord met deze voorwaarden.">
     <h2>Een indicatie, geen advies</h2>
     <p>De uitkomsten van {SITE_NAME} zijn schattingen op basis van wat je invult en van vereenvoudigde rekenregels. Ze zijn geen financieel, fiscaal, juridisch of pensioenadvies. Je werkelijke netto inkomen hangt af van je loonstrook, cao, pensioenregeling, toeslagen en persoonlijke situatie. Neem belangrijke beslissingen, zoals het aannemen van een baan of het kiezen van een leaseauto, niet alleen op basis van deze site. Raadpleeg bij twijfel je werkgever, de Belastingdienst of een adviseur.</p>
 
@@ -33,5 +35,5 @@ export default function DisclaimerPage() {
 
     <h2>Toepasselijk recht</h2>
     <p>Op het gebruik van {SITE_NAME} en op deze voorwaarden is Nederlands recht van toepassing.</p>
-  </LegalPage>;
+  </LegalPage></>;
 }

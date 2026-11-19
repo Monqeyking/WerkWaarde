@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import JsonLd from "../components/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import Link from "next/link";
 import SpokePage from "../components/SpokePage";
 import DeeltijdCalculator from "./DeeltijdCalculator";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/deeltijd",
   title: "Deeltijd of voltijd: wat levert een dag extra werken op?",
-  description: "Bereken wat 24, 32 of 40 uur werken je huishouden netto oplevert, na belasting, kinderopvang, kinderopvangtoeslag, kindgebonden budget en zorgtoeslag.",
-  alternates: { canonical: "/deeltijd" },
-};
+  description: "Wat levert 24, 32 of 40 uur werken je huishouden netto op, na belasting, kinderopvang en toeslagen? Bereken het voor 2026.",
+});
 
 const PROEFBEREKENING = "https://www.belastingdienst.nl/wps/wcm/connect/nl/toeslagen/content/hulpmiddel-proefberekening-toeslagen";
 
@@ -32,8 +34,8 @@ const disclaimer = <>
 </>;
 
 export default function DeeltijdPage() {
-  return <SpokePage active="work" kicker="Deeltijd of voltijd" title="Wat levert een dag extra werken op?"
+  return <><JsonLd data={breadcrumbJsonLd([["Deeltijd of voltijd", "/deeltijd"]])} /><SpokePage active="work" kicker="Deeltijd of voltijd" title="Wat levert een dag extra werken op?"
     intro="Zie per aantal uren wat je huishouden netto overhoudt, na belasting, kinderopvang en toeslagen. Zo weet je wat een dag meer of minder werken je echt kost of oplevert."
     calculator={<DeeltijdCalculator />} how={how} faqs={faqs} adPlacement="deeltijd" disclaimer={disclaimer}
-    articles={["loont-meer-uren-werken", "kinderopvangtoeslag-2026", "kindgebonden-budget-2026"]} />;
+    articles={["loont-meer-uren-werken", "kinderopvangtoeslag-2026", "kindgebonden-budget-2026"]} /></>;
 }
