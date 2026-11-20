@@ -36,7 +36,8 @@ npm run typecheck
 npm run lint
 npm run build          # out/ + scripts/flatten-segments.mjs (postbuild)
 npm start              # wrangler dev on http://127.0.0.1:3000
-npm run deploy         # build + wrangler deploy
+npm run deploy         # build + wrangler deploy + IndexNow ping of changed pages
+npm run indexnow -- --dry-run   # show which pages IndexNow would submit
 npm run build:extension  # Chrome extension -> extension/dist + zip
 ```
 

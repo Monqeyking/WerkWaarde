@@ -48,3 +48,6 @@ next-env.d.ts
 # browser extension build output
 /extension/dist/
 /extension/*.zip
+
+# IndexNow: hashes of the pages submitted at the last deploy
+/.indexnow-state.json
