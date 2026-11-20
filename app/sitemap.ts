@@ -9,8 +9,10 @@ import { caoPath } from "../lib/cao-pages";
 export const dynamic = "force-static";
 
 /**
- * Only articles and cao pages carry a lastmod: they have a real "updated" or "checked" date. A build date
- * on every URL tells Google nothing, so it would learn to ignore lastmod here.
+ * Articles and cao pages carry their real "updated" or "checked" date here. After the build,
+ * scripts/content-dates.mjs gives every URL a lastmod with the date its text last changed
+ * (content-dates.json), using these dates for pages it sees for the first time. Never a
+ * plain build date: that tells search engines nothing, so they would learn to ignore lastmod.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = SITE_URL;

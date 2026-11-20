@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/flatten-segments.mjs",
+    "postbuild": "node scripts/flatten-segments.mjs && node scripts/content-dates.mjs",
     "start": "wrangler dev --port 3000",
     "deploy": "npm run build && wrangler deploy && node scripts/indexnow.mjs",
     "indexnow": "node scripts/indexnow.mjs",

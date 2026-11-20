@@ -1,0 +1,366 @@
+{
+  "https://nettoplaatje.nl/": {
+    "hash": "c315204d861cf415",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/totaal": {
+    "hash": "8db108195cfb40f8",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto": {
+    "hash": "cc9c656ef7d03b7f",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/mobiliteit": {
+    "hash": "dcd438ac7fa51049",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bijtelling": {
+    "hash": "52b0cd3304cdc69d",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/kilometervergoeding": {
+    "hash": "628f94422426354b",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/deeltijd": {
+    "hash": "ee96758a561f6f7e",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/werkpatroon": {
+    "hash": "4d1c719bfea44a3a",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/arbeidsvoorwaarden": {
+    "hash": "37928b10d0db55af",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/2000-per-maand": {
+    "hash": "a6f776ec9117d262",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/2200-per-maand": {
+    "hash": "27e1683ad735e43c",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/2400-per-maand": {
+    "hash": "9e5907090cf8964b",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/2500-per-maand": {
+    "hash": "ea50d64ab8a7b591",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/2600-per-maand": {
+    "hash": "365b3c0ebc83f0f3",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/2700-per-maand": {
+    "hash": "6f07fb57a41b1733",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/2800-per-maand": {
+    "hash": "24976ea4a0d70385",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/2900-per-maand": {
+    "hash": "2eac03672017cf0d",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3000-per-maand": {
+    "hash": "13bab538c895700b",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3100-per-maand": {
+    "hash": "e4f3d6f4db19b1b7",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3200-per-maand": {
+    "hash": "376c353970bba14b",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3300-per-maand": {
+    "hash": "15b9e9c03d858216",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3400-per-maand": {
+    "hash": "dd6af8d036c21e2e",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3500-per-maand": {
+    "hash": "3ef375d2a4caccce",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3600-per-maand": {
+    "hash": "552949744a7afebc",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3700-per-maand": {
+    "hash": "b049ba26ae4b4ee7",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3800-per-maand": {
+    "hash": "80f865ccfd39c251",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/3900-per-maand": {
+    "hash": "f9625b3aec30c4e7",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/4000-per-maand": {
+    "hash": "6abb32ffe28c059d",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/4200-per-maand": {
+    "hash": "92caad581ec3ab30",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/4500-per-maand": {
+    "hash": "c0afab9febc21e24",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/4800-per-maand": {
+    "hash": "3101dea97413ad88",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/5000-per-maand": {
+    "hash": "2d7cfec272a52120",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/5500-per-maand": {
+    "hash": "b6a0e3eeb7f5224b",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/6000-per-maand": {
+    "hash": "d5f4375b769747c3",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/6500-per-maand": {
+    "hash": "e0a54030efaf096a",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/7000-per-maand": {
+    "hash": "e4d3944eef34e5bc",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/8000-per-maand": {
+    "hash": "87043e189ddd110b",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/9000-per-maand": {
+    "hash": "c89287fc4c14f493",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/10000-per-maand": {
+    "hash": "16d60e437d2ba6b4",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/30000-per-jaar": {
+    "hash": "08ed10191c5f4877",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/35000-per-jaar": {
+    "hash": "c92dbd3a45e84a7c",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/40000-per-jaar": {
+    "hash": "2cbcac1b635e6827",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/45000-per-jaar": {
+    "hash": "468163e6f55c9491",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/50000-per-jaar": {
+    "hash": "4fa3b254bba26e17",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/60000-per-jaar": {
+    "hash": "b626a92a2a4a6289",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/70000-per-jaar": {
+    "hash": "f0fe53eef7f74e91",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/80000-per-jaar": {
+    "hash": "03550b99c8a083ef",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/bruto-netto/90000-per-jaar": {
+    "hash": "b31de6bb142d9136",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/cao": {
+    "hash": "89c682240b795a05",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/rijk": {
+    "hash": "e2cffeb9f362259a",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/gemeenten": {
+    "hash": "090fbd3b92084102",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/politie": {
+    "hash": "0de0e4addbd55a89",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/primair-onderwijs": {
+    "hash": "dd694427aa8f72b7",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/voortgezet-onderwijs": {
+    "hash": "c5025ad82930a8da",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/mbo": {
+    "hash": "69437f0cb5ccbc96",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/universiteiten": {
+    "hash": "64aa04e34f2d60e3",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/ziekenhuizen": {
+    "hash": "27500cb2fd1b5d45",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/vvt": {
+    "hash": "39300a2c6be13c15",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/gehandicaptenzorg": {
+    "hash": "edf4bd0c399de5b9",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/ggz": {
+    "hash": "eba7c39d03668225",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/sociaal-werk": {
+    "hash": "be740eb143801c3e",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/kinderopvang": {
+    "hash": "0fadacaac067ea19",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/supermarkten": {
+    "hash": "b77a6bc4b84ce84e",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/retail-non-food": {
+    "hash": "f886804ec8a71697",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/horeca": {
+    "hash": "71975bf7e19629ca",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/schoonmaak": {
+    "hash": "3ca8d45887caf3cd",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/uitzendkrachten-abu": {
+    "hash": "d69eb1a3b8e3e2a8",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/metaal-en-techniek": {
+    "hash": "5c59b11bee10d1bd",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/metalektro": {
+    "hash": "3fa9da290f5f6a06",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/bouw-en-infra": {
+    "hash": "e3bdb406ebbff7bc",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/cao/beroepsgoederenvervoer": {
+    "hash": "417c744bfe7bc38e",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen": {
+    "hash": "0182c8df1a641d4e",
+    "changed": "2026-11-18"
+  },
+  "https://nettoplaatje.nl/vragen/banen-eerlijk-vergelijken": {
+    "hash": "0cbdf39e9b354d12",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen/bruto-naar-netto": {
+    "hash": "0d6cb87eddc59b14",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen/minder-over-van-vakantiegeld-en-bonus": {
+    "hash": "f9c73b4d12e43290",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen/bruto-voor-100-euro-netto-meer": {
+    "hash": "124fdcbdb53e2388",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen/wat-is-bijtelling": {
+    "hash": "9e9d3c8bcdd69c81",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen/leaseauto-of-mobiliteitsbudget": {
+    "hash": "5ac44396674e940d",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen/kilometervergoeding-onbelast": {
+    "hash": "333d6111f798c2e0",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen/reistijd-meetellen-nieuwe-baan": {
+    "hash": "ef2a8091b3329b1f",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen/waarde-pensioen-en-arbeidsvoorwaarden": {
+    "hash": "970ccd38f2d8dc4f",
+    "changed": "2026-11-16"
+  },
+  "https://nettoplaatje.nl/vragen/loont-meer-uren-werken": {
+    "hash": "fe3edf39fc7c21bd",
+    "changed": "2026-11-18"
+  },
+  "https://nettoplaatje.nl/vragen/kinderopvangtoeslag-2026": {
+    "hash": "e0148e4722512751",
+    "changed": "2026-11-18"
+  },
+  "https://nettoplaatje.nl/vragen/kindgebonden-budget-2026": {
+    "hash": "120456fa7dd9f9bc",
+    "changed": "2026-11-18"
+  },
+  "https://nettoplaatje.nl/insluiten": {
+    "hash": "36f167fa1489b122",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/over": {
+    "hash": "e9678d53410f6f51",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/uitleg": {
+    "hash": "423c26c9151ca132",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/privacy": {
+    "hash": "814beb73bcadabd4",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/cookies": {
+    "hash": "76fe6a95efed5c97",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/disclaimer": {
+    "hash": "14d3c168e7fe578b",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/contact": {
+    "hash": "2f0fb3048288c3ef",
+    "changed": "2026-11-20"
+  }
+}

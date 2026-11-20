@@ -15,12 +15,18 @@ export function htmlFileFor(url: string): string {
   return path === "" ? "index.html" : `${path.slice(1)}.html`;
 }
 
-/** Hash of what a visitor reads: the <main> content without scripts, styles and build file names. */
+/**
+ * Hash of what a visitor reads on this page: the <main> content without the site-wide
+ * header and footer, scripts, styles and build file names. A new footer link is not a
+ * change of the page itself.
+ */
 export function contentHash(html: string): string {
   const main = html.match(/<main[\s\S]*<\/main>/)?.[0] ?? html;
   const text = main
     .replace(/<script[\s\S]*?<\/script>/g, "")
     .replace(/<style[\s\S]*?<\/style>/g, "")
+    .replace(/<footer[\s\S]*?<\/footer>/g, "")
+    .replace(/<nav[\s\S]*?<\/nav>/g, "")
     .replace(/\/_next\/[^"'\s)]+/g, "")
     .replace(/\s+/g, " ");
   return createHash("sha256").update(text).digest("hex").slice(0, 16);

@@ -63,6 +63,7 @@ npm run build:extension  # Chrome extension -> extension/dist + zip
 - **`lib/caos.ts`:** cao terms and pension, with sources and `checkedOn` per entry. Check after new cao agreements and the yearly pension premiums (around December).
 - **`lib/articles.ts`:** articles with an `updated` date. Bump it when the content changes.
 - **Sources and dates:** every figure needs a source. Look figures up at the source, never from memory.
+- **`content-dates.json`:** the date each page's text last changed, used for `<lastmod>` on every sitemap URL. The postbuild (`scripts/content-dates.mjs`) updates it whenever page text changes, so commit it together with that change, also when it changes during `npm run deploy`. Never edit dates by hand, and never reset it: that would make every page look changed today.
 - **New calculation year:** bump the extension version (`extension/static/manifest.json`) and rebuild the zip.
 
 ## Conventions
