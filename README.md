@@ -56,3 +56,9 @@ op de machine die `npm run deploy` draait:
 - `NEXT_PUBLIC_CONTACT_EMAIL` — contactadres op privacy- en contactpagina
 - `NEXT_PUBLIC_ADSENSE_PUBLISHER_ID` — `ca-pub-…`; genereert ook `/ads.txt`
 - `NEXT_PUBLIC_ADSENSE_SLOT_CONTENT` — advertentie-unit
+
+## Iconen
+
+`node scripts/build-icons.mjs` tekent `app/apple-icon.png` en `public/icon-192.png` /
+`icon-512.png` uit dezelfde vormen als `app/icon.svg`. Alleen opnieuw draaien als het
+logo verandert.
