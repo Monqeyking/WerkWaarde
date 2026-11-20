@@ -56,6 +56,8 @@ op de machine die `npm run deploy` draait:
 - `NEXT_PUBLIC_CONTACT_EMAIL` — contactadres op privacy- en contactpagina
 - `NEXT_PUBLIC_ADSENSE_PUBLISHER_ID` — `ca-pub-…`; genereert ook `/ads.txt`
 - `NEXT_PUBLIC_ADSENSE_SLOT_CONTENT` — advertentie-unit
+- `NEXT_PUBLIC_CF_ANALYTICS_TOKEN` — token van Cloudflare Web Analytics (bezoekcijfers
+  zonder cookies); leeg = geen statistieken. De privacypagina past zich hierop aan.
 
 ## Iconen
 

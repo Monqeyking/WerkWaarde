@@ -22,5 +22,11 @@ export const OPERATOR = {
   website: "", // e.g. "https://…"; linked only on the contact page
 };
 
+/**
+ * Site token of Cloudflare Web Analytics (NEXT_PUBLIC_CF_ANALYTICS_TOKEN): cookieless
+ * visit counts. The token is public (it is in the page source). Empty = no analytics.
+ */
+export const CF_ANALYTICS_TOKEN = process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN?.trim() ?? "";
+
 /** Public contact address (NEXT_PUBLIC_CONTACT_EMAIL). Empty until set. */
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() ?? "";

@@ -4,7 +4,7 @@ import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import Link from "next/link";
 import LegalPage from "../components/LegalPage";
 import { houseAdAdvertisers } from "../../lib/ads";
-import { CONTACT_EMAIL, OPERATOR, SITE_NAME } from "../../lib/site";
+import { CF_ANALYTICS_TOKEN, CONTACT_EMAIL, OPERATOR, SITE_NAME } from "../../lib/site";
 
 export const metadata: Metadata = pageMetadata({
   path: "/privacy",
@@ -17,7 +17,7 @@ function Contact() {
 }
 
 export default function PrivacyPage() {
-  return <><JsonLd data={breadcrumbJsonLd([["Privacy", "/privacy"]])} /><LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 19 november 2026.">
+  return <><JsonLd data={breadcrumbJsonLd([["Privacy", "/privacy"]])} /><LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 20 november 2026.">
     <h2>Wie we zijn</h2>
     <p>{SITE_NAME} biedt gratis calculators voor salaris, mobiliteit en de kosten van werken. Je kunt ze gebruiken zonder account.{OPERATOR.name && <> {SITE_NAME} wordt beheerd door {OPERATOR.name}{OPERATOR.address && <>, {OPERATOR.address}</>}{OPERATOR.kvk && <> (KvK {OPERATOR.kvk})</>}. {OPERATOR.name} is verantwoordelijk voor de verwerking van persoonsgegevens op deze site.</>} Vragen over privacy stel je via <Contact />.</p>
 
@@ -40,8 +40,13 @@ export default function PrivacyPage() {
     <h2>De browserextensie</h2>
     <p>De extensie &lsquo;Nettoplaatje: netto salaris in vacatures&rsquo; werkt alleen op Indeed, Nationale Vacaturebank en Werkzoeken.nl. Ze leest daar de salarisbedragen op de pagina en rekent het netto uit in je browser. Ze stuurt niets naar ons of naar anderen, bewaart geen gegevens en volgt niet welke vacatures je bekijkt. Pas als je op een bedrag klikt, open je {SITE_NAME} met dat salaris in de link, in het deel na het hekje.</p>
 
-    <h2>Geen analytics, geen verkoop</h2>
-    <p>We gebruiken geen eigen analytics- of trackingdiensten en verkopen geen gegevens.</p>
+    {CF_ANALYTICS_TOKEN ? <>
+      <h2>Bezoekstatistieken zonder cookies</h2>
+      <p>Om te zien welke pagina&apos;s bezocht worden, gebruiken we Cloudflare Web Analytics. Dat telt paginabezoeken zonder cookies, zonder lokale opslag en zonder je over websites heen te volgen. We zien alleen totalen, zoals het aantal bezoeken per pagina, het land en het type apparaat, en kunnen daaruit niet afleiden wie je bent. Op de ingesloten calculator draait het niet. We verkopen geen gegevens.</p>
+    </> : <>
+      <h2>Geen analytics, geen verkoop</h2>
+      <p>We gebruiken geen eigen analytics- of trackingdiensten en verkopen geen gegevens.</p>
+    </>}
 
     <h2>Als je ons mailt</h2>
     <p>Mail je ons, dan gebruiken we je e-mailadres en bericht alleen om je te antwoorden. We bewaren je bericht zolang dat nodig is om je vraag af te handelen en verwijderen het uiterlijk een jaar daarna.</p>
