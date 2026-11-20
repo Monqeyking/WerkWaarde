@@ -177,7 +177,7 @@ function QuickNet() {
   </div>;
 }
 
-function Landing() {
+function Landing({ extra }: { extra?: React.ReactNode }) {
   return <main><SiteNav active="home" />
     <section className="landing-hero shell"><div className="hero-copy"><div className="hero-kicker"><span className="kicker-line"></span> Slim kiezen begint met vergelijken</div>
       <h1>Wat houd je écht over van je werk?</h1><p>Vul je brutoloon in en zie direct je netto salaris. Of vergelijk twee banen, inclusief auto, reiskosten en reistijd.</p><div className="hero-actions"><Link className="primary-button" href="/totaal">Vergelijk twee banen →</Link></div>
@@ -192,6 +192,7 @@ function Landing() {
       <div><h3>Je gegevens blijven bij jou</h3><p>Geen account nodig. Wat je invult, blijft in je eigen browser.</p></div>
       <p>Benieuwd hoe we rekenen? Lees de <Link href="/uitleg">uitleg</Link> of de <Link href="/vragen">vragen en antwoorden</Link>.</p>
     </section>
+    {extra}
     <SiteFooter />
   </main>;
 }
@@ -229,7 +230,7 @@ function WorkPatternCalculator() {
   </main>;
 }
 
-export default function CalculatorApp({ initialView }: { initialView: AppView }) {
+export default function CalculatorApp({ initialView, homeExtra }: { initialView: AppView; homeExtra?: React.ReactNode }) {
   const [model, setModel] = useJobModel();
   const [job, setJob] = useState<JobKey>("current");
   const router = useRouter();
@@ -250,7 +251,7 @@ export default function CalculatorApp({ initialView }: { initialView: AppView })
     : [...current, scenario]);
   const showOwnCarInputs = inputs.mobilityUsesOwnCar || selectedScenarios.includes("ownCar");
   const showReimbursementInputs = showOwnCarInputs || inputs.mobilityUsesBike;
-  if (initialView === "home") return <Landing />;
+  if (initialView === "home") return <Landing extra={homeExtra} />;
   if (initialView === "work") return <WorkPatternCalculator />;
   return <main>
     <SiteNav active="mobility" />

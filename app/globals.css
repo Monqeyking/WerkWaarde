@@ -85,6 +85,7 @@ button,input { font:inherit; } a { color:inherit; }
 .not-found-links a { display:inline-block; padding:4px 0; }
 .landing-content .section-kicker { grid-column:1/-1; }
 .method-copy { display:grid; gap:12px; max-width:900px; margin-top:22px; color:var(--muted); font-size:12px; line-height:1.7; }
+.method-copy a { color:var(--teal-ink); font-weight:700; }
 @media (max-width:760px) { .landing-content { grid-template-columns:1fr; padding:20px; }.landing-content h2,.landing-content .section-kicker { grid-column:auto; } }
 /* Ads: one labelled box per page, between content and footer. Height is reserved to avoid layout shift. */
 .ad-box { display:block; min-height:118px; margin-top:28px; margin-bottom:8px; padding:10px 14px 14px; border:1px solid var(--line); border-radius:14px; background:#fbfcfc; }
@@ -318,6 +319,11 @@ button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; ba
 .amount-links { margin-top:34px; }
 .amount-links-group { margin-top:16px; }
 .amount-links-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; margin-top:8px; }
+.home-extra { margin-top:34px; }
+.home-extra .amount-links:first-child { margin-top:0; }
+.home-extra-intro { margin:4px 0 0; color:var(--muted); font-size:13px; }
+.amount-links-more { margin:10px 0 0; font-size:13px; }
+.amount-links-more a { display:inline-block; padding:4px 0; color:var(--teal-ink); font-weight:700; }
 .amount-link { display:block; padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--ink); font-size:11px; font-weight:700; }
 .amount-link:hover { border-color:var(--teal); }
 .amount-link.current { border-color:var(--teal); color:var(--teal-ink); background:var(--teal-soft); }
