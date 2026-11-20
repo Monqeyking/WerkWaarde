@@ -1,4 +1,5 @@
 import { creditAt, DEFAULT_TAX_YEAR, taxYear, type TaxYearParams } from "./tax-years.ts";
+import { expatAllowance, type ExpatOption } from "./expat.ts";
 
 export type CalculatorInputs = {
   salary: number;
@@ -18,6 +19,8 @@ export type CalculatorInputs = {
    * Absent or 1 means full time.
    */
   pensionPartTimeFactor?: number;
+  /** Expatregeling (30%-regeling); absent means none. See lib/expat.ts. */
+  expatRuling?: ExpatOption;
   age: number;
   leaseBudget: number;
   mobilityBudget: number;
@@ -161,8 +164,19 @@ export function calculatePensionBreakdown(inputs: CalculatorInputs) {
   };
 }
 
-function annualTaxableSalary(inputs: CalculatorInputs) {
+/** Wage for the loonheffingen before the expatregeling: gross salary and holiday allowance minus the employee's pension premium. */
+function annualWageBeforeExpat(inputs: CalculatorInputs) {
   return Math.max(0, annualGrossSalary(inputs) - calculatePensionBreakdown(inputs).employeeAnnual);
+}
+
+/** Share of the wage that stays taxable under the expatregeling (1 without it). */
+function expatTaxableShare(inputs: CalculatorInputs) {
+  const wage = annualWageBeforeExpat(inputs);
+  return wage > 0 ? 1 - expatAllowance(wage, inputs.expatRuling, inputs.taxYear) / wage : 1;
+}
+
+function annualTaxableSalary(inputs: CalculatorInputs) {
+  return annualWageBeforeExpat(inputs) * expatTaxableShare(inputs);
 }
 
 function taxDelta(inputs: CalculatorInputs, additionalAnnualIncome: number) {
@@ -177,11 +191,13 @@ export function calculateSalaryBreakdown(inputs: CalculatorInputs) {
   const pensionMonthly = pension.employeeMonthly;
   const taxableAnnual = annualTaxableSalary(inputs);
   const taxMonthly = incomeTax(taxableAnnual, inputs.age, inputs.taxYear) / 12;
-  const taxWithoutPension = incomeTax(annualGrossSalary(inputs), inputs.age, inputs.taxYear) / 12;
+  const taxableShare = expatTaxableShare(inputs);
+  const taxWithoutPension = incomeTax(annualGrossSalary(inputs) * taxableShare, inputs.age, inputs.taxYear) / 12;
   const taxBenefitMonthly = Math.max(0, taxWithoutPension - taxMonthly);
   // A regular month is taxed as if the salary were the whole income; holiday
   // allowance is taxed separately when it is paid. Same method as grossToNet.
-  const regularTaxMonthly = incomeTax(Math.max(0, (grossMonthly - pensionMonthly) * 12), inputs.age, inputs.taxYear) / 12;
+  // Under the expatregeling the same share of every payment is tax-free.
+  const regularTaxMonthly = incomeTax(Math.max(0, (grossMonthly - pensionMonthly) * 12) * taxableShare, inputs.age, inputs.taxYear) / 12;
   const netMonthlyRegular = grossMonthly - pensionMonthly - regularTaxMonthly;
   const netMonthlyAverage = grossMonthlyAverage - pensionMonthly - taxMonthly;
   return { grossMonthly, holidayMonthly, grossMonthlyAverage, pensionMonthly, employerPensionMonthly: pension.employerMonthly, totalPensionMonthly: pension.totalMonthly, pensionableAnnual: pension.pensionableAnnual, pensionBase: pension.pensionBase, taxableAnnual, taxMonthly, taxBenefitMonthly, netMonthlyRegular, netMonthlyAverage };

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CaoSelect } from "../components/CaoSelect";
+import { ExpatSelect } from "../components/ExpatSelect";
+import { grossToNet } from "../../lib/spokes";
 import { Field } from "../components/Field";
 import { HouseholdInputs } from "../components/HouseholdInputs";
 import { hasFormalChildcare, toetsingsinkomenText } from "../../lib/household";
@@ -116,6 +118,10 @@ function Inputs({ state, setState }: { state: NettoplaatjeState; setState: SetSt
             <Field label="Eigen pensioeninleg" value={value.pensionEmployeeMonthly} onChange={(pensionEmployeeMonthly) => set({ pensionEmployeeMonthly, pensionMode: "monthly" })} suffix="€/mnd" hint="De werknemersbijdrage pensioen op je loonstrook. Weet je het niet? Kies hierboven je cao." />
             <Field label="Pensioen werkgever" value={value.pensionEmployerMonthly} onChange={(pensionEmployerMonthly) => set({ pensionEmployerMonthly, pensionMode: "monthly" })} suffix="€/mnd" hint="Wat je werkgever per maand aan je pensioen bijdraagt. Telt niet als netto, wel als totale beloning." />
           </>}
+          {(() => {
+            const expat = grossToNet(state, job);
+            return <ExpatSelect salary={value} onChange={set} year={state.personal.taxYear} allowanceAnnual={expat.expatAllowanceAnnual} limit={expat.expatLimit} />;
+          })()}
         </>;
       }} />
     </InputSection>

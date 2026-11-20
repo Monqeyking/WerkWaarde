@@ -31,8 +31,17 @@ export type TaxYearParams = {
    * up to `max`. For a parent with a child under 12 who is single or earns less than the partner.
    */
   combinationCredit: { threshold: number; rate: number; max: number; rateAow: number; maxAow: number };
+  /**
+   * Expatregeling (30%-regeling): the employer may pay `rate` of the wage including the
+   * allowance tax-free, as long as the wage without it stays above `salaryNorm` (the lower
+   * `salaryNormYoungMaster` for employees under 30 with a master's degree), and at most
+   * `rate` × `wntNorm` per full year.
+   */
+  expatRuling: { rate: number; salaryNorm: number; salaryNormYoungMaster: number; wntNorm: number; sourceUrl: string };
   allowances: AllowanceParams;
 };
+
+const EXPAT_SOURCE = "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/internationaal/personeel/u_bent_niet_in_nederland_gevestigd_loonheffingen_inhouden/als_u_loonheffingen_gaat_inhouden/extraterritoriale_kosten_en_de_30procentregeling/inhoud_van_de_regeling/inhoud_van_de_regeling";
 
 export type ChildcareType = "dagopvang" | "bso" | "gastouder";
 
@@ -135,6 +144,9 @@ const TAX_2026: TaxYearParams = {
   taxFreeKmRate: 0.25,
   // Rijksoverheid: maximum € 3.032 at € 32.720; Belastingdienst: threshold € 6.239.
   combinationCredit: { threshold: 6_239, rate: 0.1145, max: 3_032, rateAow: 0.0572, maxAow: 1_513 },
+  // Belastingdienst, checked 20 November 2026: 30%, norm € 48.013 (under 30 with master € 36.497),
+  // maximum € 78.600 = 30% of the WNT-norm € 262.000.
+  expatRuling: { rate: 0.30, salaryNorm: 48_013, salaryNormYoungMaster: 36_497, wntNorm: 262_000, sourceUrl: EXPAT_SOURCE },
   allowances: ALLOWANCES_2026,
 };
 
@@ -183,6 +195,10 @@ const TAX_2027: TaxYearParams = {
   // ESTIMATED: 2026 values. The combinatiekorting is phased out from 2027; replace with
   // the Belastingdienst figures once published.
   combinationCredit: { threshold: 6_239, rate: 0.1145, max: 3_032, rateAow: 0.0572, maxAow: 1_513 },
+  // 27% from 2027 (Belastingdienst). WNT-norm 2027 € 273.000 (SRA, regeling of 21 August 2026).
+  // ESTIMATED: the salary norms are the 2026 values; 2027 brings a higher norm that is not
+  // published yet. Replace before 2027 is published.
+  expatRuling: { rate: 0.27, salaryNorm: 48_013, salaryNormYoungMaster: 36_497, wntNorm: 273_000, sourceUrl: EXPAT_SOURCE },
   // ESTIMATED: 2026 values. Still open for 2027: the kinderopvangtoeslag table of the
   // Prinsjesdag wijzigingsbesluit (vaste voet first child 39.1%), the proposed second
   // kindgebonden budget phase-out from € 60.000, and the final zorgtoeslag figures.

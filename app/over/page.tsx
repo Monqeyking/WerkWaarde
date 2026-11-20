@@ -16,6 +16,7 @@ export const metadata: Metadata = pageMetadata({
 
 /** Recent changes, newest first. Add a line when something users notice changes. */
 const UPDATES: ReadonlyArray<readonly [date: string, text: string]> = [
+  ["20 november 2026", "De expatregeling (30%-regeling) rekent mee in de bruto-nettocalculator en het totaaloverzicht, met de salarisnorm en het maximum van de Belastingdienst."],
   ["19 november 2026", "Een pagina per cao, met pensioenpremie, 13e maand en rekenvoorbeelden voor 22 cao's."],
   ["19 november 2026", "De inkomensafhankelijke combinatiekorting telt mee in de deeltijdcalculator en het totaaloverzicht."],
   ["18 november 2026", "Nieuwe calculator: wat levert een dag extra werken op, na toeslagen en kinderopvang?"],

@@ -15,6 +15,7 @@ import {
   incomeTax,
 } from "./calculator.ts";
 import { taxYear } from "./tax-years.ts";
+import { expatAllowance } from "./expat.ts";
 import { allowancesFor, hasFormalChildcare } from "./household.ts";
 import type { AllowancesResult } from "./toeslagen.ts";
 import {
@@ -38,6 +39,8 @@ export type JobTotal = {
     yearEndMonthly: number;
     bonusMonthly: number;
     pensionEmployeeMonthly: number;
+    /** Tax-free part of the wage under the expatregeling (0 without it). */
+    expatAllowanceMonthly: number;
     taxMonthly: number;
     /** Net pay from salary, holiday allowance and bonuses (before mobility and work costs). */
     netPayMonthly: number;
@@ -132,14 +135,18 @@ export function calculateJobTotal(state: NettoplaatjeState, job: JobKey): JobTot
   const holidayAnnual = grossAnnual * salary.holidayAllowancePct / 100;
   const yearEndAnnual = grossAnnual * salary.yearEndBonusPct / 100;
   const bonusAnnual = salary.annualBonus;
-  const salaryTaxable = Math.max(0, grossAnnual + holidayAnnual + yearEndAnnual + bonusAnnual - pension.employeeAnnual);
+  const wageAnnual = Math.max(0, grossAnnual + holidayAnnual + yearEndAnnual + bonusAnnual - pension.employeeAnnual);
+  // Expatregeling: part of the wage is a tax-free allowance. It is still paid out, so net pay
+  // is the whole wage minus the tax on the rest.
+  const expatAllowanceAnnual = expatAllowance(wageAnnual, salary.expatRuling, personal.taxYear);
+  const salaryTaxable = wageAnnual - expatAllowanceAnnual;
   const salaryTax = incomeTax(salaryTaxable, personal.age, personal.taxYear);
 
   const mobility = mobilityPart(state, job);
   const totalTax = incomeTax(salaryTaxable + mobility.taxableAnnual, personal.age, personal.taxYear);
   const mobilityTaxMonthly = Math.max(0, totalTax - salaryTax) / 12;
 
-  const netPayMonthly = (salaryTaxable - salaryTax) / 12;
+  const netPayMonthly = (wageAnnual - salaryTax) / 12;
   const mobilityNetMonthly = mobility.cashMonthly - mobilityTaxMonthly;
 
   const taxableAnnual = salaryTaxable + mobility.taxableAnnual;
@@ -178,6 +185,7 @@ export function calculateJobTotal(state: NettoplaatjeState, job: JobKey): JobTot
       yearEndMonthly: yearEndAnnual / 12,
       bonusMonthly: bonusAnnual / 12,
       pensionEmployeeMonthly: pension.employeeMonthly,
+      expatAllowanceMonthly: expatAllowanceAnnual / 12,
       taxMonthly: salaryTax / 12,
       netPayMonthly,
     },

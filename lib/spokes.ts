@@ -5,6 +5,7 @@
  */
 import { annualCarBenefit, incomeTax } from "./calculator.ts";
 import { DEFAULT_TAX_YEAR, taxYear } from "./tax-years.ts";
+import { expatLimit, taxableAfterExpat, type ExpatOption } from "./expat.ts";
 import { calculateJobTotal } from "./job-total.ts";
 import { toCalculatorInputs, type JobKey, type MobilityChoice, type NettoplaatjeState } from "./job-model.ts";
 
@@ -23,9 +24,19 @@ function withMobilityChoice(state: NettoplaatjeState, job: JobKey, choice: Mobil
   return { ...state, jobs: { ...state.jobs, [job]: { ...profile, mobility: { ...profile.mobility, choice } } } };
 }
 
+/** Taxable salary income per year: the wage minus the tax-free expatregeling allowance. */
 function salaryTaxableAnnual(state: NettoplaatjeState, job: JobKey) {
   const { income } = calculateJobTotal(withMobilityChoice(state, job, "none"), job);
-  return (income.netPayMonthly + income.taxMonthly) * 12;
+  return (income.netPayMonthly + income.taxMonthly - income.expatAllowanceMonthly) * 12;
+}
+
+/**
+ * Share of an extra euro of gross wage that goes to tax, with the expatregeling applied to
+ * the new wage as well (without the regeling this equals marginalRate on the taxable income).
+ */
+function marginalRateOnWage(wageAnnual: number, expat: ExpatOption, age: number, year: number) {
+  const step = 100;
+  return (incomeTax(taxableAfterExpat(wageAnnual + step, expat, year), age, year) - incomeTax(taxableAfterExpat(wageAnnual, expat, year), age, year)) / step;
 }
 
 export type GrossToNet = {
@@ -51,6 +62,12 @@ export type GrossToNet = {
   /** Gross raise needed for €100 more net per month. */
   grossFor100Net: number;
   netPerHour: number;
+  /** Tax-free allowance per year under the expatregeling (0 without it). */
+  expatAllowanceAnnual: number;
+  /** The tax-free part of a regular month's salary under the expatregeling. */
+  expatAllowanceRegularMonthly: number;
+  /** Why the allowance is what it is: see expatLimit in lib/expat.ts. */
+  expatLimit: ReturnType<typeof expatLimit>;
 };
 
 export function grossToNet(state: NettoplaatjeState, job: JobKey): GrossToNet {
@@ -60,9 +77,12 @@ export function grossToNet(state: NettoplaatjeState, job: JobKey): GrossToNet {
   const year = state.personal.taxYear;
   const hoursPerWeek = state.jobs[job].salary.hoursPerWeek;
 
-  const regularTaxableAnnual = Math.max(0, (income.grossMonthly - income.pensionEmployeeMonthly) * 12);
+  const expat = state.jobs[job].salary.expatRuling;
+  const wageAnnual = (income.netPayMonthly + income.taxMonthly) * 12;
+  // Under the expatregeling the same share of every payment is tax-free.
+  const taxableShare = wageAnnual > 0 ? 1 - income.expatAllowanceMonthly * 12 / wageAnnual : 1;
+  const regularTaxableAnnual = Math.max(0, (income.grossMonthly - income.pensionEmployeeMonthly) * 12) * taxableShare;
   const regularTax = incomeTax(regularTaxableAnnual, age, year);
-  const totalTaxable = (income.netPayMonthly + income.taxMonthly) * 12;
   const totalTax = income.taxMonthly * 12;
 
   const holidayGrossAnnual = income.holidayMonthly * 12;
@@ -72,7 +92,7 @@ export function grossToNet(state: NettoplaatjeState, job: JobKey): GrossToNet {
   const extraTax = Math.max(0, totalTax - regularTax);
   const extraTaxRate = extraGross > 0 ? extraTax / extraGross : marginalRate(regularTaxableAnnual, age, year);
   const grossAnnual = income.grossMonthly * 12 + extraGross;
-  const rate = marginalRate(totalTaxable, age, year);
+  const rate = marginalRateOnWage(wageAnnual, expat, age, year);
   const regularNetMonthly = income.grossMonthly - income.pensionEmployeeMonthly - regularTax / 12;
 
   return {
@@ -94,6 +114,9 @@ export function grossToNet(state: NettoplaatjeState, job: JobKey): GrossToNet {
     marginalRate: rate,
     grossFor100Net: rate < 1 ? 100 / (1 - rate) : 0,
     netPerHour: hoursPerWeek > 0 ? regularNetMonthly * 12 / (hoursPerWeek * WEEKS_PER_YEAR) : 0,
+    expatAllowanceAnnual: income.expatAllowanceMonthly * 12,
+    expatAllowanceRegularMonthly: Math.max(0, income.grossMonthly - income.pensionEmployeeMonthly) * (1 - taxableShare),
+    expatLimit: expatLimit(wageAnnual, expat, year),
   };
 }
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { CaoSelect } from "../components/CaoSelect";
+import { ExpatSelect } from "../components/ExpatSelect";
 import { Field } from "../components/Field";
 import { Highlight, Metrics, SpokeCalculator, SpokeTable, ToTotal, useSpokeModel, type TableRow } from "../components/Spoke";
 import { updateJobSection, updatePersonal, type JobProfile } from "../../lib/job-model";
@@ -25,6 +26,7 @@ export default function BrutoNettoCalculator() {
   const monthRows: TableRow[] = [
     { label: "Bruto salaris", value: money(result.grossMonthly) },
     ...(result.pensionMonthly > 0 ? [{ label: "Eigen pensioeninleg", value: money(-result.pensionMonthly) }] : []),
+    ...(result.expatAllowanceAnnual > 0 ? [{ label: "Waarvan onbelast (expatregeling)", value: money(result.expatAllowanceRegularMonthly), muted: true }] : []),
     { label: "Loonheffing (na heffingskortingen)", value: money(-result.regularTaxMonthly) },
     { label: "Netto in een gewone maand", value: money(result.regularNetMonthly), total: true },
   ];
@@ -62,5 +64,6 @@ export default function BrutoNettoCalculator() {
       ? <Field label="Eigen pensioeninleg" value={salary.pensionEmployeeMonthly} onChange={(pensionEmployeeMonthly) => set({ pensionEmployeeMonthly })} suffix="€/mnd" hint="De werknemersbijdrage pensioen op je loonstrook. Die gaat van je bruto af vóór de belasting. Weet je het niet? Kies hierboven je cao." />
       : <p className="choice-note">Je eigen pensioeninleg volgt uit de pensioenregeling: {money(result.pensionMonthly)} per maand. <button type="button" className="link-button" onClick={() => set({ pensionMode: "monthly", pensionEmployeeMonthly: Math.round(result.pensionMonthly) })}>Zelf invullen</button></p>}
     <Field label="Leeftijd" value={model.personal.age} onChange={(age) => setModel((current) => updatePersonal(current, { age }))} suffix="jaar" hint="Vanaf de AOW-leeftijd gelden lagere tarieven." min={16} max={100} />
+    <ExpatSelect salary={salary} onChange={set} year={model.personal.taxYear} allowanceAnnual={result.expatAllowanceAnnual} limit={result.expatLimit} />
   </SpokeCalculator>;
 }

@@ -10,6 +10,7 @@
  */
 import type { CalculatorInputs } from "./calculator.ts";
 import { findCao } from "./caos.ts";
+import { EXPAT_OPTIONS, type ExpatOption } from "./expat.ts";
 import { DEFAULT_TAX_YEAR, selectableTaxYears } from "./tax-years.ts";
 import type { WorkPatternInputs } from "./work-costs.ts";
 
@@ -113,6 +114,8 @@ export type JobProfile = {
     pensionMaxSalary: number;
     /** Cao the conditions were prefilled from; empty when filled in by hand. */
     caoId: string;
+    /** Expatregeling (30%-regeling) for this job; see lib/expat.ts. */
+    expatRuling: ExpatOption;
   };
   mobility: {
     choice: MobilityChoice;
@@ -162,6 +165,7 @@ const defaultJob = (officeDaysPerWeek: number): JobProfile => ({
     grossMonthly: 4500, hoursPerWeek: 40, fullTimeHours: 0, holidayAllowancePct: 8, yearEndBonusPct: 0, annualBonus: 0,
     pensionMode: "monthly", pensionEmployeeMonthly: 0, pensionEmployerMonthly: 0,
     pensionTotalRatePct: 20, pensionEmployeeSharePct: 33.33, pensionFranchise: 19172, pensionIncludesHoliday: true, pensionMaxSalary: 0, caoId: "",
+    expatRuling: "none",
   },
   mobility: {
     choice: "ownCar", leaseBudget: 625, mobilityBudget: 850,
@@ -243,6 +247,7 @@ export function sanitizeState(input: unknown): NettoplaatjeState {
     job.salary.pensionEmployeeSharePct = Math.min(100, job.salary.pensionEmployeeSharePct);
     job.salary.fullTimeHours = Math.min(60, job.salary.fullTimeHours);
     if (!findCao(job.salary.caoId)) job.salary.caoId = "";
+    if (!EXPAT_OPTIONS.includes(job.salary.expatRuling)) job.salary.expatRuling = "none";
   }
   state.personal.workWeeksPerYear = Math.min(52, state.personal.workWeeksPerYear);
   for (const slot of CHILD_SLOTS) {
@@ -430,6 +435,7 @@ const CALCULATOR_PATHS: Record<Exclude<keyof CalculatorInputs, DerivedCalculator
   pensionFranchise: salaryPath("pensionFranchise"),
   pensionIncludesHoliday: salaryPath("pensionIncludesHoliday"),
   pensionMaxSalary: salaryPath("pensionMaxSalary"),
+  expatRuling: salaryPath("expatRuling"),
   age: personalPath("age"),
   taxYear: personalPath("taxYear"),
   leaseBudget: mobilityPath("leaseBudget"),
@@ -571,6 +577,7 @@ export function toCalculatorInputs(state: NettoplaatjeState, job: JobKey): Calcu
     pensionIncludesHoliday: salary.pensionIncludesHoliday,
     pensionMaxSalary: salary.pensionMaxSalary,
     pensionPartTimeFactor: partTimeFactor(salary),
+    expatRuling: salary.expatRuling,
     age: state.personal.age,
     leaseBudget: mobility.leaseBudget,
     mobilityBudget: mobility.mobilityBudget,
