@@ -9,6 +9,7 @@ import { isEmbedPath } from "./AdSenseHead";
  */
 export default function AnalyticsBeacon({ token }: { token: string }) {
   if (isEmbedPath(usePathname())) return null;
-  // Same attributes as Cloudflare's own snippet; module scripts load deferred.
-  return <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token })} />;
+  // Cloudflare's own snippet uses type="module", which loads deferred anyway; the explicit
+  // defer keeps the Next.js lint rule against blocking scripts satisfied.
+  return <script type="module" defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token })} />;
 }
