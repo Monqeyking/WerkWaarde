@@ -41,8 +41,11 @@ kan draaien.
 
 ## Fiscale tarieven bijwerken
 
-De tarieven staan in `lib/calculator.ts`. Controleer ze elk jaar rond Prinsjesdag en
-1 januari tegen de bronnen van de Belastingdienst, en werk de tests bij.
+De tarieven staan per jaar in `lib/tax-years.ts` (belasting, heffingskortingen,
+toeslagen, combinatiekorting). Een jaar met `published: false` wordt berekend en getest
+maar niet getoond. Controleer de tarieven elk jaar rond Prinsjesdag en 1 januari tegen
+de bronnen van de Belastingdienst, en werk de tests bij. Cao-gegevens staan in
+`lib/caos.ts`, elk met bron en controledatum.
 
 ## Omgevingsvariabelen
 
