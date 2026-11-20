@@ -1,38 +1,38 @@
 {
   "https://nettoplaatje.nl/": {
-    "hash": "c315204d861cf415",
+    "hash": "244b86e0c6d0741b",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/totaal": {
-    "hash": "0a2d661b9649f44a",
+    "hash": "6f295939bff3d582",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/bruto-netto": {
-    "hash": "d6c9ab35dbff6ac7",
+    "hash": "c9e964c282dbba65",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/mobiliteit": {
-    "hash": "dcd438ac7fa51049",
+    "hash": "ec9302f6fd8c7ce4",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/bijtelling": {
-    "hash": "52b0cd3304cdc69d",
+    "hash": "37b206aed43b781b",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/kilometervergoeding": {
-    "hash": "628f94422426354b",
+    "hash": "d2eb974f2f0b4d2b",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/deeltijd": {
-    "hash": "ee96758a561f6f7e",
+    "hash": "6ef238ce743179db",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/werkpatroon": {
-    "hash": "4d1c719bfea44a3a",
+    "hash": "d82024411a02055e",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/arbeidsvoorwaarden": {
-    "hash": "37928b10d0db55af",
+    "hash": "2c6163145092cc18",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/bruto-netto/2000-per-maand": {
@@ -340,7 +340,7 @@
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/over": {
-    "hash": "470f4cf19862374f",
+    "hash": "f8296fb1db691162",
     "changed": "2026-11-20"
   },
   "https://nettoplaatje.nl/uitleg": {
@@ -361,6 +361,70 @@
   },
   "https://nettoplaatje.nl/contact": {
     "hash": "2f0fb3048288c3ef",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en": {
+    "hash": "12cf3d5abb3f1f5f",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/30-percent-ruling": {
+    "hash": "9a4a38b824981a40",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/50000-gross-per-year": {
+    "hash": "c595e6fe239d5a38",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/60000-gross-per-year": {
+    "hash": "6abd6139226afb6a",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/70000-gross-per-year": {
+    "hash": "43302e85c133f13c",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/80000-gross-per-year": {
+    "hash": "a44d32bc46738f6c",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/100000-gross-per-year": {
+    "hash": "71b16a5662cc7a79",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/120000-gross-per-year": {
+    "hash": "0bcc8547b224a278",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/3000-gross-per-month": {
+    "hash": "d185df33c54ab0d1",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/4000-gross-per-month": {
+    "hash": "4dc53fe176ccbd16",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/5000-gross-per-month": {
+    "hash": "4f3d756b66087061",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/salary/6000-gross-per-month": {
+    "hash": "c6da650f5fab2d98",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/guides": {
+    "hash": "dfae94864a205c9c",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/guides/30-percent-ruling-explained": {
+    "hash": "535fa576555235e8",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/guides/dutch-payslip-explained": {
+    "hash": "db4daf0f8bead2c6",
+    "changed": "2026-11-20"
+  },
+  "https://nettoplaatje.nl/en/guides/dutch-income-tax-rates": {
+    "hash": "d2f73a767ced2a2b",
     "changed": "2026-11-20"
   }
 }

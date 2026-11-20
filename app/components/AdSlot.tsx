@@ -19,7 +19,7 @@ let shownOnPage: { path: string; ids: string[] } = { path: "", ids: [] };
 /** Which boxes an ad spot shows. Pages with one spot show both; pages with two split them. */
 export type AdShow = "both" | "house" | "adsense";
 
-function AdSenseBox({ publisherId, slotId }: { publisherId: string; slotId: string }) {
+function AdSenseBox({ publisherId, slotId, label }: { publisherId: string; slotId: string; label: string }) {
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -27,8 +27,8 @@ function AdSenseBox({ publisherId, slotId }: { publisherId: string; slotId: stri
       // AdSense can be blocked by a browser extension or consent settings.
     }
   }, []);
-  return <aside className="ad-box shell" aria-label="Advertentie" data-ad-kind="adsense">
-    <span className="ad-label">Advertentie</span>
+  return <aside className="ad-box shell" aria-label={label} data-ad-kind="adsense">
+    <span className="ad-label">{label}</span>
     <ins className="adsbygoogle ad-unit"
       style={{ display: "block" }}
       data-ad-client={publisherId}
@@ -72,12 +72,16 @@ function HouseAdBox({ placement }: { placement: string }) {
  * Google ad box. Place it between content sections, never next to inputs,
  * buttons or results. Each box reserves its height.
  */
-export default function AdSlot({ placement, show = "both" }: { placement: string; show?: AdShow }) {
+export default function AdSlot({ placement, show = "both", label = "Advertentie" }: {
+  placement: string; show?: AdShow;
+  /** Label above the Google ad; "Advertisement" on English pages, which show no (Dutch) house ads. */
+  label?: string;
+}) {
   const house = houseAds && show !== "adsense";
   const google = adsense && show !== "house" ? adsense : null;
   if (!house && !google) return null;
   return <>
     {house && <HouseAdBox placement={placement} />}
-    {google && <AdSenseBox publisherId={google.publisherId} slotId={google.slotId} />}
+    {google && <AdSenseBox publisherId={google.publisherId} slotId={google.slotId} label={label} />}
   </>;
 }

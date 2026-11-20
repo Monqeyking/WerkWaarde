@@ -261,6 +261,7 @@ button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; ba
 .spoke-table .spoke-total { margin-top:2px; border-top:1px solid #cddde5; }
 .spoke-table .spoke-total span,.spoke-table .spoke-total strong { color:var(--teal-ink); font-weight:800; font-size:12px; }
 .spoke-table .spoke-muted span,.spoke-table .spoke-muted strong { color:var(--muted-light); font-weight:400; }
+.ruling-compare>div { display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:6px 16px; }.ruling-compare strong { text-align:right; min-width:72px; }
 .spoke-calculator .choice-note { margin-top:12px; color:var(--muted); font-size:11px; line-height:1.6; }
 
 /* Related articles and knowledge base */

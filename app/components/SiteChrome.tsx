@@ -26,9 +26,40 @@ export function SiteNav({ active }: { active?: NavKey }) {
     <Link className="brand" href="/"><Brand /></Link>
     <div className="site-nav">
       {navItems.map((item) => <Link key={item.key} href={item.href} className={active === item.key ? "active" : ""} aria-current={active === item.key ? "page" : undefined}>{item.label}</Link>)}
+      <Link href="/en" hrefLang="en" lang="en">English</Link>
     </div>
     <div className="nav-note"><span className="status-dot"></span> Indicatie voor {selectableTaxYears().join(" en ")}</div>
   </nav>;
+}
+
+export type NavKeyEn = "home" | "ruling" | "guides";
+
+const navItemsEn: Array<{ key: NavKeyEn; href: string; label: string }> = [
+  { key: "home", href: "/en", label: "Net salary" },
+  { key: "ruling", href: "/en/30-percent-ruling", label: "30% ruling" },
+  { key: "guides", href: "/en/guides", label: "Guides" },
+];
+
+/** Navigation for the English pages under /en. */
+export function SiteNavEn({ active }: { active?: NavKeyEn }) {
+  return <nav className="topbar shell" aria-label="Main navigation">
+    <Link className="brand" href="/en"><Brand /></Link>
+    <div className="site-nav">
+      {navItemsEn.map((item) => <Link key={item.key} href={item.href} className={active === item.key ? "active" : ""} aria-current={active === item.key ? "page" : undefined}>{item.label}</Link>)}
+      <Link href="/" hrefLang="nl" lang="nl">Nederlands</Link>
+    </div>
+    <div className="nav-note"><span className="status-dot"></span> Dutch tax rules {selectableTaxYears().join(" and ")}</div>
+  </nav>;
+}
+
+/** Footer for the English pages. The legal pages exist in Dutch only. */
+export function SiteFooterEn() {
+  return <footer className="footer shell">
+    <div className="brand"><Brand /></div>
+    <span>A clear estimate of your Dutch take-home pay.</span>
+    <nav className="footer-tools" aria-label="Calculators"><Link href="/en">Gross to net salary</Link><Link href="/en/30-percent-ruling">30% ruling calculator</Link><Link href="/en/guides">Guides and salary examples</Link><Link href="/" hrefLang="nl" lang="nl">Alle calculators in het Nederlands</Link></nav>
+    <span className="footer-links" lang="nl"><Link href="/over" hrefLang="nl">Over</Link><Link href="/privacy" hrefLang="nl">Privacy</Link><Link href="/cookies" hrefLang="nl">Cookies</Link><Link href="/disclaimer" hrefLang="nl">Disclaimer</Link><Link href="/contact" hrefLang="nl">Contact</Link></span>
+  </footer>;
 }
 
 export function SiteFooter() {

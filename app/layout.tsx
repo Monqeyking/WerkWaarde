@@ -3,6 +3,7 @@ import { CF_ANALYTICS_TOKEN, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL
 import AnalyticsBeacon from "./components/AnalyticsBeacon";
 import { SITE_JSON_LD, pageMetadata } from "../lib/seo";
 import AdSenseHead from "./components/AdSenseHead";
+import HtmlLang from "./components/HtmlLang";
 import JsonLd from "./components/JsonLd";
 import "./globals.css";
 
@@ -20,5 +21,5 @@ export const viewport: Viewport = { themeColor: "#172d42" };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const publisherId = process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID;
 
-  return <html lang="nl"><head>{publisherId && <AdSenseHead publisherId={publisherId} />}</head><body>{children}<JsonLd data={SITE_JSON_LD} />{CF_ANALYTICS_TOKEN && <AnalyticsBeacon token={CF_ANALYTICS_TOKEN} />}</body></html>;
+  return <html lang="nl"><head>{publisherId && <AdSenseHead publisherId={publisherId} />}</head><body>{children}<HtmlLang /><JsonLd data={SITE_JSON_LD} />{CF_ANALYTICS_TOKEN && <AnalyticsBeacon token={CF_ANALYTICS_TOKEN} />}</body></html>;
 }

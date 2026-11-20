@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "./hreflang.ts";
+import type { Lang } from "./lang.ts";
 import { OPERATOR, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "./site";
 
 /** The share image from app/opengraph-image.tsx, exported to /opengraph-image. */
 export const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: `${SITE_NAME}: wat levert een nieuwe baan je écht op?` };
+const OG_IMAGE_EN = { ...OG_IMAGE, alt: `${SITE_NAME}: Dutch salary calculator, gross to net` };
 
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
@@ -21,6 +24,8 @@ type PageMeta = {
   socialTitle?: string;
   socialDescription?: string;
   article?: { published: string; modified: string };
+  /** Page language; "en" for the English pages under /en. */
+  lang?: Lang;
 };
 
 /**
@@ -28,26 +33,29 @@ type PageMeta = {
  * whole when a page sets its own, so every page sets the full object here,
  * including the share image and og:url.
  */
-export function pageMetadata({ path, title, description, socialTitle, socialDescription, article }: PageMeta): Metadata {
+export function pageMetadata({ path, title, description, socialTitle, socialDescription, article, lang = "nl" }: PageMeta): Metadata {
   const ogTitle = socialTitle ?? title ?? `${SITE_NAME}: ${SITE_TAGLINE.toLowerCase()}`;
   const ogDescription = socialDescription ?? description ?? SITE_DESCRIPTION;
   const fitsSuffix = title !== undefined && title.length + TITLE_SUFFIX.length <= MAX_TITLE;
+  const image = lang === "en" ? OG_IMAGE_EN : OG_IMAGE;
+  const languages = languageAlternates(path);
   return {
     ...(title !== undefined && { title: fitsSuffix ? title : { absolute: title } }),
     ...(description !== undefined && { description }),
-    alternates: { canonical: path },
+    alternates: { canonical: path, ...(languages && { languages }) },
     openGraph: {
-      locale: "nl_NL",
+      locale: lang === "en" ? "en_GB" : "nl_NL",
+      ...(languages && { alternateLocale: lang === "en" ? "nl_NL" : "en_GB" }),
       siteName: SITE_NAME,
       url: path,
       title: ogTitle,
       description: ogDescription,
-      images: [OG_IMAGE],
+      images: [image],
       ...(article
         ? { type: "article", publishedTime: article.published, modifiedTime: article.modified }
         : { type: "website" }),
     },
-    twitter: { card: "summary_large_image", title: ogTitle, description: ogDescription, images: [OG_IMAGE.url] },
+    twitter: { card: "summary_large_image", title: ogTitle, description: ogDescription, images: [image.url] },
   };
 }
 
@@ -59,21 +67,22 @@ export const SITE_JSON_LD = {
       "@type": "Organization", "@id": ORGANIZATION_ID, name: SITE_NAME, url: SITE_URL,
       ...(OPERATOR.name && { parentOrganization: { "@type": "Organization", name: OPERATOR.name, ...(OPERATOR.website && { url: OPERATOR.website }) } }),
     },
-    { "@type": "WebSite", "@id": WEBSITE_ID, url: SITE_URL, name: SITE_NAME, description: SITE_DESCRIPTION, inLanguage: "nl-NL", publisher: { "@id": ORGANIZATION_ID } },
+    { "@type": "WebSite", "@id": WEBSITE_ID, url: SITE_URL, name: SITE_NAME, description: SITE_DESCRIPTION, inLanguage: ["nl-NL", "en"], publisher: { "@id": ORGANIZATION_ID } },
   ],
 };
 
-/** BreadcrumbList from the home page down to this page. Pass [name, path] pairs below "Start". */
-export function breadcrumbList(trail: ReadonlyArray<readonly [name: string, path: string]>) {
+/** BreadcrumbList from the home page down to this page. Pass [name, path] pairs below "Start" (or "Home" on /en). */
+export function breadcrumbList(trail: ReadonlyArray<readonly [name: string, path: string]>, lang: Lang = "nl") {
+  const home = lang === "en" ? ["Home", "/en"] as const : ["Start", "/"] as const;
   return {
     "@type": "BreadcrumbList",
-    itemListElement: [["Start", "/"] as const, ...trail].map(([name, path], index) => ({
+    itemListElement: [home, ...trail].map(([name, path], index) => ({
       "@type": "ListItem", position: index + 1, name, item: `${SITE_URL}${path === "/" ? "" : path}`,
     })),
   };
 }
 
 /** A complete JSON-LD document with only a breadcrumb trail. */
-export function breadcrumbJsonLd(trail: ReadonlyArray<readonly [name: string, path: string]>) {
-  return { "@context": "https://schema.org", ...breadcrumbList(trail) };
+export function breadcrumbJsonLd(trail: ReadonlyArray<readonly [name: string, path: string]>, lang: Lang = "nl") {
+  return { "@context": "https://schema.org", ...breadcrumbList(trail, lang) };
 }

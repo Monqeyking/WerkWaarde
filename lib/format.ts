@@ -25,3 +25,15 @@ export const decimal = (value: number) => formatSigned(decimalFormat, value, 10,
 export const signedDecimal = (value: number) => formatSigned(decimalFormat, value, 10, true);
 /** Share as a percentage: 0.4947 → "49,5%" */
 export const percent = (share: number) => `${decimal(share * 100)}%`;
+
+/** English formatting for the /en pages: "€5,000", "49.5%". */
+const euroFormatEn = new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+const euroCentsFormatEn = new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const decimalFormatEn = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 1 });
+
+export const moneyEn = (value: number) => formatSigned(euroFormatEn, value, 1, false);
+export const moneyCentsEn = (value: number) => formatSigned(euroCentsFormatEn, value, 100, false);
+/** Share as a percentage: 0.4947 → "49.5%" */
+export const percentEn = (share: number) => `${formatSigned(decimalFormatEn, share * 100, 10, false)}%`;
+/** Official tax rate, exact to three decimals: 0.3575 → "35.75%", 0.06398 → "6.398%". */
+export const ratePercentEn = (rate: number) => `${new Intl.NumberFormat("en-GB", { maximumFractionDigits: 3 }).format(Math.round(rate * 100_000) / 1000)}%`;
