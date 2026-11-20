@@ -112,10 +112,10 @@ export default async function SalaryPage({ params }: Props) {
         <aside className="inputs-panel amount-side">
           <h2 className="amount-side-title">With the 30% ruling</h2>
           <SpokeTable head={["Net " + per, "Amount"]} rows={rulingRows} />
-          <p className="amount-neighbour-links"><Link href={`/en/30-percent-ruling#bruto=${Math.round(f.grossMonthly)}`}>Compare with and without the ruling for your own situation →</Link></p>
+          <p className="amount-neighbour-links"><Link href={`/en/30-percent-ruling#bruto=${f.grossMonthly.toFixed(2)}`}>Compare with and without the ruling for your own situation →</Link></p>
           <div className="to-total amount-cta">
             <div><span className="section-kicker">Your situation</span><strong>Calculate it exactly</strong><small>With your own hours, pension contribution, 13th month or bonus.</small></div>
-            <div className="to-total-buttons"><Link className="primary-button" href={`/en#bruto=${Math.round(f.grossMonthly)}`}>Open the calculator →</Link></div>
+            <div className="to-total-buttons"><Link className="primary-button" href={`/en#bruto=${f.grossMonthly.toFixed(2)}`}>Open the calculator →</Link></div>
           </div>
         </aside>
       </div>

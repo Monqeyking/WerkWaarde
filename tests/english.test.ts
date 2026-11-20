@@ -85,3 +85,10 @@ test("exported English pages get lang=en, Dutch pages keep lang=nl", () => {
   assert.equal(pathForHtmlFile("index.html"), "/");
   assert.equal(setHtmlLang('<!DOCTYPE html><html lang="nl"><head>', "en"), '<!DOCTYPE html><html lang="en"><head>');
 });
+
+test("a prefill link from a yearly salary page gives back exactly that yearly amount", async () => {
+  const { readPrefillGross } = await import("../lib/job-model.ts");
+  const page = EN_AMOUNT_PAGES.find((p) => p.slug === "60000-gross-per-year")!;
+  const monthly = readPrefillGross(new URL(`https://nettoplaatje.nl/en#bruto=${enAmountFigures(page).grossMonthly.toFixed(2)}`))!;
+  assert.equal(Math.round(monthly * 12.96), 60_000);
+});

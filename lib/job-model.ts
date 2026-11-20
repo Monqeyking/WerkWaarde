@@ -330,12 +330,15 @@ export function withoutSharedParam(url: URL): URL {
 /** Fragment key the amount pages use to open the calculator with a gross salary (#bruto=3500). */
 export const PREFILL_GROSS_PARAM = "bruto";
 
-/** The monthly gross salary in a prefill link, or null when there is none or it is not a sensible amount. */
+/**
+ * The monthly gross salary in a prefill link, or null when there is none or it is not a sensible amount.
+ * Kept to the cent, so a yearly amount (€ 60.000 ÷ 12,96) comes back as exactly € 60.000 a year.
+ */
 export function readPrefillGross(url: URL): number | null {
   const raw = new URLSearchParams(url.hash.replace(/^#/, "")).get(PREFILL_GROSS_PARAM);
   if (!raw) return null;
   const value = Number(raw);
-  return Number.isFinite(value) && value > 0 && value <= MAX_INPUT ? Math.round(value) : null;
+  return Number.isFinite(value) && value > 0 && value <= MAX_INPUT ? Math.round(value * 100) / 100 : null;
 }
 
 /** Minimal Storage interface so tests can pass a fake. */
