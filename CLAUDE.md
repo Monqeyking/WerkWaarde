@@ -50,7 +50,7 @@ npm run build:extension  # Chrome extension -> extension/dist + zip
 - **Security headers:** in `public/_headers`. Framing is allowed only on `/embed/*`.
 - **AI crawler policy (Cloudflare):** Search allow, Training disallow, Agents allow. robots.txt contains no AI rules of its own.
 - **Contact:** info@nettoplaatje.nl, an alias on the user's Microsoft 365 account.
-- **Repo:** github.com/Monqeyking/WerkWaarde. Work happens on `rebuild/nettoplaatje-basis`; `main` is far behind and needs a PR to catch up.
+- **Repo:** github.com/Monqeyking/WerkWaarde. Work happens on `rebuild/nettoplaatje-basis`. `main` was brought level on 20 Nov 2026 (PR #1, fast-forward). Keep it level with a fast-forward, not GitHub's rebase merge, which rewrites the commit IDs. An old Vercel project still deploys `main` to werk-waarde-khaki.vercel.app; the live site is Cloudflare.
 - **Indexing:** the site is verified in Search Console as a domain property, with the sitemap submitted. Bing was imported from Search Console.
 - **Live check:** run `bash D:/Skills/website-builder/tool-site-launch/scripts/verify-live.sh https://nettoplaatje.nl /embed/bruto-netto`.
 
