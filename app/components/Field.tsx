@@ -17,7 +17,8 @@ const MESSAGES = {
 /**
  * Number field that accepts what people actually type: "3.500", "€ 3.500,-", "3500,50".
  * While you type, the text stays as typed and only valid numbers reach the calculation,
- * kept within min and max. On leaving the field it shows the number that is used.
+ * kept within min and max. On leaving the field it shows the number that is used;
+ * a field left empty counts as 0.
  */
 export function Field({ label, value, onChange, suffix, hint, step = 1, min = 0, max, lang = "nl" }: {
   label: string; value: number; onChange: (value: number) => void; suffix?: string; hint?: string;
@@ -49,7 +50,11 @@ export function Field({ label, value, onChange, suffix, hint, step = 1, min = 0,
         const next = parseNumberInput(event.target.value, decimalField);
         if (next !== null) onChange(clampNumber(next, min, max));
       }}
-      onBlur={() => setDraft(null)}
+      onBlur={() => {
+        // Left empty means none (no bonus, no pension); while typing, an empty field changes nothing yet.
+        if (draft !== null && draft.trim() === "") onChange(clampNumber(0, min, max));
+        setDraft(null);
+      }}
       inputMode={decimalField ? "decimal" : "numeric"} />{suffix && <span className="input-suffix">{suffix}</span>}</span>
     {error && <span className="field-error" id={errorId} role="status">{error}</span>}
   </div>;
