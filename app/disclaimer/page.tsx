@@ -4,6 +4,7 @@ import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import Link from "next/link";
 import LegalPage from "../components/LegalPage";
 import { houseAdAdvertisers } from "../../lib/ads";
+import { AFFILIATE_NETWORK, affiliateAdvertisers, legalUpdatedText } from "../../lib/affiliates";
 import { OPERATOR, SITE_NAME } from "../../lib/site";
 
 export const metadata: Metadata = pageMetadata({
@@ -14,7 +15,12 @@ export const metadata: Metadata = pageMetadata({
 
 export default function DisclaimerPage() {
   const owner = OPERATOR.name || SITE_NAME;
-  return <><JsonLd data={breadcrumbJsonLd([["Disclaimer", "/disclaimer"]])} /><LegalPage adPlacement="disclaimer" eyebrow="Nettoplaatje" title="Disclaimer en gebruiksvoorwaarden" intro="Laatst bijgewerkt: 18 november 2026. Door deze site te gebruiken, ga je akkoord met deze voorwaarden.">
+  const affiliates = affiliateAdvertisers();
+  // One string, so the page text stays identical while no affiliate offer is live.
+  const affiliateSentence = affiliates.length > 0
+    ? ` Op pagina’s over mobiliteit staan ook advertenties van ${affiliates.join(" en ")} via ${AFFILIATE_NETWORK}. Vraag je via zo’n link iets aan of sluit je iets af, dan krijgen wij een vergoeding.`
+    : "";
+  return <><JsonLd data={breadcrumbJsonLd([["Disclaimer", "/disclaimer"]])} /><LegalPage adPlacement="disclaimer" eyebrow="Nettoplaatje" title="Disclaimer en gebruiksvoorwaarden" intro={`Laatst bijgewerkt: ${legalUpdatedText("2026-11-18")}. Door deze site te gebruiken, ga je akkoord met deze voorwaarden.`}>
     <h2>Een indicatie, geen advies</h2>
     <p>De uitkomsten van {SITE_NAME} zijn schattingen op basis van wat je invult en van vereenvoudigde rekenregels. Ze zijn geen financieel, fiscaal, juridisch of pensioenadvies. Je werkelijke netto inkomen hangt af van je loonstrook, cao, pensioenregeling, toeslagen en persoonlijke situatie. Neem belangrijke beslissingen, zoals het aannemen van een baan of het kiezen van een leaseauto, niet alleen op basis van deze site. Raadpleeg bij twijfel je werkgever, de Belastingdienst of een adviseur.</p>
 
@@ -25,7 +31,7 @@ export default function DisclaimerPage() {
     <p>Je gebruikt {SITE_NAME} op eigen risico. {owner} is niet aansprakelijk voor schade die ontstaat door het gebruik van de site of door beslissingen die je neemt op basis van de uitkomsten, voor zover de wet dat toestaat. Dat geldt ook als de site tijdelijk niet beschikbaar is of fouten bevat.</p>
 
     <h2>Advertenties en externe links</h2>
-    <p>{SITE_NAME} toont advertenties van Google en advertenties die we zelf plaatsen voor {houseAdAdvertisers().join(" en ")}. Alle advertenties zijn gemarkeerd als advertentie en hebben geen invloed op de berekeningen. We zijn niet verantwoordelijk voor de inhoud van websites waarnaar advertenties of links verwijzen.</p>
+    <p>{SITE_NAME} toont advertenties van Google en advertenties die we zelf plaatsen voor {houseAdAdvertisers().join(" en ")}{`.${affiliateSentence} Alle advertenties zijn gemarkeerd als advertentie en hebben geen invloed op de berekeningen. We zijn niet verantwoordelijk voor de inhoud van websites waarnaar advertenties of links verwijzen.`}</p>
 
     <h2>Gedeelde links</h2>
     <p>Een gedeelde link bevat de bedragen die je hebt ingevuld. Je bent zelf verantwoordelijk voor met wie je zo&rsquo;n link deelt.</p>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { adsenseUnit, houseAdsEnabled, pickHouseAd, readAdConfig, type HouseAdChoice } from "../../lib/ads.ts";
+import { affiliateOfferFor, type AffiliateOffer } from "../../lib/affiliates.ts";
 
 declare global {
   interface Window {
@@ -67,10 +68,27 @@ function HouseAdBox({ placement }: { placement: string }) {
   </aside>;
 }
 
+/** A paid link via an affiliate network: text only, nothing loads until someone clicks. */
+function AffiliateBox({ offer }: { offer: AffiliateOffer }) {
+  return <aside className="ad-box shell" aria-label="Advertentie" data-ad-kind="affiliate">
+    <span className="ad-label">Advertentie</span>
+    <a className="house-ad" href={offer.href} target="_blank" rel="sponsored noopener">
+      <span className="house-ad-text">
+        <strong>{offer.title}</strong>
+        <span>{offer.body}</span>
+        <span className="house-ad-advertiser">{offer.advertiser}</span>
+      </span>
+      <span className="house-ad-cta">{offer.cta} →</span>
+    </a>
+    <small className="affiliate-note">{offer.disclosure}</small>
+  </aside>;
+}
+
 /**
  * An ad spot: a Virtrust house ad and, when AdSense is configured, a separate
- * Google ad box. Place it between content sections, never next to inputs,
- * buttons or results. Each box reserves its height.
+ * Google ad box. Placements with a live affiliate offer add that as a third box;
+ * it never replaces the other two. Place it between content sections, never next
+ * to inputs, buttons or results. Each box reserves its height.
  */
 export default function AdSlot({ placement, show = "both", label = "Advertentie" }: {
   placement: string; show?: AdShow;
@@ -79,9 +97,11 @@ export default function AdSlot({ placement, show = "both", label = "Advertentie"
 }) {
   const house = houseAds && show !== "adsense";
   const google = adsense && show !== "house" ? adsense : null;
-  if (!house && !google) return null;
+  const affiliate = affiliateOfferFor(placement);
+  if (!house && !google && !affiliate) return null;
   return <>
     {house && <HouseAdBox placement={placement} />}
     {google && <AdSenseBox publisherId={google.publisherId} slotId={google.slotId} label={label} />}
+    {affiliate && <AffiliateBox offer={affiliate} />}
   </>;
 }

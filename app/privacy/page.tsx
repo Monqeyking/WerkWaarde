@@ -4,6 +4,7 @@ import { breadcrumbJsonLd, pageMetadata } from "../../lib/seo";
 import Link from "next/link";
 import LegalPage from "../components/LegalPage";
 import { houseAdAdvertisers } from "../../lib/ads";
+import { AFFILIATE_NETWORK, affiliateAdvertisers, legalUpdatedText } from "../../lib/affiliates";
 import { CF_ANALYTICS_TOKEN, CONTACT_EMAIL, OPERATOR, SITE_NAME } from "../../lib/site";
 
 export const metadata: Metadata = pageMetadata({
@@ -17,7 +18,8 @@ function Contact() {
 }
 
 export default function PrivacyPage() {
-  return <><JsonLd data={breadcrumbJsonLd([["Privacy", "/privacy"]])} /><LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro="Laatst bijgewerkt: 20 november 2026.">
+  const affiliates = affiliateAdvertisers();
+  return <><JsonLd data={breadcrumbJsonLd([["Privacy", "/privacy"]])} /><LegalPage adPlacement="privacy" eyebrow="Nettoplaatje" title="Privacybeleid" intro={`Laatst bijgewerkt: ${legalUpdatedText("2026-11-20")}.`}>
     <h2>Wie we zijn</h2>
     <p>{SITE_NAME} biedt gratis calculators voor salaris, mobiliteit en de kosten van werken. Je kunt ze gebruiken zonder account.{OPERATOR.name && <> {SITE_NAME} wordt beheerd door {OPERATOR.name}{OPERATOR.address && <>, {OPERATOR.address}</>}{OPERATOR.kvk && <> (KvK {OPERATOR.kvk})</>}. {OPERATOR.name} is verantwoordelijk voor de verwerking van persoonsgegevens op deze site.</>} Vragen over privacy stel je via <Contact />.</p>
 
@@ -33,6 +35,10 @@ export default function PrivacyPage() {
     <p>{SITE_NAME} is gratis dankzij advertenties van Google AdSense. Google en zijn partners gebruiken cookies om advertenties te tonen op basis van je bezoek aan deze en andere websites.</p>
     <p>Bezoekers uit de Europese Economische Ruimte, het Verenigd Koninkrijk en Zwitserland krijgen eerst een toestemmingsmelding. Zonder toestemming krijg je alleen niet-gepersonaliseerde advertenties. Je kunt gepersonaliseerde advertenties ook uitzetten via de <a href="https://adssettings.google.com" rel="noopener" target="_blank">advertentie-instellingen van Google</a>. Lees meer over <a href="https://policies.google.com/technologies/partner-sites" rel="noopener" target="_blank">hoe Google gegevens gebruikt op sites van partners</a>.</p>
     <p>Een deel van de advertenties plaatsen we zelf, voor {houseAdAdvertisers().join(" en ")}. Die gebruiken geen cookies en volgen je niet. Alleen als je erop klikt, ziet de adverteerder via de link dat je van {SITE_NAME} komt.</p>
+    {affiliates.length > 0 && <>
+      <h2>Advertenties via {AFFILIATE_NETWORK}</h2>
+      <p>Op een paar pagina&rsquo;s over mobiliteit staat een advertentie van {affiliates.join(" en ")} via het affiliatenetwerk {AFFILIATE_NETWORK}. Die advertentie is een gewone link: hij laadt niets van {AFFILIATE_NETWORK} of de adverteerder en plaatst geen cookies. Klik je erop, dan ga je via {AFFILIATE_NETWORK} naar de adverteerder. {AFFILIATE_NETWORK} en de adverteerder kunnen dan cookies of vergelijkbare technieken gebruiken om vast te stellen dat je via {SITE_NAME} kwam, zodat wij een vergoeding krijgen als je iets aanvraagt of afsluit. Daarvoor gelden het privacybeleid van {AFFILIATE_NETWORK} en dat van de adverteerder.</p>
+    </>}
 
     <h2>De calculator op andere websites</h2>
     <p>Andere sites kunnen onze bruto-nettocalculator op hun pagina zetten. Die ingesloten calculator rekent ook alleen in je browser, bewaart niets, plaatst geen cookies en toont geen advertenties. Cloudflare verwerkt bij het laden dezelfde technische gegevens als bij een gewoon bezoek.</p>
