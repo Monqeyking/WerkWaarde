@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { calculatePensionBreakdown } from "../lib/calculator.ts";
-import { CAOS, caoFilledText, caoSalaryPatch, checkedOnText, findCao } from "../lib/caos.ts";
+import { CAOS, caoClearPatch, caoFilledText, caoSalaryPatch, checkedOnText, findCao } from "../lib/caos.ts";
 import { createDefaultState, sanitizeState, toCalculatorInputs } from "../lib/job-model.ts";
 
 describe("cao data", () => {
@@ -80,6 +80,22 @@ describe("applying a cao", () => {
     // Without a cao the fiscal maximum applies, so the same salary is fully pensionable.
     state.jobs.current.salary.pensionMaxSalary = 0;
     assert.equal(calculatePensionBreakdown(toCalculatorInputs(state, "current")).pensionableAnnual, 5000 * 12 * 1.08);
+  });
+
+  test("clearing the cao takes its terms out of the result again", () => {
+    const fresh = createDefaultState();
+    const rijk = findCao("rijk")!;
+    const salary = { ...fresh.jobs.current.salary, grossMonthly: 3200 };
+    const cleared = { ...salary, ...caoSalaryPatch(rijk), ...caoClearPatch(rijk) };
+    assert.equal(cleared.caoId, "");
+    assert.equal(cleared.holidayAllowancePct, 8);
+    assert.equal(cleared.yearEndBonusPct, 0);
+    assert.equal(cleared.pensionMode, "monthly");
+    assert.equal(cleared.pensionEmployeeMonthly, salary.pensionEmployeeMonthly);
+    assert.equal(cleared.fullTimeHours, 0);
+    // A cao that leaves holiday pay open does not touch it when cleared.
+    assert.equal("holidayAllowancePct" in caoClearPatch(findCao("uitzendkrachten-abu")), false);
+    assert.deepEqual(caoClearPatch(undefined), { caoId: "", fullTimeHours: 0 });
   });
 
   test("picking a cao without a cap clears a cap from an earlier pick", () => {

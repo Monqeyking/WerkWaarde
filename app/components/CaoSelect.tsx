@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useId } from "react";
-import { CAOS, caoFilledText, caoSalaryPatch, checkedOnText, findCao } from "../../lib/caos";
+import { CAOS, caoClearPatch, caoFilledText, caoSalaryPatch, checkedOnText, findCao } from "../../lib/caos";
 import { money } from "../../lib/format";
 import type { JobProfile } from "../../lib/job-model";
 
@@ -30,7 +30,8 @@ export function CaoSelect({ salary, onChange }: {
     <span className="input-wrap">
       <select id={id} value={cao?.id ?? ""} onChange={(event) => {
         const picked = findCao(event.target.value);
-        onChange(picked ? caoSalaryPatch(picked) : { caoId: "" });
+        // Clear the previous cao first, so terms it set do not linger under a cao that leaves them open.
+        onChange(picked ? { ...caoClearPatch(cao), ...caoSalaryPatch(picked) } : caoClearPatch(cao));
       }}>
         <option value="">Geen / zelf invullen</option>
         {groups.map((group) => <optgroup key={group.sector} label={group.sector}>

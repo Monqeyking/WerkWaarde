@@ -258,6 +258,21 @@ export function caoSalaryPatch(cao: Cao): Partial<JobProfile["salary"]> {
   };
 }
 
+/**
+ * Salary fields to reset when the user sets the cao back to "Geen / zelf invullen":
+ * what that cao filled in returns to the plain defaults (legal 8% holiday pay, no
+ * 13th month, the pension amount the user entered before), so no cao terms stay hidden in the result.
+ */
+export function caoClearPatch(cao: Cao | undefined): Partial<JobProfile["salary"]> {
+  return {
+    caoId: "",
+    fullTimeHours: 0,
+    ...(cao?.holidayAllowancePct != null && { holidayAllowancePct: 8 }),
+    ...(cao?.yearEndBonusPct != null && { yearEndBonusPct: 0 }),
+    ...(cao?.pension && { pensionMode: "monthly" as const }),
+  };
+}
+
 /** "Vakantiegeld, 13e maand en pensioen": only the parts this cao fills in. */
 export function caoFilledText(cao: Cao): string {
   const parts = [
