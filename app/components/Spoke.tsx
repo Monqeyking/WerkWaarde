@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import type { JobKey, NettoplaatjeState } from "../../lib/job-model";
 import { useJobModel } from "../../lib/use-job-model";
+import { InfoToggle } from "./Field";
 import { JobToggle } from "./JobToggle";
 import { TaxYearSelect } from "./TaxYearSelect";
 
@@ -43,9 +44,27 @@ export function Highlight({ label, value, children }: { label: string; value: st
   </div>;
 }
 
-export function Metrics({ items }: { items: Array<{ label: string; value: string; note?: string }> }) {
+export type MetricItem = {
+  label: string; value: string; note?: string;
+  /** Explanation behind an info button next to the label. */
+  hint?: string;
+  /** Screen-reader prefix of the info button; "Explanation" on English pages. */
+  infoLabel?: string;
+};
+
+function Metric({ label, value, note, hint, infoLabel = "Uitleg" }: MetricItem) {
+  const [showHint, setShowHint] = useState(false);
+  const hintId = useId();
+  return <div>
+    <span className="metric-label">{label}{hint && <InfoToggle hint={hint} open={showHint} onToggle={() => setShowHint((open) => !open)} controls={hintId} infoLabel={infoLabel} />}</span>
+    <strong>{value}</strong>{note && <small>{note}</small>}
+    {hint && showHint && <span className="field-hint" id={hintId}>{hint}</span>}
+  </div>;
+}
+
+export function Metrics({ items }: { items: MetricItem[] }) {
   return <div className="work-metrics">
-    {items.map((item) => <div key={item.label}><span>{item.label}</span><strong>{item.value}</strong>{item.note && <small>{item.note}</small>}</div>)}
+    {items.map((item) => <Metric key={item.label} {...item} />)}
   </div>;
 }
 

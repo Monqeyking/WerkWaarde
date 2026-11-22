@@ -127,6 +127,8 @@ button,input { font:inherit; } a { color:inherit; }
 .work-metrics>div { padding:14px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; }
 .work-metrics span,.work-metrics small { display:block; color:var(--muted); font-size:9px; }
 .work-metrics strong { display:block; margin:5px 0 2px; color:var(--ink); font-size:17px; letter-spacing:-.03em; }
+.work-metrics .metric-label { display:flex; align-items:center; gap:5px; }
+.work-metrics .field-hint { display:block; margin:8px 0 0; color:#4d7d77; font-size:10px; }
 .work-breakdown { margin-top:14px; padding:17px 16px 13px; border:1px solid var(--line); border-radius:12px; background:#fff; }
 .work-breakdown .detail-list { margin-top:10px; }
 .work-table { margin-top:12px; overflow-x:auto; color:var(--muted); font-size:10px; }

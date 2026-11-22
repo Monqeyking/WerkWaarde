@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 
 /** Tappable info button: the hint opens below the label, so it also works on touch screens. */
-function InfoToggle({ hint, open, onToggle, controls, infoLabel }: { hint: string; open: boolean; onToggle: () => void; controls: string; infoLabel: string }) {
+export function InfoToggle({ hint, open, onToggle, controls, infoLabel }: { hint: string; open: boolean; onToggle: () => void; controls: string; infoLabel: string }) {
   return <button type="button" className="info-dot" aria-label={`${infoLabel}: ${hint}`} aria-expanded={open} aria-controls={controls} title={hint}
     onClick={(event) => { event.preventDefault(); onToggle(); }}>i</button>;
 }

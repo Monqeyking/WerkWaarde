@@ -95,7 +95,7 @@ export default async function AmountPage({ params }: Props) {
           <SpokeTable head={["Per maand", "Bedrag"]} rows={monthRows} />
           <SpokeTable head={["Per jaar", "Bedrag"]} rows={yearRows} />
           <Metrics items={[
-            { label: "Marginaal tarief", value: percent(f.marginalRate), note: "van elke extra euro" },
+            { label: "Marginaal tarief", value: percent(f.marginalRate), note: "van elke extra euro", hint: "Het deel van elke extra euro bruto dat naar belasting gaat. Vaak hoger dan je schijftarief: als je meer verdient, nemen ook je heffingskortingen af." },
             { label: "Gemiddeld tarief", value: percent(f.effectiveRate), note: "van je totale bruto" },
             { label: "Voor € 100 netto meer", value: money(f.grossFor100Net), note: "bruto per maand nodig" },
             { label: "Netto per uur", value: money(f.netPerHour), note: "bij 40 uur per week" },

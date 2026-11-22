@@ -141,7 +141,7 @@ export function GrossNetCalculatorEn() {
       { label: "Net per year", value: moneyEn(result.netAnnual), note: "incl. holiday allowance, 13th month and bonus" },
       { label: "Net per hour", value: moneyCentsEn(result.netPerHour), note: `at ${salary.hoursPerWeek} hours a week` },
       { label: "Tax on extras", value: percentEn(result.extraTaxRate), note: "holiday allowance, 13th month, bonus" },
-      { label: "Gross needed for €100 net", value: moneyEn(result.grossFor100Net), note: `your marginal rate is ${percentEn(result.marginalRate)}` },
+      { label: "Gross needed for €100 net", value: moneyEn(result.grossFor100Net), note: `your marginal rate is ${percentEn(result.marginalRate)}`, hint: "The share of each extra euro of gross pay that goes to tax. Often higher than your tax bracket: as you earn more, your tax credits also shrink.", infoLabel: "Explanation" },
     ]} />
     <SpokeTable head={["Per month", "Amount"]} rows={monthRows} />
     {extraRows.length > 0 && <SpokeTable head={["Extras per year", "Net"]} rows={[

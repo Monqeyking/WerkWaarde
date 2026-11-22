@@ -10,6 +10,8 @@ import { grossToNet } from "../../lib/spokes";
 import { applyPrefillFromLocation } from "../../lib/use-job-model";
 import { money, moneyCents, percent } from "../../lib/format";
 
+const MARGINAL_HINT = "Het deel van elke extra euro bruto dat naar belasting gaat. Vaak hoger dan je schijftarief: als je meer verdient, nemen ook je heffingskortingen af.";
+
 export default function BrutoNettoCalculator() {
   const { model, setModel, job, setJob } = useSpokeModel();
   const salary = model.jobs[job].salary;
@@ -45,7 +47,7 @@ export default function BrutoNettoCalculator() {
         { label: "Netto per jaar", value: money(result.netAnnual), note: "incl. vakantiegeld, 13e maand en bonus" },
         { label: "Netto per uur", value: moneyCents(result.netPerHour), note: `bij ${salary.hoursPerWeek} uur per week` },
         { label: "Belasting over extra's", value: percent(result.extraTaxRate), note: "vakantiegeld, 13e maand, bonus" },
-        { label: "Bruto nodig voor € 100 netto", value: money(result.grossFor100Net), note: `je marginale tarief is ${percent(result.marginalRate)}` },
+        { label: "Bruto nodig voor € 100 netto", value: money(result.grossFor100Net), note: `je marginale tarief is ${percent(result.marginalRate)}`, hint: MARGINAL_HINT },
       ]} />
       <SpokeTable head={["Per maand", "Bedrag"]} rows={monthRows} />
       {extraRows.length > 0 && <SpokeTable head={["Extra's per jaar", "Netto"]} rows={[
