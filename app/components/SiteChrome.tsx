@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { CALCULATORS } from "../../lib/calculators";
+import { LANGUAGE_PAIRS } from "../../lib/hreflang";
 import { selectableTaxYears } from "../../lib/tax-years";
+import { LanguageSwitch } from "./LanguageSwitch";
 
 export type NavKey = "home" | "total" | "mobility" | "work" | "questions";
 
@@ -26,8 +28,8 @@ export function SiteNav({ active }: { active?: NavKey }) {
     <Link className="brand" href="/"><Brand /></Link>
     <div className="site-nav">
       {navItems.map((item) => <Link key={item.key} href={item.href} className={active === item.key ? "active" : ""} aria-current={active === item.key ? "page" : undefined}>{item.label}</Link>)}
-      <Link href="/en" hrefLang="en" lang="en">English</Link>
     </div>
+    <LanguageSwitch current="nl" pairs={LANGUAGE_PAIRS} />
     <div className="nav-note"><span className="status-dot"></span> Indicatie voor {selectableTaxYears().join(" en ")}</div>
   </nav>;
 }
@@ -46,8 +48,8 @@ export function SiteNavEn({ active }: { active?: NavKeyEn }) {
     <Link className="brand" href="/en"><Brand /></Link>
     <div className="site-nav">
       {navItemsEn.map((item) => <Link key={item.key} href={item.href} className={active === item.key ? "active" : ""} aria-current={active === item.key ? "page" : undefined}>{item.label}</Link>)}
-      <Link href="/" hrefLang="nl" lang="nl">Nederlands</Link>
     </div>
+    <LanguageSwitch current="en" pairs={LANGUAGE_PAIRS} />
     <div className="nav-note"><span className="status-dot"></span> Dutch tax rules {selectableTaxYears().join(" and ")}</div>
   </nav>;
 }
