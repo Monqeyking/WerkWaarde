@@ -180,6 +180,8 @@ button.info-dot { position:relative; padding:0; background:#fff; font:inherit; f
 button.info-dot::after { content:""; position:absolute; inset:-6px; }
 .field-label label { cursor:pointer; }
 button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; background:var(--teal); }
+.field-error { display:block; margin:5px 0 0; color:#a32a1c; font-size:11px; font-weight:700; line-height:1.4; }
+.input-wrap input[aria-invalid="true"] { border-color:#a32a1c; }
 .field-hint { display:block; margin:-2px 0 7px; padding:7px 9px; border-radius:7px; background:var(--teal-soft); color:#4d7d77; font-size:10px; font-weight:400; line-height:1.45; }
 
 /* Buttons */

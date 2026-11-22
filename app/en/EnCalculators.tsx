@@ -63,22 +63,22 @@ function SalaryInputs({ salary, set, model, setModel, pensionMonthly }: {
       </div>
     </div>
     {period === "year"
-      ? <Field label="Gross salary per year" value={Math.round(salary.grossMonthly * yearFactor)} onChange={(annual) => set({ grossMonthly: annual / yearFactor })} suffix="€" step={500} infoLabel="Explanation"
+      ? <Field label="Gross salary per year" value={Math.round(salary.grossMonthly * yearFactor)} onChange={(annual) => set({ grossMonthly: annual / yearFactor })} suffix="€" step={500} lang="en"
         hint="Your annual gross salary including holiday allowance (and a 13th month, if you get one), as most Dutch offers state it. Leave out a bonus: enter that below." />
-      : <Field label="Gross salary per month" value={Math.round(salary.grossMonthly)} onChange={(grossMonthly) => set({ grossMonthly })} suffix="€" step={50} infoLabel="Explanation"
+      : <Field label="Gross salary per month" value={Math.round(salary.grossMonthly)} onChange={(grossMonthly) => set({ grossMonthly })} suffix="€" step={50} lang="en"
         hint="Your fixed monthly gross salary for your hours, as on your payslip. Without holiday allowance." />}
-    <Field label="Hours per week" value={salary.hoursPerWeek} onChange={(hoursPerWeek) => set({ hoursPerWeek })} suffix="hrs" max={60} infoLabel="Explanation" />
-    <Field label="Holiday allowance" value={salary.holidayAllowancePct} onChange={(holidayAllowancePct) => set({ holidayAllowancePct })} suffix="%" step={0.1} max={20} infoLabel="Explanation"
+    <Field label="Hours per week" value={salary.hoursPerWeek} onChange={(hoursPerWeek) => set({ hoursPerWeek })} suffix="hrs" max={60} lang="en" />
+    <Field label="Holiday allowance" value={salary.holidayAllowancePct} onChange={(holidayAllowancePct) => set({ holidayAllowancePct })} suffix="%" step={0.1} max={20} lang="en"
       hint="Vakantiegeld: by law at least 8% of your gross salary, usually paid in May or June." />
-    <Field label="13th month" value={salary.yearEndBonusPct} onChange={(yearEndBonusPct) => set({ yearEndBonusPct })} suffix="%" step={0.01} max={50} infoLabel="Explanation"
+    <Field label="13th month" value={salary.yearEndBonusPct} onChange={(yearEndBonusPct) => set({ yearEndBonusPct })} suffix="%" step={0.01} max={50} lang="en"
       hint="A full 13th month is 8.33% of your annual salary. Enter 0 if you don't get one." />
-    <Field label="Bonus per year" value={salary.annualBonus} onChange={(annualBonus) => set({ annualBonus })} suffix="€" step={100} infoLabel="Explanation"
+    <Field label="Bonus per year" value={salary.annualBonus} onChange={(annualBonus) => set({ annualBonus })} suffix="€" step={100} lang="en"
       hint="Expected gross bonus or profit share per year." />
     {salary.pensionMode === "monthly"
-      ? <Field label="Your pension contribution" value={salary.pensionEmployeeMonthly} onChange={(pensionEmployeeMonthly) => set({ pensionEmployeeMonthly })} suffix="€/mo" infoLabel="Explanation"
+      ? <Field label="Your pension contribution" value={salary.pensionEmployeeMonthly} onChange={(pensionEmployeeMonthly) => set({ pensionEmployeeMonthly })} suffix="€/mo" lang="en"
         hint="The employee pension contribution on your payslip (pensioenpremie). It is deducted from your gross pay before tax. Not sure? Ask your employer, or leave it at 0." />
       : <p className="choice-note">Your pension contribution follows from your pension scheme: {moneyEn(pensionMonthly)} a month. <button type="button" className="link-button" onClick={() => set({ pensionMode: "monthly", pensionEmployeeMonthly: Math.round(pensionMonthly) })}>Enter it yourself</button></p>}
-    <Field label="Age" value={model.personal.age} onChange={(age) => setModel((current) => updatePersonal(current, { age }))} suffix="yrs" min={16} max={100} infoLabel="Explanation"
+    <Field label="Age" value={model.personal.age} onChange={(age) => setModel((current) => updatePersonal(current, { age }))} suffix="yrs" min={16} max={100} lang="en"
       hint="From the Dutch state pension age (AOW), lower tax rates apply." />
   </>;
 }
