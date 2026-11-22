@@ -245,6 +245,8 @@ function Results({ state, setState }: { state: NettoplaatjeState; setState: SetS
   const [period, setPeriod] = useState<"month" | "year">("month");
   const [copied, setCopied] = useState(false);
   const better = comparison.netDifferenceMonthly >= 0;
+  // Below half a euro a year the two jobs leave the same amount at the precision shown.
+  const equal = Math.round(comparison.netDifferenceAnnual) === 0;
   const timeIncluded = state.personal.timeValue.include;
 
   const share = async () => {
@@ -272,7 +274,7 @@ function Results({ state, setState }: { state: NettoplaatjeState; setState: SetS
     <div className={`work-highlight total-highlight ${better ? "better" : "worse"}`}>
       <span className="section-kicker">Verschil per maand, na alle kosten</span>
       <strong>{signedMoney(comparison.netDifferenceMonthly)}</strong>
-      <p>{better ? "De nieuwe baan houdt naar schatting meer over" : "De nieuwe baan houdt naar schatting minder over"}: {signedMoney(comparison.netDifferenceAnnual)} per jaar.</p>
+      <p>{equal ? "Beide banen houden naar schatting evenveel over." : <>{better ? "De nieuwe baan houdt naar schatting meer over" : "De nieuwe baan houdt naar schatting minder over"}: {signedMoney(comparison.netDifferenceAnnual)} per jaar.</>}</p>
     </div>
 
     <div className="work-metrics">

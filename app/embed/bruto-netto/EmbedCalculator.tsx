@@ -4,7 +4,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Field } from "../../components/Field";
 import { caosBySector } from "../../../lib/cao-pages";
 import { findCao } from "../../../lib/caos";
-import { EMBED_DEFAULTS, EMBED_MESSAGE, embedMoreUrl, embedResult, type EmbedInput } from "../../../lib/embed";
+import { EMBED_DEFAULTS, EMBED_MESSAGE, embedCaoNote, embedMoreUrl, embedResult, type EmbedInput } from "../../../lib/embed";
 import { money } from "../../../lib/format";
 import { DEFAULT_TAX_YEAR } from "../../../lib/tax-years";
 
@@ -63,7 +63,7 @@ export default function EmbedCalculator() {
           <div><span>Loonheffing</span><strong>{money(-result.regularTaxMonthly)}</strong></div>
           <div className="spoke-total"><span>Netto per jaar{cao?.yearEndBonusPct ? ", met vakantiegeld en 13e maand" : ", met vakantiegeld"}</span><strong>{money(result.netAnnual)}</strong></div>
         </div>
-        <p className="embed-note">{cao ? `Met vakantiegeld, 13e maand en pensioen volgens de ${cao.name.replace(/^Cao /, "cao ")}.` : "Zonder pensioeninhouding. Kies je cao om die mee te rekenen."} Indicatie, geen advies.</p>
+        <p className="embed-note">{cao ? embedCaoNote(cao) : "Zonder pensioeninhouding. Kies je cao om die mee te rekenen."} Indicatie, geen advies.</p>
         <a className="primary-button embed-more" href={embedMoreUrl(input)} target="_blank" rel="noopener">Meer details op Nettoplaatje →</a>
       </div>
     </div>

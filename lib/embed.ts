@@ -3,9 +3,9 @@
  * iframe (/embed/bruto-netto). It keeps its inputs in memory only: no cookies,
  * no storage, no ads, so the hosting site needs no consent banner for it.
  */
-import { caoSalaryPatch, findCao } from "./caos.ts";
+import { caoSalaryPatch, findCao, type Cao } from "./caos.ts";
 import { amountState } from "./amounts.ts";
-import { updateJobSection, type NettoplaatjeState } from "./job-model.ts";
+import { PREFILL_HOLIDAY_PARAM, PREFILL_HOURS_PARAM, updateJobSection, type NettoplaatjeState } from "./job-model.ts";
 import { grossToNet, type GrossToNet } from "./spokes.ts";
 import { SITE_URL } from "./site.ts";
 import { DEFAULT_TAX_YEAR } from "./tax-years.ts";
@@ -33,11 +33,23 @@ export function embedResult(input: EmbedInput, year = DEFAULT_TAX_YEAR): GrossTo
   return grossToNet(embedState(input, year), "current");
 }
 
-/** The full calculator on Nettoplaatje with the same salary and cao filled in. */
+/** The full calculator on Nettoplaatje with the same salary, hours, holiday pay and cao filled in. */
 export function embedMoreUrl(input: EmbedInput): string {
   const hash = new URLSearchParams({ bruto: String(Math.round(input.grossMonthly)) });
-  if (findCao(input.caoId)) hash.set("cao", input.caoId);
+  const cao = findCao(input.caoId);
+  // Always passed on: the site may have other hours or holiday pay saved from an earlier visit.
+  hash.set(PREFILL_HOURS_PARAM, String(input.hoursPerWeek));
+  // A cao with its own holiday pay sets it on the site too, as in the embed itself.
+  if (cao?.holidayAllowancePct == null) hash.set(PREFILL_HOLIDAY_PARAM, String(input.holidayAllowancePct));
+  if (cao) hash.set("cao", input.caoId);
   return `${SITE_URL}/bruto-netto#${hash.toString()}`;
+}
+
+/** The note under the embed's result: only what the chosen cao actually adds to it. */
+export function embedCaoNote(cao: Cao): string {
+  const parts = ["vakantiegeld", cao.yearEndBonusPct ? "13e maand" : null, cao.pension ? "pensioen" : null].filter((part): part is string => part !== null);
+  const list = parts.length > 1 ? `${parts.slice(0, -1).join(", ")} en ${parts.at(-1)}` : parts[0];
+  return `Met ${list} volgens de ${cao.name.replace(/^Cao /, "cao ")}.`;
 }
 
 /** The code a site owner pastes: the iframe, a normal credit link below it, and the optional resizer. */

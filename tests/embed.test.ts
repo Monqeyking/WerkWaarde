@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { EMBED_DEFAULTS, EMBED_MESSAGE, EMBED_PATH, embedMoreUrl, embedResult, embedSnippet } from "../lib/embed.ts";
+import { EMBED_DEFAULTS, EMBED_MESSAGE, EMBED_PATH, embedCaoNote, embedMoreUrl, embedResult, embedSnippet } from "../lib/embed.ts";
 import { caoExample } from "../lib/cao-pages.ts";
 import { findCao, readPrefillCao } from "../lib/caos.ts";
-import { readPrefillGross } from "../lib/job-model.ts";
+import { readPrefillGross, readPrefillSalaryTerms } from "../lib/job-model.ts";
 
 const near = (actual: number, expected: number, tolerance = 0.01) =>
   assert.ok(Math.abs(actual - expected) <= tolerance, `expected ${expected}, got ${actual}`);
@@ -62,4 +62,22 @@ test("only /embed pages may be framed by other sites", () => {
   assert.match(block("/*"), /X-Frame-Options: DENY/);
   assert.match(block("/embed/*"), /! X-Frame-Options/);
   assert.doesNotMatch(block("/embed/*"), /frame-ancestors/);
+});
+
+test("the details link passes on hours and holiday pay, so the site shows the same result", () => {
+  const input = { ...EMBED_DEFAULTS, grossMonthly: 3_200, hoursPerWeek: 24, holidayAllowancePct: 12 };
+  const url = new URL(embedMoreUrl(input));
+  assert.deepEqual(readPrefillSalaryTerms(url), { hoursPerWeek: 24, holidayAllowancePct: 12 });
+  // With a cao that sets holiday pay, the cao decides it on the site as well.
+  assert.deepEqual(readPrefillSalaryTerms(new URL(embedMoreUrl({ ...input, caoId: "rijk" }))), { hoursPerWeek: 24 });
+  assert.deepEqual(readPrefillSalaryTerms(new URL("https://nettoplaatje.nl/bruto-netto#uren=0&vakantiegeld=abc")), {});
+});
+
+test("the cao note names only what that cao adds", () => {
+  assert.equal(embedCaoNote(findCao("rijk")!), "Met vakantiegeld, 13e maand en pensioen volgens de cao Rijk.");
+  assert.doesNotMatch(embedCaoNote(findCao("horeca")!), /13e maand/);
+});
+
+test("a prefill amount that rounds to zero is ignored", () => {
+  assert.equal(readPrefillGross(new URL("https://nettoplaatje.nl/bruto-netto#bruto=0.001")), null);
 });

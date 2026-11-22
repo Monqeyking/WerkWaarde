@@ -6,6 +6,7 @@ import {
   decodeState,
   loadState,
   readPrefillGross,
+  readPrefillSalaryTerms,
   readSharedParam,
   saveState,
   shareHash,
@@ -82,19 +83,21 @@ export function shareUrl(state: NettoplaatjeState, path = window.location.pathna
 }
 
 /**
- * If the page was opened from an amount page (#bruto=3500) or a cao page
- * (#cao=ziekenhuizen), put that gross salary or cao in the current job and
+ * If the page was opened from an amount page (#bruto=3500), a cao page
+ * (#cao=ziekenhuizen) or the embed (#uren=24&vakantiegeld=12), put those values in the current job and
  * clear the fragment. Other inputs stay as they are.
  */
 export function applyPrefillFromLocation() {
   const url = new URL(window.location.href);
   const gross = readPrefillGross(url);
   const cao = readPrefillCao(url);
-  if (gross === null && cao === null) return false;
+  const terms = readPrefillSalaryTerms(url);
+  if (gross === null && cao === null && Object.keys(terms).length === 0) return false;
   url.hash = "";
   window.history.replaceState(window.history.state, "", url.toString());
   setJobModel((state) => updateJobSection(state, "current", "salary", {
     ...(gross !== null && { grossMonthly: gross }),
+    ...terms,
     ...(cao && caoSalaryPatch(cao)),
   }));
   return true;

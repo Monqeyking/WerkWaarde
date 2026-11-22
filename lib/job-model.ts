@@ -337,8 +337,26 @@ export const PREFILL_GROSS_PARAM = "bruto";
 export function readPrefillGross(url: URL): number | null {
   const raw = new URLSearchParams(url.hash.replace(/^#/, "")).get(PREFILL_GROSS_PARAM);
   if (!raw) return null;
-  const value = Number(raw);
-  return Number.isFinite(value) && value > 0 && value <= MAX_INPUT ? Math.round(value * 100) / 100 : null;
+  const value = Math.round(Number(raw) * 100) / 100;
+  // Rounded first, so "#bruto=0.001" does not wipe a saved salary with € 0.
+  return Number.isFinite(value) && value > 0 && value <= MAX_INPUT ? value : null;
+}
+
+/** Fragment keys for the hours and holiday pay the embed passes on (#bruto=3200&uren=24&vakantiegeld=12). */
+export const PREFILL_HOURS_PARAM = "uren";
+export const PREFILL_HOLIDAY_PARAM = "vakantiegeld";
+
+/** Hours per week and holiday pay in a prefill link, each only when present and sensible. */
+export function readPrefillSalaryTerms(url: URL): Partial<Pick<JobProfile["salary"], "hoursPerWeek" | "holidayAllowancePct">> {
+  const params = new URLSearchParams(url.hash.replace(/^#/, ""));
+  const read = (key: string, min: number, max: number) => {
+    const raw = params.get(key);
+    const value = raw ? Math.round(Number(raw) * 100) / 100 : Number.NaN;
+    return Number.isFinite(value) && value >= min && value <= max ? value : null;
+  };
+  const hoursPerWeek = read(PREFILL_HOURS_PARAM, 1, 60);
+  const holidayAllowancePct = read(PREFILL_HOLIDAY_PARAM, 0, 20);
+  return { ...(hoursPerWeek !== null && { hoursPerWeek }), ...(holidayAllowancePct !== null && { holidayAllowancePct }) };
 }
 
 /** Minimal Storage interface so tests can pass a fake. */
