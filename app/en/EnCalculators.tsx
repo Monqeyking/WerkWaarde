@@ -5,7 +5,7 @@ import { Field } from "../components/Field";
 import { Highlight, Metrics, SpokeTable, type TableRow } from "../components/Spoke";
 import type { ExpatOption } from "../../lib/expat";
 import { moneyCentsEn, moneyEn, percentEn } from "../../lib/format";
-import { updateJobSection, updatePersonal, type JobProfile, type NettoplaatjeState } from "../../lib/job-model";
+import { keepOfferTotal, offerYearFactor, updateJobSection, updatePersonal, type JobProfile, type NettoplaatjeState } from "../../lib/job-model";
 import { grossToNet, type GrossToNet } from "../../lib/spokes";
 import { taxYear } from "../../lib/tax-years";
 import { applyPrefillFromLocation, useJobModel } from "../../lib/use-job-model";
@@ -53,7 +53,9 @@ function SalaryInputs({ salary, set, model, setModel, pensionMonthly }: {
 }) {
   const [period, setPeriod] = useState<Period>("year");
   // A yearly amount includes holiday allowance and a 13th month, as in most Dutch offers.
-  const yearFactor = 12 * (1 + salary.holidayAllowancePct / 100 + salary.yearEndBonusPct / 100);
+  const yearFactor = offerYearFactor(salary);
+  // Entered per year, the offer total stays as typed when holiday allowance or the 13th month changes.
+  const setShare = (patch: Partial<Pick<Salary, "holidayAllowancePct" | "yearEndBonusPct">>) => set(period === "year" ? keepOfferTotal(salary, patch) : patch);
   return <>
     <div className="tax-year-box">
       <span className="section-kicker">Salary in your offer</span>
@@ -68,9 +70,9 @@ function SalaryInputs({ salary, set, model, setModel, pensionMonthly }: {
       : <Field label="Gross salary per month" value={Math.round(salary.grossMonthly)} onChange={(grossMonthly) => set({ grossMonthly })} suffix="€" step={50} lang="en"
         hint="Your fixed monthly gross salary for your hours, as on your payslip. Without holiday allowance." />}
     <Field label="Hours per week" value={salary.hoursPerWeek} onChange={(hoursPerWeek) => set({ hoursPerWeek })} suffix="hrs" max={60} lang="en" />
-    <Field label="Holiday allowance" value={salary.holidayAllowancePct} onChange={(holidayAllowancePct) => set({ holidayAllowancePct })} suffix="%" step={0.1} max={20} lang="en"
+    <Field label="Holiday allowance" value={salary.holidayAllowancePct} onChange={(holidayAllowancePct) => setShare({ holidayAllowancePct })} suffix="%" step={0.1} max={20} lang="en"
       hint="Vakantiegeld: by law at least 8% of your gross salary, usually paid in May or June." />
-    <Field label="13th month" value={salary.yearEndBonusPct} onChange={(yearEndBonusPct) => set({ yearEndBonusPct })} suffix="%" step={0.01} max={50} lang="en"
+    <Field label="13th month" value={salary.yearEndBonusPct} onChange={(yearEndBonusPct) => setShare({ yearEndBonusPct })} suffix="%" step={0.01} max={50} lang="en"
       hint="A full 13th month is 8.33% of your annual salary. Enter 0 if you don't get one." />
     <Field label="Bonus per year" value={salary.annualBonus} onChange={(annualBonus) => set({ annualBonus })} suffix="€" step={100} lang="en"
       hint="Expected gross bonus or profit share per year." />

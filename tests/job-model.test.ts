@@ -6,6 +6,8 @@ import {
   applyWorkPatternInput,
   commuteKmPerYear,
   copySectionToNext,
+  keepOfferTotal,
+  offerYearFactor,
   createDefaultState,
   decodeState,
   encodeState,
@@ -213,4 +215,13 @@ describe("writing calculator edits back into the model", () => {
     assert.equal(state.jobs.current.salary.pensionMode, "monthly");
     assert.equal(state.filled.current.salary, true);
   });
+});
+
+test("a yearly offer total stays as entered when the 13th month or holiday pay changes", () => {
+  const salary = { grossMonthly: 70_000 / offerYearFactor({ holidayAllowancePct: 8, yearEndBonusPct: 0 }), holidayAllowancePct: 8, yearEndBonusPct: 0 };
+  const patch = keepOfferTotal(salary, { yearEndBonusPct: 8.33 });
+  assert.equal(patch.yearEndBonusPct, 8.33);
+  const after = { ...salary, ...patch } as typeof salary;
+  assert.ok(Math.abs(after.grossMonthly * offerYearFactor(after) - 70_000) < 1e-6);
+  assert.ok(after.grossMonthly < salary.grossMonthly);
 });

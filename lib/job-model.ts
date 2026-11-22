@@ -362,6 +362,22 @@ export function saveState(storage: KeyValueStorage | undefined, state: Nettoplaa
   }
 }
 
+type OfferShares = Pick<JobProfile["salary"], "holidayAllowancePct" | "yearEndBonusPct">;
+
+/** Months of pay in a yearly offer that includes holiday allowance and a 13th month: 12 × (1 + 8% + 8,33%). */
+export function offerYearFactor(salary: OfferShares): number {
+  return 12 * (1 + salary.holidayAllowancePct / 100 + salary.yearEndBonusPct / 100);
+}
+
+/**
+ * Change holiday allowance or the 13th month while the yearly offer total stays as entered:
+ * the monthly salary is split again, as in an offer of "€ 70.000 a year, including everything".
+ */
+export function keepOfferTotal(salary: OfferShares & Pick<JobProfile["salary"], "grossMonthly">, patch: Partial<OfferShares>): Partial<JobProfile["salary"]> {
+  const annual = salary.grossMonthly * offerYearFactor(salary);
+  return { ...patch, grossMonthly: annual / offerYearFactor({ ...salary, ...patch }) };
+}
+
 /** Update one section of one job and mark it as filled in. */
 export function updateJobSection<S extends SectionKey>(
   state: NettoplaatjeState,
