@@ -326,6 +326,10 @@ button.info-dot[aria-expanded="true"] { border-color:var(--teal); color:#fff; ba
 .amount-neighbour-links a,.sub-hero .hero-kicker a { color:var(--teal-ink); font-weight:700; }
 .amount-neighbour-links a { display:inline-flex; align-items:center; min-height:24px; }
 .amount-content { padding-top:40px; }
+.amount-context h3 { margin:8px 0 0; color:var(--ink); font-size:14px; }
+.amount-context ul { display:grid; gap:8px; margin:0; padding-left:18px; }
+.amount-context-source { font-size:11px; }
+.amount-context + .disclaimer { margin-top:28px; }
 .amount-links { margin-top:34px; }
 .amount-links-group { margin-top:16px; }
 .amount-links-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; margin-top:8px; }

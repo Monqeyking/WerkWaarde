@@ -1,15 +1,15 @@
 {
   "https://nettoplaatje.nl/": {
-    "hash": "fdfac3ac54ee8b06",
-    "changed": "2026-11-22"
+    "hash": "102d0f1c8629b22b",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/totaal": {
     "hash": "a345b884e0913a71",
     "changed": "2026-11-22"
   },
   "https://nettoplaatje.nl/bruto-netto": {
-    "hash": "987b5149550b1475",
-    "changed": "2026-11-22"
+    "hash": "08cf5ca6fc115717",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/mobiliteit": {
     "hash": "4c392181147dfe2e",
@@ -36,160 +36,48 @@
     "changed": "2026-11-22"
   },
   "https://nettoplaatje.nl/bruto-netto/2000-per-maand": {
-    "hash": "b8fe8de60e26534d",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/2200-per-maand": {
-    "hash": "3be488a48e548923",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/2400-per-maand": {
-    "hash": "c70ffdeeda57b4c8",
-    "changed": "2026-11-22"
+    "hash": "8a197efa9eaa43a0",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/2500-per-maand": {
-    "hash": "e06c79ba91860ee1",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/2600-per-maand": {
-    "hash": "6923a11691b16d47",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/2700-per-maand": {
-    "hash": "182b282019fff8e9",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/2800-per-maand": {
-    "hash": "61033a7905b426b0",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/2900-per-maand": {
-    "hash": "1c3dd5915ae7c4d4",
-    "changed": "2026-11-22"
+    "hash": "1c0acd715e0c7868",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/3000-per-maand": {
-    "hash": "d69dcb1da016adda",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/3100-per-maand": {
-    "hash": "5a96dd06f8096312",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/3200-per-maand": {
-    "hash": "42643241f04ac8be",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/3300-per-maand": {
-    "hash": "30fd442dec5b9189",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/3400-per-maand": {
-    "hash": "a08aef33c908ffe3",
-    "changed": "2026-11-22"
+    "hash": "8bd801fe63b5d6c7",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/3500-per-maand": {
-    "hash": "942601586ea743d9",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/3600-per-maand": {
-    "hash": "fdcd1fb380522326",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/3700-per-maand": {
-    "hash": "3de0b84df7038f45",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/3800-per-maand": {
-    "hash": "a38bb52f5e9666e0",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/3900-per-maand": {
-    "hash": "bb7d6b015bafe881",
-    "changed": "2026-11-22"
+    "hash": "203a8bb608424d78",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/4000-per-maand": {
-    "hash": "8e92bf2a439ff05a",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/4200-per-maand": {
-    "hash": "6b0b5c4f75fdaeff",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/4500-per-maand": {
-    "hash": "245bc26071e500b3",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/4800-per-maand": {
-    "hash": "afeaa8d11d0038c0",
-    "changed": "2026-11-22"
+    "hash": "bb6691444266e6fe",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/5000-per-maand": {
-    "hash": "8f824f290fb4579d",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/5500-per-maand": {
-    "hash": "cb801d6cc980e4a9",
-    "changed": "2026-11-22"
+    "hash": "776863b5d2a05200",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/6000-per-maand": {
-    "hash": "f61158866c5f2cb2",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/6500-per-maand": {
-    "hash": "9525899a59ea9bb0",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/7000-per-maand": {
-    "hash": "d900cf2329df6684",
-    "changed": "2026-11-22"
+    "hash": "345a9b73518483c3",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/8000-per-maand": {
-    "hash": "50e9cf1881276e12",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/9000-per-maand": {
-    "hash": "013ffb6be15b5f09",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/10000-per-maand": {
-    "hash": "629fc17bffaf21c3",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/30000-per-jaar": {
-    "hash": "7d1aac97eb5730a2",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/35000-per-jaar": {
-    "hash": "cb215fb7b15dcc47",
-    "changed": "2026-11-22"
+    "hash": "b45477c854a91dd3",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/40000-per-jaar": {
-    "hash": "57834557169ac08e",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/45000-per-jaar": {
-    "hash": "54af80a8699886b7",
-    "changed": "2026-11-22"
+    "hash": "14c4cce1a93fef97",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/50000-per-jaar": {
-    "hash": "c5dd32b5ea9dafd5",
-    "changed": "2026-11-22"
+    "hash": "128e005840a887d3",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/60000-per-jaar": {
-    "hash": "8d311191633e65d5",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/70000-per-jaar": {
-    "hash": "4aa214587fdc65ba",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/80000-per-jaar": {
-    "hash": "6572c3ecdadf57d4",
-    "changed": "2026-11-22"
-  },
-  "https://nettoplaatje.nl/bruto-netto/90000-per-jaar": {
-    "hash": "c8318acb3dba843a",
-    "changed": "2026-11-22"
+    "hash": "7fe54ed969e3c2e1",
+    "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/cao": {
     "hash": "89c682240b795a05",

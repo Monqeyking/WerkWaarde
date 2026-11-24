@@ -1,0 +1,30 @@
+# Amount pages removed in November 2026: open the calculator with the amount filled in.
+# Kept in sync with RETIRED_AMOUNT_PAGES in lib/amounts.ts (tests/amounts.test.ts checks it).
+/bruto-netto/2200-per-maand /bruto-netto#bruto=2200 301
+/bruto-netto/2400-per-maand /bruto-netto#bruto=2400 301
+/bruto-netto/2600-per-maand /bruto-netto#bruto=2600 301
+/bruto-netto/2700-per-maand /bruto-netto#bruto=2700 301
+/bruto-netto/2800-per-maand /bruto-netto#bruto=2800 301
+/bruto-netto/2900-per-maand /bruto-netto#bruto=2900 301
+/bruto-netto/3100-per-maand /bruto-netto#bruto=3100 301
+/bruto-netto/3200-per-maand /bruto-netto#bruto=3200 301
+/bruto-netto/3300-per-maand /bruto-netto#bruto=3300 301
+/bruto-netto/3400-per-maand /bruto-netto#bruto=3400 301
+/bruto-netto/3600-per-maand /bruto-netto#bruto=3600 301
+/bruto-netto/3700-per-maand /bruto-netto#bruto=3700 301
+/bruto-netto/3800-per-maand /bruto-netto#bruto=3800 301
+/bruto-netto/3900-per-maand /bruto-netto#bruto=3900 301
+/bruto-netto/4200-per-maand /bruto-netto#bruto=4200 301
+/bruto-netto/4500-per-maand /bruto-netto#bruto=4500 301
+/bruto-netto/4800-per-maand /bruto-netto#bruto=4800 301
+/bruto-netto/5500-per-maand /bruto-netto#bruto=5500 301
+/bruto-netto/6500-per-maand /bruto-netto#bruto=6500 301
+/bruto-netto/7000-per-maand /bruto-netto#bruto=7000 301
+/bruto-netto/9000-per-maand /bruto-netto#bruto=9000 301
+/bruto-netto/10000-per-maand /bruto-netto#bruto=10000 301
+/bruto-netto/30000-per-jaar /bruto-netto#bruto=2315 301
+/bruto-netto/35000-per-jaar /bruto-netto#bruto=2701 301
+/bruto-netto/45000-per-jaar /bruto-netto#bruto=3472 301
+/bruto-netto/70000-per-jaar /bruto-netto#bruto=5401 301
+/bruto-netto/80000-per-jaar /bruto-netto#bruto=6173 301
+/bruto-netto/90000-per-jaar /bruto-netto#bruto=6944 301

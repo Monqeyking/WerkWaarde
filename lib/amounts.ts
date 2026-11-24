@@ -1,8 +1,9 @@
 /**
  * Static landing pages for popular salary amounts ("€ 3.500 bruto per maand").
- * The list follows Google autocomplete demand (November 2026): every €100
- * between €2.000 and €4.000, round amounts above, and common yearly salaries.
- * Keep it focused: many near-identical pages read as thin content to Google.
+ * One or two pages per income band, each with an explanation of what happens at
+ * that income (lib/amount-context.ts). Keep the list short: near-identical pages
+ * for every €100 read as thin content to Google and AdSense, and were removed in
+ * November 2026. Their URLs redirect to the calculator (public/_redirects).
  */
 import { createDefaultState, updateJobSection, updatePersonal, type NettoplaatjeState } from "./job-model.ts";
 import { grossToNet } from "./spokes.ts";
@@ -11,21 +12,27 @@ import { DEFAULT_TAX_YEAR } from "./tax-years.ts";
 export type AmountKind = "maand" | "jaar";
 export type AmountPage = { slug: string; kind: AmountKind; amount: number };
 
-export const MONTHLY_AMOUNTS = [
-  2000, 2200, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600,
-  3700, 3800, 3900, 4000, 4200, 4500, 4800, 5000, 5500, 6000, 6500, 7000, 8000, 9000, 10000,
+export const MONTHLY_AMOUNTS = [2000, 2500, 3000, 3500, 4000, 5000, 6000, 8000] as const;
+export const YEARLY_AMOUNTS = [40000, 50000, 60000] as const;
+
+/** Amount pages that existed until November 2026; each now redirects to the calculator with its amount filled in. */
+export const RETIRED_MONTHLY_AMOUNTS = [
+  2200, 2400, 2600, 2700, 2800, 2900, 3100, 3200, 3300, 3400, 3600, 3700, 3800, 3900, 4200, 4500, 4800, 5500, 6500, 7000, 9000, 10000,
 ] as const;
-export const YEARLY_AMOUNTS = [30000, 35000, 40000, 45000, 50000, 60000, 70000, 80000, 90000] as const;
+export const RETIRED_YEARLY_AMOUNTS = [30000, 35000, 45000, 70000, 80000, 90000] as const;
 
 /** Holiday allowance assumed on every amount page. */
 export const HOLIDAY_PCT = 8;
 const FULL_TIME_HOURS = 40;
 export const PART_TIME_HOURS = [32, 36] as const;
 
-export const AMOUNT_PAGES: readonly AmountPage[] = [
-  ...MONTHLY_AMOUNTS.map((amount) => ({ slug: `${amount}-per-maand`, kind: "maand" as const, amount })),
-  ...YEARLY_AMOUNTS.map((amount) => ({ slug: `${amount}-per-jaar`, kind: "jaar" as const, amount })),
+const toPages = (monthly: readonly number[], yearly: readonly number[]): AmountPage[] => [
+  ...monthly.map((amount) => ({ slug: `${amount}-per-maand`, kind: "maand" as const, amount })),
+  ...yearly.map((amount) => ({ slug: `${amount}-per-jaar`, kind: "jaar" as const, amount })),
 ];
+
+export const AMOUNT_PAGES: readonly AmountPage[] = toPages(MONTHLY_AMOUNTS, YEARLY_AMOUNTS);
+export const RETIRED_AMOUNT_PAGES: readonly AmountPage[] = toPages(RETIRED_MONTHLY_AMOUNTS, RETIRED_YEARLY_AMOUNTS);
 
 export function getAmountPage(slug: string): AmountPage | undefined {
   return AMOUNT_PAGES.find((page) => page.slug === slug);
@@ -60,11 +67,15 @@ export function amountFigures(page: AmountPage, year = DEFAULT_TAX_YEAR) {
   return { page, year, ...result, partTime };
 }
 
-/** The pages just below and above this one, of the same kind. */
-export function neighbourPages(page: AmountPage, count = 2): AmountPage[] {
-  const sameKind = AMOUNT_PAGES.filter((other) => other.kind === page.kind);
-  const index = sameKind.findIndex((other) => other.slug === page.slug);
-  return sameKind.slice(Math.max(0, index - count), index + count + 1);
+/** Amounts just below and above this page's amount (not necessarily pages), for the "nearby" table. */
+export function nearbyAmounts(page: AmountPage, count = 2): AmountPage[] {
+  const step = page.kind === "maand" ? 250 : 2500;
+  const amounts: AmountPage[] = [];
+  for (let offset = -count; offset <= count; offset += 1) {
+    const amount = page.amount + offset * step;
+    if (amount > 0) amounts.push(offset === 0 ? page : { slug: "", kind: page.kind, amount });
+  }
+  return amounts;
 }
 
 /** "€ 3.500" without decimals, for titles and headings. */

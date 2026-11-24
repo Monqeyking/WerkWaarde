@@ -8,8 +8,9 @@ import { Highlight, Metrics, SpokeTable, type TableRow } from "../../components/
 import AmountLinks from "../AmountLinks";
 import {
   AMOUNT_PAGES, HOLIDAY_PCT, amountDescription, amountFigures, amountLabel, amountPath, amountTitle,
-  euro, getAmountPage, neighbourPages, prefillPath,
+  euro, getAmountPage, nearbyAmounts, prefillPath,
 } from "../../../lib/amounts";
+import { amountContext } from "../../../lib/amount-context";
 import { money, percent } from "../../../lib/format";
 import { breadcrumbList, pageMetadata } from "../../../lib/seo";
 
@@ -32,9 +33,9 @@ export default async function AmountPage({ params }: Props) {
   const page = getAmountPage((await params).bedrag);
   if (!page) notFound();
   const f = amountFigures(page);
+  const context = amountContext(f.grossAnnual, f.year);
   const monthly = page.kind === "maand";
   const per = monthly ? "per maand" : "per jaar";
-  const keep100 = 100 * (1 - f.marginalRate);
 
   const monthRows: TableRow[] = [
     { label: monthly ? "Bruto salaris" : `Bruto salaris (${euro(page.amount)} ÷ 12,96)`, value: money(f.grossMonthly) },
@@ -52,7 +53,7 @@ export default async function AmountPage({ params }: Props) {
     { label: `40 uur (${money(f.grossMonthly)} bruto)`, value: money(f.regularNetMonthly) },
     ...f.partTime.slice().reverse().map((row) => ({ label: `${row.hours} uur (${money(row.grossMonthly)} bruto)`, value: money(row.netMonthly) })),
   ];
-  const neighbours = neighbourPages(page).map((other) => {
+  const neighbours = nearbyAmounts(page).map((other) => {
     const figures = amountFigures(other);
     return { page: other, net: monthly ? figures.regularNetMonthly : figures.netAnnual };
   });
@@ -62,7 +63,7 @@ export default async function AmountPage({ params }: Props) {
       ? `Ongeveer ${euro(f.regularNetMonthly)} netto in een gewone maand in ${f.year}, bij een fulltime baan zonder pensioeninhouding. Met ${HOLIDAY_PCT}% vakantiegeld erbij houd je ongeveer ${euro(f.netAnnual)} netto per jaar over.`
       : `Ongeveer ${euro(f.netAnnual)} netto per jaar in ${f.year}, gemiddeld ${euro(f.netMonthlyAverage)} per maand. Daarbij gaan we ervan uit dat ${euro(page.amount)} inclusief ${HOLIDAY_PCT}% vakantiegeld is en dat er geen pensioen wordt ingehouden.`],
     [`Hoeveel houd je over van je vakantiegeld?`, `Je vakantiegeld van ${euro(f.holidayGrossAnnual)} bruto wordt belast tegen ongeveer ${percent(f.extraTaxRate)}. Er blijft ongeveer ${euro(f.holidayNetAnnual)} netto van over.`],
-    [`Wat levert € 100 bruto opslag op bij dit salaris?`, `Je marginale tarief is ongeveer ${percent(f.marginalRate)}. Van € 100 bruto extra per maand houd je dus ongeveer ${euro(keep100)} netto over. Voor € 100 netto meer heb je ongeveer ${euro(f.grossFor100Net)} bruto nodig.`],
+    [`Wat levert € 100 bruto opslag op bij dit salaris, en waarom?`, context.rateChangesSoon ? context.raiseAnswer : `${context.raiseAnswer} Voor € 100 netto meer per maand heb je ongeveer ${euro(f.grossFor100Net)} bruto nodig.`],
     [`Hoeveel netto is dit bij 32 of 36 uur?`, `Met hetzelfde uurloon verdien je bij 36 uur ${euro(f.partTime[1].grossMonthly)} bruto en ongeveer ${euro(f.partTime[1].netMonthly)} netto per maand. Bij 32 uur is dat ${euro(f.partTime[0].grossMonthly)} bruto en ongeveer ${euro(f.partTime[0].netMonthly)} netto.`],
   ];
 
@@ -113,13 +114,24 @@ export default async function AmountPage({ params }: Props) {
           <EmbedCta className="" />
           <h2 className="amount-side-title">Bedragen in de buurt</h2>
           <SpokeTable head={[monthly ? "Bruto per maand" : "Bruto per jaar", monthly ? "Netto per maand" : "Netto per jaar"]}
-            rows={neighbours.map((row) => ({ label: euro(row.page.amount), value: money(row.net), total: row.page.slug === page.slug }))} />
-          <p className="amount-neighbour-links">{neighbours.filter((row) => row.page.slug !== page.slug).map((row) => <Link key={row.page.slug} href={amountPath(row.page)}>{amountLabel(row.page)}</Link>)}</p>
+            rows={neighbours.map((row) => ({ label: euro(row.page.amount), value: money(row.net), total: row.page === page }))} />
         </aside>
       </div>
     </section>
 
     <section className="how-section shell total-content amount-content">
+      <div className="section-heading"><div><span className="section-kicker">Bij dit inkomen</span><h2>Wat speelt er bij {euro(page.amount)} bruto {per}?</h2></div></div>
+      <div className="method-copy amount-context">
+        {context.paragraphs.map((text) => <p key={text}>{text}</p>)}
+        <SpokeTable head={[`Heffingskortingen ${f.year}`, "Per jaar"]} rows={[
+          { label: `Algemene heffingskorting (max. ${euro(context.generalCreditMax)})`, value: money(context.generalCredit) },
+          { label: `Arbeidskorting (max. ${euro(context.employmentCreditMax)})`, value: money(context.employmentCredit) },
+        ]} />
+        <h3>Wat betekent dat voor jou?</h3>
+        <ul>{context.tips.map((tip) => <li key={tip.text}>{tip.text}{tip.href && <> <Link href={tip.href}>{tip.link} →</Link></>}</li>)}</ul>
+        <p className="amount-context-source">Bron: de tarieven en heffingskortingen {f.year} van de Belastingdienst en de toeslagbedragen {f.year}, dezelfde cijfers als in de calculator. Zie <Link href="/uitleg">uitleg en bronnen</Link>.</p>
+      </div>
+
       <div className="disclaimer"><span className="disclaimer-icon">!</span><div><strong>Uitgangspunten van deze berekening</strong><p>
         Belastingtarieven en heffingskortingen van {f.year}, jonger dan de AOW-leeftijd, {HOLIDAY_PCT}% vakantiegeld, geen pensioeninhouding, 13e maand of bonus. {monthly ? "" : `We lezen ${euro(page.amount)} als je jaarsalaris inclusief vakantiegeld. `}Je werkgever rekent met maandtabellen en kan andere inhoudingen hebben, dus je loonstrook kan iets afwijken. Dit is een indicatie, geen financieel advies.
       </p></div></div>

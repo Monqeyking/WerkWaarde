@@ -86,13 +86,13 @@ function taxBeforeCredits(income: number, age: number, params: TaxYearParams) {
   return total;
 }
 
-function generalTaxCredit(income: number, age: number, params: TaxYearParams) {
+export function generalTaxCredit(income: number, age: number, params: TaxYearParams) {
   const { max, maxAow, phaseOutFrom, phaseOutRate, phaseOutRateAow } = params.generalCredit;
   const aow = age >= AOW_AGE;
   return Math.max(0, (aow ? maxAow : max) - Math.max(0, income - phaseOutFrom) * (aow ? phaseOutRateAow : phaseOutRate));
 }
 
-function employmentTaxCredit(income: number, age: number, params: TaxYearParams) {
+export function employmentTaxCredit(income: number, age: number, params: TaxYearParams) {
   return creditAt(age >= AOW_AGE ? params.employmentCreditAow : params.employmentCredit, income);
 }
 

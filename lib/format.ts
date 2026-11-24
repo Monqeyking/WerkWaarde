@@ -25,6 +25,8 @@ export const decimal = (value: number) => formatSigned(decimalFormat, value, 10,
 export const signedDecimal = (value: number) => formatSigned(decimalFormat, value, 10, true);
 /** Share as a percentage: 0.4947 → "49,5%" */
 export const percent = (share: number) => `${decimal(share * 100)}%`;
+/** Official tax rate, exact to two decimals: 0.3575 → "35,75%", 0.495 → "49,5%". */
+export const ratePercent = (rate: number) => `${new Intl.NumberFormat("nl-NL", { maximumFractionDigits: 2 }).format(Math.round(rate * 10_000) / 100)}%`;
 
 /** English formatting for the /en pages: "€5,000", "49.5%". */
 const euroFormatEn = new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });

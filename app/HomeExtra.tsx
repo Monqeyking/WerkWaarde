@@ -8,8 +8,8 @@ import { percent } from "../lib/format";
 
 /** A short selection of the amount pages; the full list is on /bruto-netto. */
 const HOME_AMOUNTS = [
-  "2500-per-maand", "3000-per-maand", "3500-per-maand", "4000-per-maand", "4500-per-maand", "5000-per-maand",
-  "40000-per-jaar", "50000-per-jaar", "60000-per-jaar", "70000-per-jaar",
+  "2500-per-maand", "3000-per-maand", "3500-per-maand", "4000-per-maand", "5000-per-maand", "6000-per-maand",
+  "40000-per-jaar", "50000-per-jaar", "60000-per-jaar",
 ];
 
 /** Cao's with the most employees, shown as shortcuts on the home page. */
