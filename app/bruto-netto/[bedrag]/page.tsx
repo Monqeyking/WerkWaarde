@@ -33,7 +33,7 @@ export default async function AmountPage({ params }: Props) {
   const page = getAmountPage((await params).bedrag);
   if (!page) notFound();
   const f = amountFigures(page);
-  const context = amountContext(f.grossAnnual, f.year);
+  const context = amountContext(f.grossAnnual, f.year, f.grossMonthly);
   const monthly = page.kind === "maand";
   const per = monthly ? "per maand" : "per jaar";
 
@@ -128,7 +128,7 @@ export default async function AmountPage({ params }: Props) {
           { label: `Arbeidskorting (max. ${euro(context.employmentCreditMax)})`, value: money(context.employmentCredit) },
         ]} />
         <h3>Wat betekent dat voor jou?</h3>
-        <ul>{context.tips.map((tip) => <li key={tip.text}>{tip.text}{tip.href && <> <Link href={tip.href}>{tip.link} →</Link></>}</li>)}</ul>
+        <ul>{context.tips.map((tip) => <li key={tip.text}>{tip.text}{tip.href && <> {tip.external ? <a href={tip.href} target="_blank" rel="noopener noreferrer">{tip.link} ↗</a> : <Link href={tip.href}>{tip.link} →</Link>}</>}</li>)}</ul>
         <p className="amount-context-source">Bron: de tarieven en heffingskortingen {f.year} van de Belastingdienst en de toeslagbedragen {f.year}, dezelfde cijfers als in de calculator. Zie <Link href="/uitleg">uitleg en bronnen</Link>.</p>
       </div>
 

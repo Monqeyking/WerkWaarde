@@ -12,12 +12,13 @@ import { DEFAULT_TAX_YEAR } from "./tax-years.ts";
 export type AmountKind = "maand" | "jaar";
 export type AmountPage = { slug: string; kind: AmountKind; amount: number };
 
-export const MONTHLY_AMOUNTS = [2000, 2500, 3000, 3500, 4000, 5000, 6000, 8000] as const;
+/** The lowest page sits around the full-time minimum wage: lower amounts at 40 hours would be below it. */
+export const MONTHLY_AMOUNTS = [2700, 3000, 3500, 4000, 5000, 6000, 8000] as const;
 export const YEARLY_AMOUNTS = [40000, 50000, 60000] as const;
 
 /** Amount pages that existed until November 2026; each now redirects to the calculator with its amount filled in. */
 export const RETIRED_MONTHLY_AMOUNTS = [
-  2200, 2400, 2600, 2700, 2800, 2900, 3100, 3200, 3300, 3400, 3600, 3700, 3800, 3900, 4200, 4500, 4800, 5500, 6500, 7000, 9000, 10000,
+  2000, 2200, 2400, 2500, 2600, 2800, 2900, 3100, 3200, 3300, 3400, 3600, 3700, 3800, 3900, 4200, 4500, 4800, 5500, 6500, 7000, 9000, 10000,
 ] as const;
 export const RETIRED_YEARLY_AMOUNTS = [30000, 35000, 45000, 70000, 80000, 90000] as const;
 

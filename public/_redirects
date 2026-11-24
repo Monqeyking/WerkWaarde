@@ -1,9 +1,10 @@
 # Amount pages removed in November 2026: open the calculator with the amount filled in.
 # Kept in sync with RETIRED_AMOUNT_PAGES in lib/amounts.ts (tests/amounts.test.ts checks it).
+/bruto-netto/2000-per-maand /bruto-netto#bruto=2000 301
 /bruto-netto/2200-per-maand /bruto-netto#bruto=2200 301
 /bruto-netto/2400-per-maand /bruto-netto#bruto=2400 301
+/bruto-netto/2500-per-maand /bruto-netto#bruto=2500 301
 /bruto-netto/2600-per-maand /bruto-netto#bruto=2600 301
-/bruto-netto/2700-per-maand /bruto-netto#bruto=2700 301
 /bruto-netto/2800-per-maand /bruto-netto#bruto=2800 301
 /bruto-netto/2900-per-maand /bruto-netto#bruto=2900 301
 /bruto-netto/3100-per-maand /bruto-netto#bruto=3100 301

@@ -39,6 +39,11 @@ export type TaxYearParams = {
    */
   expatRuling: { rate: number; salaryNorm: number; salaryNormYoungMaster: number; wntNorm: number; sourceUrl: string };
   allowances: AllowanceParams;
+  /**
+   * Wettelijk minimumuurloon for 21 and older, gross, in the order it applies during the
+   * year; the last entry is the current one. There is no fixed monthly minimum wage.
+   */
+  minimumWage: { periods: ReadonlyArray<{ from: string; hourly: number }>; sourceUrl: string };
 };
 
 const EXPAT_SOURCE = "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/internationaal/personeel/u_bent_niet_in_nederland_gevestigd_loonheffingen_inhouden/als_u_loonheffingen_gaat_inhouden/extraterritoriale_kosten_en_de_30procentregeling/inhoud_van_de_regeling/inhoud_van_de_regeling";
@@ -148,6 +153,11 @@ const TAX_2026: TaxYearParams = {
   // maximum € 78.600 = 30% of the WNT-norm € 262.000.
   expatRuling: { rate: 0.30, salaryNorm: 48_013, salaryNormYoungMaster: 36_497, wntNorm: 262_000, sourceUrl: EXPAT_SOURCE },
   allowances: ALLOWANCES_2026,
+  // Rijksoverheid, checked 24 November 2026.
+  minimumWage: {
+    periods: [{ from: "2026-01-01", hourly: 14.71 }, { from: "2026-07-01", hourly: 14.99 }],
+    sourceUrl: "https://www.rijksoverheid.nl/onderwerpen/minimumloon/bedragen-minimumloon/bedragen-minimumloon-2026",
+  },
 };
 
 /**
@@ -203,6 +213,11 @@ const TAX_2027: TaxYearParams = {
   // Prinsjesdag wijzigingsbesluit (vaste voet first child 39.1%), the proposed second
   // kindgebonden budget phase-out from € 60.000, and the final zorgtoeslag figures.
   allowances: ALLOWANCES_2026,
+  // Rijksoverheid, checked 24 November 2026 (final, not estimated).
+  minimumWage: {
+    periods: [{ from: "2027-01-01", hourly: 15.29 }],
+    sourceUrl: "https://www.rijksoverheid.nl/onderwerpen/minimumloon/bedragen-minimumloon/bedragen-minimumloon-2027",
+  },
 };
 
 export const TAX_YEARS: readonly TaxYearParams[] = [TAX_2026, TAX_2027];

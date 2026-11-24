@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { incomeTax } from "../lib/calculator.ts";
-import { amountContext, incomeThresholds, marginalParts } from "../lib/amount-context.ts";
+import { amountContext, fullTimeHourly, incomeThresholds, marginalParts, minimumWage } from "../lib/amount-context.ts";
 import { AMOUNT_PAGES, amountFigures } from "../lib/amounts.ts";
 import { TAX_YEARS } from "../lib/tax-years.ts";
 import { zorgtoeslagAnnual } from "../lib/toeslagen.ts";
@@ -49,8 +49,8 @@ test("threshold notes: € 3.000 is just below the second bracket, € 6.000 jus
   assert.match(at("3500-per-maand").paragraphs.join(" "), /onder de afbouw van de arbeidskorting/);
   assert.match(at("6000-per-maand").paragraphs.join(" "), /onder het einde van de algemene heffingskorting en het toptarief/);
   assert.match(at("8000-per-maand").paragraphs.join(" "), /meer dan het toptarief/);
-  assert.equal(at("2000-per-maand").bracketIndex, 0);
-  assert.ok(at("2000-per-maand").zorgtoeslagMonthly > 100);
+  assert.equal(at("2700-per-maand").bracketIndex, 0);
+  assert.ok(at("2700-per-maand").zorgtoeslagMonthly > 50);
   assert.equal(at("5000-per-maand").zorgtoeslagMonthly, 0);
 });
 
@@ -64,4 +64,26 @@ test("every tax year gives a complete, consistent explanation on every page", ()
       assert.doesNotMatch(text, /undefined|NaN|Infinity/, `${year} ${page.slug}`);
     }
   }
+});
+
+test("minimum wage: 2026 and 2027 from Rijksoverheid, and no amount page is below it at 40 hours", () => {
+  assert.equal(minimumWage(2026).hourly, 14.99);
+  assert.equal(minimumWage(2026).from, "2026-07-01");
+  assert.equal(minimumWage(2027).hourly, 15.29);
+  near(minimumWage(2026).monthly(40), 2598, 1);
+  for (const { year } of TAX_YEARS) {
+    for (const page of AMOUNT_PAGES) {
+      const f = amountFigures(page, year);
+      assert.ok(fullTimeHourly(f.grossMonthly) >= minimumWage(year).hourly, `${year} ${page.slug}`);
+    }
+  }
+});
+
+test("the lowest page says it is about the minimum wage; a part-time amount says so too", () => {
+  const low = amountContext(amountFigures(AMOUNT_PAGES[0], 2026).grossAnnual, 2026, amountFigures(AMOUNT_PAGES[0], 2026).grossMonthly);
+  assert.match(low.tips[0].text, /^Dit is ongeveer het minimumloon\./);
+  const partTime = amountContext(2000 * 12.96, 2026, 2000);
+  assert.match(partTime.tips[0].text, /minder dan het wettelijk minimumuurloon.*ongeveer 30 uur per week/);
+  const high = amountContext(amountFigures(AMOUNT_PAGES.find((page) => page.slug === "5000-per-maand")!, 2026).grossAnnual, 2026, 5000);
+  assert.match(high.tips[0].text, /meer dan het wettelijk minimumuurloon van €\s14,99/);
 });

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-const POPULAR_AMOUNTS = ["2500-per-maand", "3000-per-maand", "3500-per-maand", "4000-per-maand", "50000-per-jaar"];
+const POPULAR_AMOUNTS = ["2700-per-maand", "3000-per-maand", "3500-per-maand", "4000-per-maand", "50000-per-jaar"];
 
 /** Served by Cloudflare as out/404.html for every unknown path. */
 export default function NotFound() {

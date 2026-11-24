@@ -6,7 +6,7 @@
  * change and differs per income instead of repeating one template.
  */
 import { employmentTaxCredit, generalTaxCredit } from "./calculator.ts";
-import { percent, ratePercent } from "./format.ts";
+import { moneyCents, percent, ratePercent } from "./format.ts";
 import { zorgtoeslagAnnual } from "./toeslagen.ts";
 import { DEFAULT_TAX_YEAR, taxYear } from "./tax-years.ts";
 
@@ -40,6 +40,26 @@ export function incomeThresholds(year = DEFAULT_TAX_YEAR) {
   };
 }
 
+/** Hours per week and weeks per year behind a full-time monthly salary, as on the amount pages. */
+const FULL_TIME_HOURS = 40;
+const WEEKS_PER_YEAR = 52;
+/** Within this share of the minimum wage, an hourly wage counts as "about the minimum wage". */
+const MINIMUM_WAGE_MARGIN = 0.05;
+
+const MONTHS = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
+const dutchDate = (iso: string) => { const [y, m, d] = iso.split("-").map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
+
+/** The minimum hourly wage (21 and older) that applies last in the year, and the monthly salary it gives per weekly hours. */
+export function minimumWage(year = DEFAULT_TAX_YEAR) {
+  const { periods, sourceUrl } = taxYear(year).minimumWage;
+  const current = periods[periods.length - 1];
+  const monthly = (hours: number) => current.hourly * hours * WEEKS_PER_YEAR / 12;
+  return { ...current, sourceUrl, monthly };
+}
+
+/** Hourly wage of a full-time monthly salary. */
+export const fullTimeHourly = (grossMonthly: number) => grossMonthly * 12 / (WEEKS_PER_YEAR * FULL_TIME_HOURS);
+
 /** One part of the marginal rate: the bracket rate, or a credit that shrinks (+) or grows (−). */
 export type RatePart = { label: string; rate: number };
 
@@ -57,7 +77,7 @@ export function marginalParts(income: number, year = DEFAULT_TAX_YEAR): RatePart
   return parts;
 }
 
-export type AmountTip = { text: string; href?: string; link?: string };
+export type AmountTip = { text: string; href?: string; link?: string; external?: boolean };
 
 export type AmountContext = {
   year: number;
@@ -82,8 +102,11 @@ export type AmountContext = {
 
 const BRACKET_NAMES = ["eerste", "tweede", "derde", "vierde"];
 
-/** Explanation of what happens at this taxable annual income (salary plus holiday allowance, no pension). */
-export function amountContext(income: number, year = DEFAULT_TAX_YEAR): AmountContext {
+/**
+ * Explanation of what happens at this taxable annual income (salary plus holiday allowance,
+ * no pension). With `grossMonthly` it also compares the full-time hourly wage with the minimum wage.
+ */
+export function amountContext(income: number, year = DEFAULT_TAX_YEAR, grossMonthly?: number): AmountContext {
   const params = taxYear(year);
   const t = incomeThresholds(year);
   const brackets = params.brackets;
@@ -165,8 +188,22 @@ export function amountContext(income: number, year = DEFAULT_TAX_YEAR): AmountCo
     paragraphs.push(`Dat is meer dan het toptarief, omdat de arbeidskorting hier nog wordt afgebouwd. Pas vanaf ongeveer ${eur(t.employmentEnd)} per jaar is die op, en daalt je marginale tarief weer naar ${ratePercent(top.rate)}.`);
   }
 
-  // Tips: toeslagen, raises, pension.
+  // Tips: minimum wage, toeslagen, raises, pension.
   const tips: AmountTip[] = [];
+  if (grossMonthly !== undefined) {
+    const wage = minimumWage(year);
+    const hourly = fullTimeHourly(grossMonthly);
+    const ratio = hourly / wage.hourly - 1;
+    const since = `het wettelijk minimumuurloon van ${moneyCents(wage.hourly)} (21 jaar en ouder, vanaf ${dutchDate(wage.from)})`;
+    const link = { href: wage.sourceUrl, link: "Bedragen minimumloon bij Rijksoverheid", external: true };
+    if (Math.abs(ratio) <= MINIMUM_WAGE_MARGIN) {
+      tips.push({ text: `Dit is ongeveer het minimumloon. Bij 40 uur per week is het een uurloon van ${moneyCents(hourly)}, tegen ${since}. Er is geen vast minimummaandloon: bij 40 uur is het minimum ${eur(wage.monthly(FULL_TIME_HOURS))} per maand, bij 38 uur ${eur(wage.monthly(38))} en bij 36 uur ${eur(wage.monthly(36))}.`, ...link });
+    } else if (ratio < 0) {
+      tips.push({ text: `Bij 40 uur per week is dit een uurloon van ${moneyCents(hourly)}, minder dan ${since}. Werk je fulltime, dan is je salaris minimaal ${eur(wage.monthly(FULL_TIME_HOURS))} per maand; dit bedrag past bij ongeveer ${Math.floor(grossMonthly / wage.monthly(1))} uur per week.`, ...link });
+    } else {
+      tips.push({ text: `Bij 40 uur per week is dit een uurloon van ${moneyCents(hourly)}, ${percent(ratio)} meer dan ${since}.`, ...link });
+    }
+  }
   const allowances = params.allowances;
   if (zorgAnnual > 0) {
     tips.push({ text: `Ben je alleenstaand en blijft je vermogen onder ${eur(allowances.assetLimit.single)}, dan heb je bij dit inkomen recht op ongeveer ${eur(zorgAnnual / 12)} zorgtoeslag per maand. Die wordt kleiner naarmate je meer verdient en stopt rond ${eur(t.zorgEndSingle)} per jaar. Met een toeslagpartner telt jullie samengetelde inkomen, en ligt die grens rond ${eur(t.zorgEndPartner)}.` });

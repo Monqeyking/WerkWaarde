@@ -1,6 +1,6 @@
 {
   "https://nettoplaatje.nl/": {
-    "hash": "102d0f1c8629b22b",
+    "hash": "50625e88b338a8ae",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/totaal": {
@@ -8,7 +8,7 @@
     "changed": "2026-11-22"
   },
   "https://nettoplaatje.nl/bruto-netto": {
-    "hash": "08cf5ca6fc115717",
+    "hash": "3cf931ae61b73712",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/mobiliteit": {
@@ -35,48 +35,44 @@
     "hash": "0ffa343cd97ac244",
     "changed": "2026-11-22"
   },
-  "https://nettoplaatje.nl/bruto-netto/2000-per-maand": {
-    "hash": "8a197efa9eaa43a0",
-    "changed": "2026-11-24"
-  },
-  "https://nettoplaatje.nl/bruto-netto/2500-per-maand": {
-    "hash": "1c0acd715e0c7868",
+  "https://nettoplaatje.nl/bruto-netto/2700-per-maand": {
+    "hash": "2406b322181cf423",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/3000-per-maand": {
-    "hash": "8bd801fe63b5d6c7",
+    "hash": "46ab99975ef144b7",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/3500-per-maand": {
-    "hash": "203a8bb608424d78",
+    "hash": "a64961317ff80f5f",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/4000-per-maand": {
-    "hash": "bb6691444266e6fe",
+    "hash": "df700f05cc8d9534",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/5000-per-maand": {
-    "hash": "776863b5d2a05200",
+    "hash": "49ba1e52670d1aca",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/6000-per-maand": {
-    "hash": "345a9b73518483c3",
+    "hash": "63c2c0b42d279c81",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/8000-per-maand": {
-    "hash": "b45477c854a91dd3",
+    "hash": "f2e0d2741e12a6a7",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/40000-per-jaar": {
-    "hash": "14c4cce1a93fef97",
+    "hash": "7f182a783781acd9",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/50000-per-jaar": {
-    "hash": "128e005840a887d3",
+    "hash": "6c1c461b118d33c8",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/bruto-netto/60000-per-jaar": {
-    "hash": "7fe54ed969e3c2e1",
+    "hash": "f3c921ae11fda607",
     "changed": "2026-11-24"
   },
   "https://nettoplaatje.nl/cao": {
