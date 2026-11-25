@@ -21,7 +21,7 @@ test("amount pages have unique slugs and a sensible count", () => {
 test("every removed amount page redirects to the calculator with its amount", () => {
   const live = new Set(AMOUNT_PAGES.map((page) => page.slug));
   const rules = new Map(readFileSync("public/_redirects", "utf8").split(/\r?\n/)
-    .filter((line) => line.trim() && !line.startsWith("#"))
+    .filter((line) => line.startsWith("/bruto-netto/"))
     .map((line) => { const [from, to, status] = line.trim().split(/\s+/); return [from, { to, status }] as const; }));
   assert.equal(rules.size, RETIRED_AMOUNT_PAGES.length);
   for (const page of RETIRED_AMOUNT_PAGES) {

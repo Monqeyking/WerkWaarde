@@ -61,21 +61,74 @@ export function minimumWage(year = DEFAULT_TAX_YEAR) {
 export const fullTimeHourly = (grossMonthly: number) => grossMonthly * 12 / (WEEKS_PER_YEAR * FULL_TIME_HOURS);
 
 /** One part of the marginal rate: the bracket rate, or a credit that shrinks (+) or grows (−). */
-export type RatePart = { label: string; rate: number };
+export type RatePart = { kind: "bracket" | "general" | "employment"; label: string; rate: number };
 
 /** The marginal rate at an income, split into its parts. */
 export function marginalParts(income: number, year = DEFAULT_TAX_YEAR): RatePart[] {
   const params = taxYear(year);
   const bracket = params.brackets.find((b) => income < b.limit) ?? params.brackets[params.brackets.length - 1];
-  const parts: RatePart[] = [{ label: "belastingschijf", rate: bracket.rate }];
+  const parts: RatePart[] = [{ kind: "bracket", label: "belastingschijf", rate: bracket.rate }];
   const step = 1;
   const general = (generalTaxCredit(income, AGE, params) - generalTaxCredit(income + step, AGE, params)) / step;
-  if (general > 0.0005) parts.push({ label: "minder algemene heffingskorting", rate: general });
+  if (general > 0.0005) parts.push({ kind: "general", label: "minder algemene heffingskorting", rate: general });
   const employment = (employmentTaxCredit(income, AGE, params) - employmentTaxCredit(income + step, AGE, params)) / step;
-  if (employment > 0.0005) parts.push({ label: "minder arbeidskorting", rate: employment });
-  if (employment < -0.0005) parts.push({ label: "extra arbeidskorting", rate: employment });
+  if (employment > 0.0005) parts.push({ kind: "employment", label: "minder arbeidskorting", rate: employment });
+  if (employment < -0.0005) parts.push({ kind: "employment", label: "extra arbeidskorting", rate: employment });
   return parts;
 }
+
+/** A level just above an income where the marginal rate changes. */
+export type ThresholdKey =
+  | { kind: "bracket"; index: number; top: boolean }
+  | { kind: "generalStart" | "generalEnd" | "employmentPeak" | "employmentEnd" };
+
+/**
+ * The language-neutral facts behind the explanation at a taxable annual income: bracket,
+ * credits, the marginal rate in parts, and a threshold just above. Both the Dutch amount
+ * pages and the English salary pages turn these into text.
+ */
+export function incomeFacts(income: number, year = DEFAULT_TAX_YEAR) {
+  const params = taxYear(year);
+  const t = incomeThresholds(year);
+  const brackets = params.brackets;
+  const bracketIndex = Math.max(0, brackets.findIndex((b) => income < b.limit));
+  const bracket = brackets[bracketIndex];
+  const top = brackets[brackets.length - 1];
+  // Rates just above the income, so a page a few euros below a threshold explains the rate a raise gets.
+  const parts = marginalParts(income + 50, year);
+  const marginal = parts.reduce((sum, part) => sum + part.rate, 0);
+  const segment = [...params.employmentCredit].reverse().find((s) => income >= s.from) ?? params.employmentCredit[0];
+
+  const candidates: Array<{ at: number; key: ThresholdKey }> = [
+    ...brackets.slice(0, -1).map((b, index) => ({ at: b.limit, key: { kind: "bracket" as const, index: index + 1, top: index === brackets.length - 2 } })),
+    { at: t.generalStart, key: { kind: "generalStart" } },
+    { at: t.generalEnd, key: { kind: "generalEnd" } },
+    { at: t.employmentPeak, key: { kind: "employmentPeak" } },
+    { at: t.employmentEnd, key: { kind: "employmentEnd" } },
+  ];
+  const near = candidates
+    .filter((c) => Number.isFinite(c.at) && c.at > income && c.at - income <= income * NEAR_SHARE)
+    .sort((a, b) => a.at - b.at);
+  const threshold = near.length === 0 ? undefined : {
+    at: near[0].at,
+    keys: near.filter((c) => c.at - near[0].at < SAME_THRESHOLD).map((c) => c.key),
+    /** Marginal rate just past the threshold. */
+    above: marginalParts(near[0].at + 50, year).reduce((sum, part) => sum + part.rate, 0),
+    /** Within €100: a raise lands past it at once. */
+    atThreshold: near[0].at - income < 100,
+  };
+
+  return {
+    year, income, params, thresholds: t, brackets, bracketIndex, bracket, top, parts, marginal,
+    generalCredit: generalTaxCredit(income, AGE, params),
+    employmentCredit: employmentTaxCredit(income, AGE, params),
+    employmentCreditMax: Math.max(...params.employmentCredit.map((s) => s.base)),
+    employmentSegmentRate: segment.rate,
+    threshold,
+  };
+}
+
+export type IncomeFacts = ReturnType<typeof incomeFacts>;
 
 export type AmountTip = { text: string; href?: string; link?: string; external?: boolean };
 
@@ -107,41 +160,29 @@ const BRACKET_NAMES = ["eerste", "tweede", "derde", "vierde"];
  * no pension). With `grossMonthly` it also compares the full-time hourly wage with the minimum wage.
  */
 export function amountContext(income: number, year = DEFAULT_TAX_YEAR, grossMonthly?: number): AmountContext {
-  const params = taxYear(year);
-  const t = incomeThresholds(year);
-  const brackets = params.brackets;
-  const bracketIndex = Math.max(0, brackets.findIndex((b) => income < b.limit));
-  const bracket = brackets[bracketIndex];
-  const top = brackets[brackets.length - 1];
-  // Rates just above the income, so a page a few euros below a threshold explains the rate a raise gets.
-  const parts = marginalParts(income + 50, year);
-  const marginal = parts.reduce((sum, part) => sum + part.rate, 0);
-  const generalCredit = generalTaxCredit(income, AGE, params);
-  const employmentCredit = employmentTaxCredit(income, AGE, params);
-  const employmentCreditMax = Math.max(...params.employmentCredit.map((s) => s.base));
+  const facts = incomeFacts(income, year);
+  const { params, thresholds: t, brackets, bracketIndex, bracket, top, parts, marginal, generalCredit, employmentCredit, employmentCreditMax } = facts;
   const zorgAnnual = zorgtoeslagAnnual(income, false, false, year);
   const keep100 = 100 * (1 - marginal);
 
-  // A threshold just above this income: within €100 a raise lands past it at once,
-  // further away the rate changes after a raise of that size.
-  const candidates = [
-    ...brackets.slice(0, -1).map((b, index) => ({ at: b.limit, label: index === brackets.length - 2 ? "het toptarief" : `de ${BRACKET_NAMES[index + 1] ?? `${index + 2}e`} schijf` })),
-    { at: t.generalStart, label: "de afbouw van de algemene heffingskorting" },
-    { at: t.generalEnd, label: "het einde van de algemene heffingskorting" },
-    { at: t.employmentPeak, label: "de afbouw van de arbeidskorting" },
-    { at: t.employmentEnd, label: "het einde van de arbeidskorting" },
-  ].filter((c) => Number.isFinite(c.at) && c.at > income && c.at - income <= income * NEAR_SHARE).sort((a, b) => a.at - b.at);
+  const dutchLabel = (key: ThresholdKey) => {
+    if (key.kind === "bracket") return key.top ? "het toptarief" : `de ${BRACKET_NAMES[key.index] ?? `${key.index + 1}e`} schijf`;
+    return {
+      generalStart: "de afbouw van de algemene heffingskorting",
+      generalEnd: "het einde van de algemene heffingskorting",
+      employmentPeak: "de afbouw van de arbeidskorting",
+      employmentEnd: "het einde van de arbeidskorting",
+    }[key.kind];
+  };
   let thresholdNote: string | undefined;
-  let atThreshold = false;
-  if (candidates.length > 0) {
-    const first = candidates[0];
-    const labels = candidates.filter((c) => c.at - first.at < SAME_THRESHOLD).map((c) => c.label);
+  const atThreshold = facts.threshold?.atThreshold ?? false;
+  if (facts.threshold) {
+    const { at, keys, above } = facts.threshold;
+    const labels = keys.map(dutchLabel);
     const label = labels.length > 1 ? `${labels.slice(0, -1).join(", ")} en ${labels[labels.length - 1]}` : labels[0];
-    const above = marginalParts(first.at + 50, year).reduce((sum, part) => sum + part.rate, 0);
-    atThreshold = first.at - income < 100;
     thresholdNote = atThreshold
-      ? `Je zit maar ${eur(first.at - income)} per jaar onder ${label}. Een loonsverhoging valt daar dus meteen in.`
-      : `Je zit ${eur(first.at - income)} per jaar onder ${label}. Verdien je meer dan dat, dan gaat er van elke extra euro ${percent(above)} naar belasting in plaats van ${percent(marginal)}.`;
+      ? `Je zit maar ${eur(at - income)} per jaar onder ${label}. Een loonsverhoging valt daar dus meteen in.`
+      : `Je zit ${eur(at - income)} per jaar onder ${label}. Verdien je meer dan dat, dan gaat er van elke extra euro ${percent(above)} naar belasting in plaats van ${percent(marginal)}.`;
   }
   const inlineNote = atThreshold && thresholdNote ? ` ${thresholdNote}` : "";
 
@@ -164,7 +205,7 @@ export function amountContext(income: number, year = DEFAULT_TAX_YEAR, grossMont
     : generalCredit > 0
       ? `De algemene heffingskorting wordt boven ${eur(t.generalStart)} kleiner, met ${cents(general.phaseOutRate)} per extra euro. Bij jouw inkomen is er nog ${eur(generalCredit)} van de ${eur(general.max)} over.`
       : `De algemene heffingskorting is bij dit inkomen helemaal afgebouwd. Vanaf ongeveer ${eur(t.generalEnd)} krijg je die niet meer.`;
-  const segment = [...params.employmentCredit].reverse().find((s) => income >= s.from) ?? params.employmentCredit[0];
+  const segment = { rate: facts.employmentSegmentRate };
   const employmentText = employmentCredit <= 0
     ? `De arbeidskorting is op: die is vanaf ongeveer ${eur(t.employmentEnd)} helemaal afgebouwd.`
     : segment.rate < 0

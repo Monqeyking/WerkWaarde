@@ -9,6 +9,7 @@ import { HOLIDAY_PCT } from "../../../../lib/amounts";
 import {
   EN_AMOUNT_PAGES, enAmountDescription, enAmountFigures, enAmountLabel, enAmountPath, enAmountTitle, euroEn, getEnAmountPage, headlineNet,
 } from "../../../../lib/en-amounts";
+import { enAmountContext } from "../../../../lib/en-amount-context";
 import { moneyEn, percentEn } from "../../../../lib/format";
 import { breadcrumbList, pageMetadata } from "../../../../lib/seo";
 import { taxYear } from "../../../../lib/tax-years";
@@ -38,7 +39,7 @@ export default async function SalaryPage({ params }: Props) {
   const rules = taxYear(f.year).expatRuling;
   const rulingPct = percentEn(rules.rate);
   const youngDiffers = Math.abs(youngMaster.netAnnual - ruling.netAnnual) > 1;
-  const keep100 = 100 * (1 - without.marginalRate);
+  const context = enAmountContext(f);
 
   const monthRows: TableRow[] = [
     { label: monthly ? "Gross salary" : `Gross salary (${euroEn(page.amount)} ÷ 12.96)`, value: moneyEn(without.grossMonthly) },
@@ -70,7 +71,7 @@ export default async function SalaryPage({ params }: Props) {
       ? `About ${euroEn(without.regularNetMonthly)} net in a regular month in ${f.year}, for a full-time job without pension contribution. With ${HOLIDAY_PCT}% holiday allowance you take home about ${euroEn(without.netAnnual)} net a year.`
       : `About ${euroEn(without.netAnnual)} net a year in ${f.year}, or ${euroEn(without.netMonthlyAverage)} a month on average. We assume ${euroEn(page.amount)} includes ${HOLIDAY_PCT}% holiday allowance, as in most Dutch offers, and no pension contribution. In a regular month you get ${euroEn(without.regularNetMonthly)}.`],
     [`How much more do you get with the 30% ruling?`, rulingAnswer],
-    [`How much of a raise do you keep at this salary?`, `Your marginal tax rate is about ${percentEn(without.marginalRate)}. Of €100 extra gross a month you keep about ${euroEn(keep100)} net. For €100 more net you need about ${euroEn(without.grossFor100Net)} gross.`],
+    [`How much of a raise do you keep at this salary, and why?`, context.raiseAnswer],
     [`How much do you keep of your holiday allowance?`, `Your holiday allowance of ${euroEn(without.holidayGrossAnnual)} gross is taxed at about ${percentEn(without.extraTaxRate)}. About ${euroEn(without.holidayNetAnnual)} net remains, usually paid in May or June.`],
   ];
 
@@ -122,6 +123,14 @@ export default async function SalaryPage({ params }: Props) {
     </section>
 
     <section className="how-section shell total-content amount-content">
+      <div className="section-heading"><div><span className="section-kicker">At this salary</span><h2>What the 30% ruling does at {euroEn(page.amount)} {per}</h2></div></div>
+      <div className="method-copy amount-context">
+        {context.rulingParagraphs.map((text) => <p key={text}>{text}</p>)}
+        <h3>How tax works at this salary</h3>
+        {context.taxParagraphs.map((text) => <p key={text}>{text}</p>)}
+        <p className="amount-context-source">Source: the {f.year} tax rates, tax credits and 30% ruling rules of the Belastingdienst, the same figures as the calculator. See <Link href="/en/30-percent-ruling">the 30% ruling calculator</Link> for your own situation.</p>
+      </div>
+
       <div className="disclaimer"><span className="disclaimer-icon">!</span><div><strong>Assumptions</strong><p>
         Tax rates and tax credits of {f.year}, below the state pension age, full time, {HOLIDAY_PCT}% holiday allowance, no pension contribution, 13th month or bonus. {monthly ? "" : `We read ${euroEn(page.amount)} as your annual salary including holiday allowance. `}The 30% ruling is calculated for a full year with the {f.year} salary norm and maximum. Your employer uses monthly tables and may have other deductions, so your payslip can differ slightly. This is an estimate, not financial advice.
       </p></div></div>

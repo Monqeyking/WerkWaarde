@@ -1,8 +1,12 @@
 /**
  * English salary pages for expats ("€60,000 gross per year in the Netherlands").
  * Expats usually get an offer as a yearly amount, so most pages are yearly. Each
- * page shows the net salary with and without the 30% ruling (expatregeling).
- * Keep the list short: near-identical pages read as thin content to Google.
+ * page shows the net salary with and without the 30% ruling (expatregeling), and
+ * explains what the ruling does at that salary (lib/en-amount-context.ts).
+ * One or two pages per ruling zone: below the salary norm, limited by the norm, the
+ * full percentage, and the full percentage with the rest still in the top bracket.
+ * Near-identical pages read as thin content to Google and AdSense; the pages removed
+ * in November 2026 redirect to the calculator (public/_redirects).
  */
 import { AMOUNT_PAGES, HOLIDAY_PCT, amountPath, amountState } from "./amounts.ts";
 import type { ExpatOption } from "./expat.ts";
@@ -14,13 +18,20 @@ import { DEFAULT_TAX_YEAR } from "./tax-years.ts";
 export type EnAmountKind = "month" | "year";
 export type EnAmountPage = { slug: string; kind: EnAmountKind; amount: number };
 
-export const EN_MONTHLY_AMOUNTS = [3000, 4000, 5000, 6000] as const;
-export const EN_YEARLY_AMOUNTS = [50000, 60000, 70000, 80000, 100000, 120000] as const;
+export const EN_MONTHLY_AMOUNTS = [3000] as const;
+export const EN_YEARLY_AMOUNTS = [60000, 70000, 100000] as const;
 
-export const EN_AMOUNT_PAGES: readonly EnAmountPage[] = [
-  ...EN_YEARLY_AMOUNTS.map((amount) => ({ slug: `${amount}-gross-per-year`, kind: "year" as const, amount })),
-  ...EN_MONTHLY_AMOUNTS.map((amount) => ({ slug: `${amount}-gross-per-month`, kind: "month" as const, amount })),
+/** Salary pages removed in November 2026; each redirects to the calculator with its amount filled in. */
+export const EN_RETIRED_MONTHLY_AMOUNTS = [4000, 5000, 6000] as const;
+export const EN_RETIRED_YEARLY_AMOUNTS = [50000, 80000, 120000] as const;
+
+const toEnPages = (yearly: readonly number[], monthly: readonly number[]): EnAmountPage[] => [
+  ...yearly.map((amount) => ({ slug: `${amount}-gross-per-year`, kind: "year" as const, amount })),
+  ...monthly.map((amount) => ({ slug: `${amount}-gross-per-month`, kind: "month" as const, amount })),
 ];
+
+export const EN_AMOUNT_PAGES: readonly EnAmountPage[] = toEnPages(EN_YEARLY_AMOUNTS, EN_MONTHLY_AMOUNTS);
+export const EN_RETIRED_AMOUNT_PAGES: readonly EnAmountPage[] = toEnPages(EN_RETIRED_YEARLY_AMOUNTS, EN_RETIRED_MONTHLY_AMOUNTS);
 
 export const getEnAmountPage = (slug: string) => EN_AMOUNT_PAGES.find((page) => page.slug === slug);
 
@@ -32,6 +43,9 @@ export function dutchAmountPath(page: EnAmountPage): string | undefined {
   const dutch = AMOUNT_PAGES.find((other) => other.slug === slug);
   return dutch && amountPath(dutch);
 }
+
+/** Link that opens the English calculator with this monthly gross salary filled in. */
+export const enPrefillPath = (page: EnAmountPage) => `/en#bruto=${Math.round(enMonthlyGross(page))}`;
 
 /** A yearly amount is read as the full annual gross including 8% holiday allowance, as in most Dutch offers. */
 export function enMonthlyGross(page: EnAmountPage) {

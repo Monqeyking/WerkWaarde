@@ -1,5 +1,6 @@
 # Amount pages removed in November 2026: open the calculator with the amount filled in.
-# Kept in sync with RETIRED_AMOUNT_PAGES in lib/amounts.ts (tests/amounts.test.ts checks it).
+# Kept in sync with RETIRED_AMOUNT_PAGES (lib/amounts.ts) and EN_RETIRED_AMOUNT_PAGES (lib/en-amounts.ts);
+# tests/amounts.test.ts and tests/english.test.ts check it.
 /bruto-netto/2000-per-maand /bruto-netto#bruto=2000 301
 /bruto-netto/2200-per-maand /bruto-netto#bruto=2200 301
 /bruto-netto/2400-per-maand /bruto-netto#bruto=2400 301
@@ -29,3 +30,9 @@
 /bruto-netto/70000-per-jaar /bruto-netto#bruto=5401 301
 /bruto-netto/80000-per-jaar /bruto-netto#bruto=6173 301
 /bruto-netto/90000-per-jaar /bruto-netto#bruto=6944 301
+/en/salary/50000-gross-per-year /en#bruto=3858 301
+/en/salary/80000-gross-per-year /en#bruto=6173 301
+/en/salary/120000-gross-per-year /en#bruto=9259 301
+/en/salary/4000-gross-per-month /en#bruto=4000 301
+/en/salary/5000-gross-per-month /en#bruto=5000 301
+/en/salary/6000-gross-per-month /en#bruto=6000 301
