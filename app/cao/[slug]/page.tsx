@@ -12,6 +12,7 @@ import {
   getCao, pct, sectorSiblings, yearEndText, type CaoFigures,
 } from "../../../lib/cao-pages";
 import { euro } from "../../../lib/amounts";
+import { caoContext } from "../../../lib/cao-context";
 import { money } from "../../../lib/format";
 import { breadcrumbList, pageMetadata } from "../../../lib/seo";
 
@@ -86,6 +87,7 @@ export default async function CaoPage({ params }: Props) {
   const name = caoInText(cao);
   const questions = faqs(figures);
   const siblings = sectorSiblings(cao);
+  const context = caoContext(cao, year);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -142,6 +144,12 @@ export default async function CaoPage({ params }: Props) {
     </section>
 
     <section className="how-section shell total-content amount-content">
+      <div className="section-heading"><div><span className="section-kicker">Vergeleken met andere cao&apos;s</span><h2>Wat is bijzonder aan de {name}?</h2></div></div>
+      <div className="method-copy amount-context">
+        {context.paragraphs.map((text) => <p key={text}>{text}</p>)}
+        <p className="amount-context-source">Vergeleken met de {CAOS.length} cao&apos;s op Nettoplaatje, bij {euro(h.grossMonthly)} bruto per maand in {year}. Bronnen staan hieronder per cao.</p>
+      </div>
+
       <div className="disclaimer"><span className="disclaimer-icon">!</span><div><strong>Uitgangspunten en bronnen</strong><p>
         Belastingtarieven en heffingskortingen van {year}, een voltijdbaan van {caoHours(cao)} uur, zonder bonus, leaseauto of andere inhoudingen.
         {cao.note && <> {cao.note}</>} Je werkgever rekent met maandtabellen, dus je loonstrook kan iets afwijken. Dit is een indicatie, geen financieel advies.
